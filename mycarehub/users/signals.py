@@ -17,16 +17,7 @@ BASIC_PERMISSIONS = [
     "users.can_view_about",
 ]
 WHITELIST_PERMISSIONS = BASIC_PERMISSIONS + [
-    "common.view_system",
     "common.view_facility",
-    "ops.view_facilitysystem",
-    "ops.view_facilitysystemticket",
-    "ops.view_timesheet",
-    "ops.view_stockreceiptverification",
-    "ops.view_activitylog",
-    "ops.view_sitementorship",
-    "ops.view_dailyupdate",
-    "ops.add_timesheet",
 ]
 
 User = get_user_model()
@@ -116,7 +107,7 @@ def send_admin_awaiting_approval_email(user, request: HttpRequest) -> None:
     }
     message = get_template("emails/account_pending_approval_admin.html").render(context)
     mail = EmailMessage(
-        subject="New mycarehub System Account Pending Approval",
+        subject="myCareHub Admin System Account Pending Approval",
         body=message,
         from_email=settings.SERVER_EMAIL,
         to=[admin.email for admin in User.objects.filter(is_staff=True)],
@@ -130,7 +121,7 @@ def send_user_awaiting_approval_email(user):
     context = {"user": user, "support_email": settings.SERVER_EMAIL}
     message = get_template("emails/account_pending_approval_user.html").render(context)
     mail = EmailMessage(
-        subject="mycarehub System Account Pending Approval",
+        subject="myCareHub System Account Pending Approval",
         body=message,
         from_email=settings.SERVER_EMAIL,
         to=[user.email],

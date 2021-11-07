@@ -32,13 +32,6 @@ def user_with_all_permissions(user) -> User:
 
 
 @pytest.fixture
-def staff_user(user_with_all_permissions) -> User:
-    user_with_all_permissions.is_staff = True
-    user_with_all_permissions.save()
-    return user_with_all_permissions
-
-
-@pytest.fixture
 def group_with_all_permissions() -> Group:
     group = baker.make(Group)
     all_perms = Permission.objects.all()

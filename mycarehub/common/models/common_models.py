@@ -31,7 +31,9 @@ class FacilityQuerySet(AbstractBaseQuerySet):
     def mycarehub_facilities(self):
         """Return all the facilities that are part of the FYJ program."""
         return self.active().filter(
-            is_mycarehub_facility=True, operation_status="Operational", county__in=WHITELIST_COUNTIES
+            is_mycarehub_facility=True,
+            operation_status="Operational",
+            county__in=WHITELIST_COUNTIES,
         )
 
 
@@ -65,7 +67,7 @@ class Facility(AbstractBase):
     class KEPHLevels(models.TextChoices):
         """The different Kenya Package for Health (KEPH) levels.
 
-        This are the different tiers of health care delivery systems as
+        This are the different tiers of health care delivery as
         defined by the Ministry of Health.
         """
 
@@ -246,37 +248,6 @@ class FacilityAttachment(Attachment):
         """Define ordering and other attributes for attachments."""
 
         ordering = ("-updated", "-created")
-
-
-class System(AbstractBase):
-    """List of systems used in the public sector e.g Kenya EMR."""
-
-    class SystemPatters(models.TextChoices):
-        """The different patters of a system in a facility."""
-
-        POINT_OF_CARE = "poc", "Point of Care"
-        RETROSPECTIVE_DATA_ENTRY = "rde", "Retrospective Data Entry"
-        HYBRID = "hybrid", "Hybrid"
-        NONE = "none", "None"
-
-    name = models.CharField(max_length=128, null=False, blank=False, unique=True)
-    pattern = models.CharField(
-        max_length=10, choices=SystemPatters.choices, default=SystemPatters.NONE.value
-    )
-    description = models.TextField()
-
-    def get_absolute_url(self):
-        update_url = reverse("common:system_update", kwargs={"pk": self.pk})
-        return update_url
-
-    def __str__(self) -> str:
-        return self.name
-
-    class Meta(AbstractBase.Meta):
-        ordering = (
-            "name",
-            "-updated",
-        )
 
 
 class UserFacilityAllotment(AbstractBase):

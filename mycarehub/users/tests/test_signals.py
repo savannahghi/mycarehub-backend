@@ -49,7 +49,7 @@ def test_send_user_awaiting_approval_email(mailoutbox):
     send_user_awaiting_approval_email(user)  # no error
     assert len(mailoutbox) >= 1  # an automatic user approval email was also sent
     m = mailoutbox[len(mailoutbox) - 1]
-    assert m.subject == "mycarehub System Account Pending Approval"
+    assert "System Account Pending Approval" in m.subject
     assert m.from_email == settings.SERVER_EMAIL
     assert list(m.to) == [
         user.email,
@@ -65,7 +65,7 @@ def test_send_admin_awaiting_approval_email(mailoutbox, rf):
     send_admin_awaiting_approval_email(user, request)  # no error
     assert len(mailoutbox) >= 1
     m = mailoutbox[len(mailoutbox) - 1]
-    assert m.subject == "New mycarehub System Account Pending Approval"
+    assert "System Account Pending Approval" in m.subject
     assert m.from_email == settings.SERVER_EMAIL
     assert set(m.to) == set(admin.email for admin in admins)
 

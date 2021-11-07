@@ -1,11 +1,7 @@
 from mycarehub.common.dashboard import get_mycarehub_facilities_queryset
-from mycarehub.common.filters import FacilityFilter, SystemFilter, UserFacilityAllotmentFilter
-from mycarehub.common.models import System, UserFacilityAllotment
-from mycarehub.common.serializers import (
-    FacilitySerializer,
-    SystemSerializer,
-    UserFacilityAllotmentSerializer,
-)
+from mycarehub.common.filters import FacilityFilter, UserFacilityAllotmentFilter
+from mycarehub.common.models import UserFacilityAllotment
+from mycarehub.common.serializers import FacilitySerializer, UserFacilityAllotmentSerializer
 
 from ..base_views import BaseView
 
@@ -21,14 +17,6 @@ class FacilityViewSet(BaseView):
         "registration_number",
     )
     facility_field_lookup = "pk"
-
-
-class SystemViewSet(BaseView):
-    queryset = System.objects.active()
-    serializer_class = SystemSerializer
-    filterset_class = SystemFilter
-    ordering_fields = ("name",)
-    search_fields = ("name",)
 
 
 class UserFacilityViewSet(BaseView):

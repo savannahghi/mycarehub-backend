@@ -1,8 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Sum
-from django.utils import timezone
-
-from mycarehub.ops.models import DailyUpdate
 
 from .models import Facility
 
@@ -27,32 +23,9 @@ def get_active_facility_count(user):
     )
 
 
-def get_open_ticket_count(user):
-    from mycarehub.ops.models import FacilitySystemTicket
-
-    return FacilitySystemTicket.objects.filter(
-        resolved__isnull=True,
-        active=True,
-        organisation=user.organisation,
-    ).count()
-
-
 def get_active_user_count(user):
     return User.objects.filter(
         is_approved=True,
         approval_notified=True,
         organisation=user.organisation,
     ).count()
-
-
-def get_appointments_mtd(user):
-    today = timezone.datetime.today()
-    year = today.year
-    month = today.month
-    qs = DailyUpdate.objects.filter(
-        active=True,
-        date__year=year,
-        date__month=month,
-        organisation=user.organisation,
-    ).aggregate(Sum("total"))
-    return qs["total__sum"]

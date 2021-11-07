@@ -16,7 +16,8 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from mycarehub.common.constants import WHITELIST_COUNTIES
-from mycarehub.common.models import Facility, Organisation, System, UserFacilityAllotment
+from mycarehub.common.models import Facility, Organisation, UserFacilityAllotment
+from mycarehub.common.serializers import FacilitySerializer
 
 from .test_utils import patch_baker
 
@@ -109,48 +110,6 @@ class LoggedInMixin(APITestCase):
     def extra_headers(self):
         """Return an empty headers list."""
         return {}
-
-
-class DRFSerializerExcelIOMixinTest(LoggedInMixin, APITestCase):
-    """Test suite for excel io mixin API."""
-
-    def setUp(self) -> None:
-        super().setUp()
-        from mycarehub.ops.models import FacilitySystem
-        from mycarehub.ops.serializers import FacilitySystemSerializer
-
-        versions = baker.make(FacilitySystem, 10, organisation=self.global_organisation)
-        self.data = FacilitySystemSerializer(versions, many=True).data
-
-    def test_dump_data(self) -> None:
-        """Test `dump_data` action."""
-
-        url = reverse("api:facilitysystem-dump-data")
-        data = {"dump_fields": ["facility_data::name", "system_data::name", "version"]}
-        response = self.client.get(url, data=data)
-
-        assert response.status_code == status.HTTP_200_OK
-        assert response["content-disposition"] == "attachment; filename=facility systems.xlsx"
-        assert response["content-type"] == "application/xlsx; charset=utf-8"
-
-    def test_get_available_fields(self) -> None:
-        """Test the `get_available_fields` action."""
-
-        url = reverse("api:facilitysystem-get-available-fields")
-        response = self.client.get(url)
-
-        assert response.status_code == status.HTTP_200_OK, response.json()
-        assert len(response.data) == 1
-        assert response.data[0]["id"] == "*"
-
-    def test_get_filter_form(self) -> None:
-        """Test the `get_filter_form` action."""
-
-        url = reverse("api:facilitysystem-get-filter-form")
-        response = self.client.get(url)
-
-        assert response.status_code == status.HTTP_200_OK
-        assert response["content-type"] == "text/html; charset=utf-8"
 
 
 class FacilityViewsetTest(LoggedInMixin, APITestCase):
@@ -397,119 +356,6 @@ class FacilityFormTest(LoggedInMixin, TestCase):
         )
 
 
-class SystemViewsetTest(LoggedInMixin, APITestCase):
-    """Test suite for systems API."""
-
-    def setUp(self):
-        self.url_list = reverse("api:system-list")
-        super().setUp()
-
-    def test_create(self):
-        data = {
-            "name": fake.name()[:127],
-            "description": fake.text(),
-            "organisation": self.global_organisation.pk,
-        }
-        response = self.client.post(self.url_list, data)
-        assert response.status_code == 201, response.json()
-        assert response.data["name"] == data["name"]
-
-    def test_retrieve_systems(self):
-        system = baker.make(
-            System,
-            name=fake.name()[:127],
-            organisation=self.global_organisation,
-        )
-
-        response = self.client.get(self.url_list)
-        assert response.status_code == 200, response.json()
-        assert response.data["count"] >= 1, response.json()
-
-        names = [a["name"] for a in response.data["results"]]
-        assert system.name in names
-
-    def test_patch_system(self):
-        system = baker.make(
-            System,
-            name=fake.name()[:127],
-            organisation=self.global_organisation,
-        )
-
-        edit_name = {"name": fake.name()[:127]}
-        url = reverse("api:system-detail", kwargs={"pk": system.pk})
-        response = self.client.patch(url, edit_name)
-
-        assert response.status_code == 200, response.json()
-        assert response.data["name"] == edit_name["name"]
-
-    def test_put_system(self):
-        system = baker.make(
-            System,
-            name=fake.name()[:127],
-            organisation=self.global_organisation,
-        )
-        data = {
-            "name": fake.name()[:127],
-            "description": fake.text(),
-            "organisation": self.global_organisation.pk,
-        }
-        url = reverse("api:system-detail", kwargs={"pk": system.pk})
-        response = self.client.put(url, data)
-
-        assert response.status_code == 200, response.json()
-        assert response.data["name"] == data["name"]
-
-
-class SystemFormTest(LoggedInMixin, TestCase):
-    def test_create(self):
-        data = {
-            "name": fake.name()[:127],
-            "pattern": System.SystemPatters.HYBRID.value,
-            "description": fake.text(),
-            "organisation": self.global_organisation.pk,
-        }
-        response = self.client.post(reverse("common:system_create"), data=data)
-        self.assertEqual(
-            response.status_code,
-            302,
-        )
-
-    def test_update(self):
-        system = baker.make(
-            System,
-            name=fake.name()[:127],
-            organisation=self.global_organisation,
-        )
-        data = {
-            "pk": system.pk,
-            "name": fake.name()[:127],
-            "pattern": System.SystemPatters.POINT_OF_CARE.value,
-            "description": fake.text(),
-            "organisation": self.global_organisation.pk,
-        }
-        response = self.client.post(
-            reverse("common:system_update", kwargs={"pk": system.pk}), data=data
-        )
-        self.assertEqual(
-            response.status_code,
-            302,
-        )
-
-    def test_delete(self):
-        system = baker.make(
-            System,
-            name=fake.name()[:127],
-            organisation=self.global_organisation,
-        )
-        response = self.client.post(
-            reverse("common:system_delete", kwargs={"pk": system.pk}),
-        )
-        self.assertEqual(
-            response.status_code,
-            302,
-        )
-
-
 class UserFacilityViewSetTest(LoggedInMixin, APITestCase):
     def setUp(self):
         super().setUp()
@@ -665,3 +511,43 @@ class UserFacilityAllotmentFormTest(LoggedInMixin, TestCase):
             response.status_code,
             302,
         )
+
+
+class DRFSerializerExcelIOMixinTest(LoggedInMixin, APITestCase):
+    """Test suite for excel io mixin API."""
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        versions = baker.make(Facility, 10, organisation=self.global_organisation)
+        self.data = FacilitySerializer(versions, many=True).data
+
+    def test_dump_data(self) -> None:
+        """Test `dump_data` action."""
+
+        url = reverse("api:facility-dump-data")
+        data = {"dump_fields": ["name", "mfl_code", "county", "sub_county"]}
+        response = self.client.get(url, data=data)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response["content-disposition"] == "attachment; filename=facilities.xlsx"
+        assert response["content-type"] == "application/xlsx; charset=utf-8"
+
+    def test_get_available_fields(self) -> None:
+        """Test the `get_available_fields` action."""
+
+        url = reverse("api:facility-get-available-fields")
+        response = self.client.get(url)
+
+        assert response.status_code == status.HTTP_200_OK, response.json()
+        assert len(response.data) == 1
+        assert response.data[0]["id"] == "*"
+
+    def test_get_filter_form(self) -> None:
+        """Test the `get_filter_form` action."""
+
+        url = reverse("api:facility-get-filter-form")
+        response = self.client.get(url)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response["content-type"] == "text/html; charset=utf-8"

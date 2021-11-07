@@ -20,7 +20,6 @@ from mycarehub.common.models import (
     Facility,
     Organisation,
     OwnerlessAbstractBase,
-    System,
     UserFacilityAllotment,
     is_image_type,
     unique_list,
@@ -44,12 +43,6 @@ def test_is_image_type():
     assert is_image_type("image/png") is True
     assert is_image_type("image/jpeg") is True
     assert is_image_type("application/pdf") is False
-
-
-def test_system_string_representation():
-    system_name = fake.name()
-    system = baker.make(System, name=system_name)
-    assert str(system) == system_name
 
 
 def test_facility_string_representation():

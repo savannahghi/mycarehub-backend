@@ -2,7 +2,7 @@ from crispy_forms.layout import Field, Fieldset, Layout
 from django.forms import MultipleChoiceField, TextInput
 
 from ..dashboard import get_mycarehub_facilities_queryset
-from ..models import Facility, FacilityAttachment, Organisation, System, UserFacilityAllotment
+from ..models import Facility, FacilityAttachment, Organisation, UserFacilityAllotment
 from ..utils import get_constituencies, get_counties, get_sub_counties, get_wards
 from ..widgets import MultiSearchableComboBox, SearchableComboBox
 from .base_forms import BaseModelForm
@@ -57,22 +57,6 @@ class FacilityForm(BaseModelForm):
             "facility_owner",
             "regulatory_body",
         )
-
-
-class SystemForm(BaseModelForm):
-    field_order = (
-        "name",
-        "pattern",
-        "description",
-        "active",
-    )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper.form_id = "system_form"
-
-    class Meta(BaseModelForm.Meta):
-        model = System
 
 
 class OrganisationForm(BaseModelForm):

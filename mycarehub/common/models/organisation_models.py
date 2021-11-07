@@ -63,12 +63,12 @@ class Organisation(OrganisationAbstractBase):
     """
     Define organisations - the main unit of partitioning.
 
-    All resources besides the system resources have an organisation.
-    The organisation is the single 'special' resource in the entire system.
+    All resources besides the platform resources have an organisation.
+    The organisation is the single 'special' resource in the entire backend.
     It does **not** descend from the base class as in other apps.
 
     This is considered a worthwhile trade-off because this resource is to be
-    maintained only by the overall system administrator. Breaking the link
+    maintained only by the overall administrator. Breaking the link
     between this and the base class helps avoid cyclic dependencies
     in migrations.
     """
@@ -119,7 +119,7 @@ class Organisation(OrganisationAbstractBase):
 
     @transaction.atomic
     def save(self, *args, **kwargs):
-        """Ensure that a newly created organisation gets system data."""
+        """Ensure that a newly created organisation gets default data."""
         self.updated = timezone.now()
         self.preserve_created_and_created_by()
         obj_exists = self.__class__.objects.filter(pk=self.pk)

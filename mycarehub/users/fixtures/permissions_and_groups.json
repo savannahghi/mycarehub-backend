@@ -530,94 +530,6 @@
     {
         "model": "auth.permission",
         "fields": {
-            "name": "Can add bookmark",
-            "content_type": [
-                "jet",
-                "bookmark"
-            ],
-            "codename": "add_bookmark"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can change bookmark",
-            "content_type": [
-                "jet",
-                "bookmark"
-            ],
-            "codename": "change_bookmark"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can delete bookmark",
-            "content_type": [
-                "jet",
-                "bookmark"
-            ],
-            "codename": "delete_bookmark"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can view bookmark",
-            "content_type": [
-                "jet",
-                "bookmark"
-            ],
-            "codename": "view_bookmark"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can add pinned application",
-            "content_type": [
-                "jet",
-                "pinnedapplication"
-            ],
-            "codename": "add_pinnedapplication"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can change pinned application",
-            "content_type": [
-                "jet",
-                "pinnedapplication"
-            ],
-            "codename": "change_pinnedapplication"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can delete pinned application",
-            "content_type": [
-                "jet",
-                "pinnedapplication"
-            ],
-            "codename": "delete_pinnedapplication"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can view pinned application",
-            "content_type": [
-                "jet",
-                "pinnedapplication"
-            ],
-            "codename": "view_pinnedapplication"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
             "name": "Can add log entry",
             "content_type": [
                 "admin",
@@ -882,94 +794,6 @@
     {
         "model": "auth.permission",
         "fields": {
-            "name": "Can add system",
-            "content_type": [
-                "common",
-                "system"
-            ],
-            "codename": "add_system"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can change system",
-            "content_type": [
-                "common",
-                "system"
-            ],
-            "codename": "change_system"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can delete system",
-            "content_type": [
-                "common",
-                "system"
-            ],
-            "codename": "delete_system"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can view system",
-            "content_type": [
-                "common",
-                "system"
-            ],
-            "codename": "view_system"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can add facility system",
-            "content_type": [
-                "ops",
-                "facilitysystem"
-            ],
-            "codename": "add_facilitysystem"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can change facility system",
-            "content_type": [
-                "ops",
-                "facilitysystem"
-            ],
-            "codename": "change_facilitysystem"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can delete facility system",
-            "content_type": [
-                "ops",
-                "facilitysystem"
-            ],
-            "codename": "delete_facilitysystem"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can view facility system",
-            "content_type": [
-                "ops",
-                "facilitysystem"
-            ],
-            "codename": "view_facilitysystem"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
             "name": "Can add time sheet",
             "content_type": [
                 "ops",
@@ -1009,50 +833,6 @@
                 "timesheet"
             ],
             "codename": "view_timesheet"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can add facility system ticket",
-            "content_type": [
-                "ops",
-                "facilitysystemticket"
-            ],
-            "codename": "add_facilitysystemticket"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can change facility system ticket",
-            "content_type": [
-                "ops",
-                "facilitysystemticket"
-            ],
-            "codename": "change_facilitysystemticket"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can delete facility system ticket",
-            "content_type": [
-                "ops",
-                "facilitysystemticket"
-            ],
-            "codename": "delete_facilitysystemticket"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can view facility system ticket",
-            "content_type": [
-                "ops",
-                "facilitysystemticket"
-            ],
-            "codename": "view_facilitysystemticket"
         }
     },
     {
@@ -1352,11 +1132,6 @@
                     "facility"
                 ],
                 [
-                    "view_system",
-                    "common",
-                    "system"
-                ],
-                [
                     "view_activity",
                     "ops",
                     "activity"
@@ -1370,16 +1145,6 @@
                     "view_dailyupdate",
                     "ops",
                     "dailyupdate"
-                ],
-                [
-                    "view_facilitysystem",
-                    "ops",
-                    "facilitysystem"
-                ],
-                [
-                    "view_facilitysystemticket",
-                    "ops",
-                    "facilitysystemticket"
                 ],
                 [
                     "view_operationalarea",

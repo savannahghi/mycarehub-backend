@@ -17,7 +17,6 @@ urlpatterns = [
         AboutView.as_view(),
         name="about",
     ),
-    path("jet/", include("jet.urls", "jet")),  # Django JET URLS
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
@@ -25,7 +24,6 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     # Our apps
     path("common/", include("mycarehub.common.urls", namespace="common")),
-    path("ops/", include("mycarehub.ops.urls", namespace="ops")),
     # favicon
     re_path(
         r"^favicon\.ico$",

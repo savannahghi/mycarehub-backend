@@ -39,4 +39,4 @@ def test_user_string_representation():
 def test_default_organisation():
     first_fetch_org = default_organisation()
     second_fetch_org = default_organisation()
-    assert first_fetch_org == second_fetch_org
+    assert str(first_fetch_org) == str(second_fetch_org)
