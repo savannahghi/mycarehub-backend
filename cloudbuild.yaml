@@ -26,7 +26,7 @@ steps:
       '--platform', 'managed',
       '--allow-unauthenticated',
       '--add-cloudsql-instances', '${_CLOUDSQL_INSTANCE_CONNECTION_NAME}',
-      '--set-env-vars', 'GOOGLE_CLOUD_PROJECT=$PROJECT_ID,SETTINGS_NAME=${_SETTINGS_NAME},DJANGO_SETTINGS_MODULE=config.settings.production,DEFAULT_ORG_ID=99edd1b5-1ff2-49f4-8b0e-261c78909695',
+      '--set-env-vars', 'GOOGLE_CLOUD_PROJECT=$PROJECT_ID,SETTINGS_NAME=${_SETTINGS_NAME},DJANGO_SETTINGS_MODULE=config.settings.production,DEFAULT_ORG_ID=4181df12-ca96-4f28-b78b-8e8ad88b25df',
       '--min-instances', '1',
       '--max-instances', '8',
       '--memory', '512M',
