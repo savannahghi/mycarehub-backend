@@ -1,0 +1,22 @@
+[run]
+branch=True
+source=mycarehub
+omit=mycarehub/config/*,mycarehub/**/migrations/*,scripts/*,mycarehub/**/tests/*
+
+[report]
+exclude_lines =
+    # Have to re-enable the standard pragma
+    pragma: no branch
+    pragma: nocover
+    pragma: no cover
+
+    # Don't complain if tests don't hit defensive assertion code:
+    raise AssertionError
+    raise NotImplementedError
+
+    # Don't complain about abstract methods, they aren't run:
+    @(abc\.)?abstractmethod
+show_missing=True
+
+[html]
+directory=coverage

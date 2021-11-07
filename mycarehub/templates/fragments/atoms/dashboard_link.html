@@ -1,0 +1,9 @@
+{% load static i18n compress%}
+
+{% if perms.users.can_view_dashboard %}
+    <li class="nav-item {% if active == "dashboard-nav" %}active{% endif %}" id="dashboard-nav">
+        <a class="nav-link" href="{% url 'home' %}" id="dashboard">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span></a>
+    </li>
+{% endif %}

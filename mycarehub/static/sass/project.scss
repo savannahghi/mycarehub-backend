@@ -1,0 +1,59 @@
+@import "custom_bootstrap_vars";
+@import "bootstrap";
+// project specific CSS goes here
+////////////////////////////////
+//Variables//
+////////////////////////////////
+// Alert colors
+$white: #fff;
+$mint-green: #d6e9c6;
+$black: #000;
+$pink: #f2dede;
+$dark-pink: #eed3d7;
+$red: #b94a48;
+////////////////////////////////
+//Alerts//
+////////////////////////////////
+// bootstrap alert CSS, translated to the django-standard levels of
+// debug, info, success, warning, error
+.alert-debug {
+    background-color: $white;
+    border-color: $mint-green;
+    color: $black;
+}
+
+.alert-error {
+    background-color: $pink;
+    border-color: $dark-pink;
+    color: $red;
+}
+
+.login-background-image {
+    background: url("https://source.unsplash.com/NFvdKIhxYlU/600x800");
+    background-position: center;
+    background-size: cover;
+}
+
+.register-background-image {
+    background: url("https://source.unsplash.com/NFvdKIhxYlU/600x800");
+    background-position: center;
+    background-size: cover;
+}
+
+.password-background-image {
+    background: url("https://source.unsplash.com/NFvdKIhxYlU/600x800");
+    background-position: center;
+    background-size: cover;
+}
+
+.center-form {
+    margin: auto !important;
+}
+
+.row.align-page-content {
+    display: grid !important;
+}
+
+.dropdown-menu.show {
+    max-width: 80%;
+}

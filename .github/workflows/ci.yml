@@ -1,0 +1,121 @@
+name: CI
+
+on: [push]
+
+env:
+  DOCKER_BUILDKIT: 1 # Enable Buildkit and let compose use it to speed up image building
+  COMPOSE_DOCKER_CLI_BUILD: 1
+  DJANGO_DEBUG: true
+  USE_DOCKER: no
+  POSTGRES_HOST: localhost
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  GOOGLE_APPLICATION_CREDENTIALS: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+  DJANGO_GCP_STORAGE_BUCKET_NAME: ${{ secrets.DJANGO_GCP_STORAGE_BUCKET_NAME }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  DJANGO_EMAIL_BACKEND: ${{secrets.DJANGO_EMAIL_BACKEND}}
+
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:13-3.1
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      # Run all pre-commit hooks on all the files.
+      # Getting only staged files can be tricky in case a new PR is opened
+      # since the action is run on a branch in detached head state
+      - name: Install and Run Pre-commit
+        uses: pre-commit/action@v2.0.3
+
+      - name: Install requirements
+        run: |
+          sudo apt-get update
+          sudo apt-get install postgis gdal-bin libgdal-dev
+          pip install -r requirements/local.txt && pip install -r requirements/production.txt
+          npm ci
+          npm install -g mjml
+
+      - name: mypy
+        run: |
+          mypy .
+
+  pytest:
+    needs: linter
+    runs-on: ubuntu-latest
+
+    # Service containers to run with `container-job`
+    services:
+      postgres:
+        image: postgis/postgis:13-3.1
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v2
+
+      - name: Decrypt GCS service account
+        run: ./.github/scripts/decrypt_secret.sh
+        env:
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
+
+      - name: Install requirements
+        run: |
+          sudo apt-get update
+          sudo apt-get install postgis gdal-bin libgdal-dev
+          pip install -r requirements/local.txt && pip install -r requirements/production.txt
+          npm ci
+          npm install -g mjml
+
+      - name: Set up Django
+        run: |
+          python manage.py migrate
+          python manage.py createcachetable
+          python manage.py collectstatic --noinput
+
+      - name: Run tests and collect coverage
+        run: |
+          pytest
+          coveralls   --service=github
+
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true

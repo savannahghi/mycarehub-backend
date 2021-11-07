@@ -1,0 +1,67 @@
+{% load static i18n compress%}
+
+<li class="nav-item {% if active == "program-nav" %}active {% endif %}" id="program-nav">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" id="program-menu-link" data-target="#program-menu" aria-expanded="true" aria-controls="program-menu">
+        <i class="fas fa-fw fa-tasks"></i>
+        <span>Program Activities</span>
+    </a>
+    <div id="program-menu" class="collapse {% if active == "program-nav" %}show{% endif %}"  data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+
+            {% if perms.ops.view_activitylog %}
+                <a class="collapse-item {% if selected == "activity-log" %}active {% endif %}" id="activity-log" href="{% url 'ops:activity_logs' %}">
+                    Activity Log
+                </a>
+            {% endif %}
+
+            {% if perms.ops.view_sitementorship %}
+                <a class="collapse-item {% if selected == "site-mentorship" %}active {% endif %}" id="site-mentorship" href="{% url 'ops:site_mentorships' %}">
+                    Site Mentorship
+                </a>
+            {% endif %}
+
+            {% if perms.ops.view_dailyupdate %}
+                <a class="collapse-item {% if selected == "daily-site-updates" %}active {% endif %}" id="daily-site-updates" href="{% url 'ops:daily_site_updates' %}">
+                    Daily Site Updates
+                </a>
+            {% endif %}
+
+            {% if perms.ops.view_timesheet %}
+                <a class="collapse-item {% if selected == "timesheets" %}active {% endif %}" id="timesheets" href="{% url 'ops:timesheets' %}">
+                    Timesheets
+                </a>
+            {% endif %}
+
+            {% if perms.ops.view_weeklyprogramupdate and perms.ops.view_activity %}
+                <a class="collapse-item {% if selected == "weekly-program-updates" %}active {% endif %}" id="weekly-program-updates" href="{% url 'ops:weekly_program_updates' %}">
+                    Weekly Program Updates
+                </a>
+            {% endif %}
+
+        </div>
+    </div>
+</li>
+
+
+<script>
+
+
+
+
+function collapseMenu(){
+const program_menu_link = document.getElementById("program-menu-link");
+program_menu_link.className = "nav-link collapsed";
+const program_menu = document.getElementById("program-menu");
+program_menu.className = "collapse";
+}
+
+const program_items = document.querySelectorAll('.collapse-item');
+program_items.forEach(input => input.addEventListener('click', collapseMenu()));
+
+
+document.addEventListener("DOMContentLoaded", () => {
+collapseMenu()
+});
+
+
+</script>
