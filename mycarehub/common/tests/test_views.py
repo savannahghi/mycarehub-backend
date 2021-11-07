@@ -76,3 +76,17 @@ def test_drf_excel_io_mixin_get_filter_form(rf, user_with_all_permissions):
     )(request=request)
 
     assert response.status_code == status.HTTP_200_OK
+
+
+def test_graphql_view_initialization(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+    url = reverse("graphql")
+    response = client.post(
+        url,
+        data={"query": "query { hello }"},
+        content_type="application/json",
+        accept="application/json",
+    )
+
+    print(response.content)
+    assert response.status_code == status.HTTP_200_OK

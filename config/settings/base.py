@@ -79,12 +79,27 @@ THIRD_PARTY_APPS = [
     "rest_framework_datatables",
     "corsheaders",
     "mjml",
-    "django.contrib.admin",  # needs to come after jet so that jet static files are preferred
+    "django.contrib.admin",
+    "graphene_django",
+    "wagtail.contrib.forms",
+    "wagtail.contrib.redirects",
+    "wagtail.embeds",
+    "wagtail.sites",
+    "wagtail.users",
+    "wagtail.snippets",
+    "wagtail.documents",
+    "wagtail.images",
+    "wagtail.search",
+    "wagtail.admin",
+    "wagtail.core",
+    "taggit",
+    "modelcluster",
 ]
 
 LOCAL_APPS = [
     "mycarehub.users.apps.UsersConfig",
     "mycarehub.common.apps.CommonConfig",
+    "mycarehub.content.apps.ContentConfig",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -131,6 +146,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 ]
 
 # STATIC
@@ -342,3 +358,5 @@ WHITELISTED_DOMAINS = env.list(
         "savannahghi.org",
     ],
 )
+
+GRAPHENE = {"SCHEMA": "mycarehub.schema.schema.schema"}
