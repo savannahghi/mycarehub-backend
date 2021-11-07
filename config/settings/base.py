@@ -79,7 +79,8 @@ THIRD_PARTY_APPS = [
     "rest_framework_datatables",
     "corsheaders",
     "mjml",
-    "django.contrib.admin",  # needs to come after jet so that jet static files are preferred
+    "django.contrib.admin",
+    "graphene_django",
 ]
 
 LOCAL_APPS = [
@@ -342,3 +343,5 @@ WHITELISTED_DOMAINS = env.list(
         "savannahghi.org",
     ],
 )
+
+GRAPHENE = {"SCHEMA": "mycarehub.schema.schema"}

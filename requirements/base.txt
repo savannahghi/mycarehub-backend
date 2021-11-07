@@ -21,6 +21,7 @@ google-api-python-client~=2.29.0
 google-auth~=2.3.3
 google-cloud-secret-manager~=2.7.0
 google-cloud-storage~=1.42.3
+graphene-django~=2.15.0
 openpyxl~=3.0.7
 phonenumbers~=8.12.29
 python-slugify~=5.0.2  # https://github.com/un33k/python-slugify
