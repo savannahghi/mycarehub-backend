@@ -210,7 +210,7 @@ class DRFSerializerExcelIO(Generic[S, T], ExcelIO[DT]):
         # Visit each nested field and only pick/select the requested dump fields.
         def visit_horizontally(nested_fields: Sequence[str], fields: _NFD, results: _NFD) -> None:
             parent = nested_fields[0]
-            if len(nested_fields) > 1:
+            if len(nested_fields) > 1:  # pragma: nocover
                 results.setdefault(parent, OrderedDict())
                 visit_horizontally(nested_fields[1:], fields[parent], results[parent])
             else:
@@ -433,7 +433,7 @@ class AuditSerializerExcelIO(Generic[S_Audit, T], DRFSerializerExcelIO[S_Audit, 
             for field_name, field in fields.items():
                 if field_name in audit_fields_names:  # Skip audit fields
                     continue
-                if isinstance(field, Serializer):
+                if isinstance(field, Serializer):  # pragma: nocover
                     results.append((field_name, visit(field.get_fields())))
                 else:
                     results.append((field_name, field))

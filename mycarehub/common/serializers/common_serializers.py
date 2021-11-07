@@ -3,7 +3,9 @@ import logging
 
 from rest_framework import serializers
 
-from ..models import Facility, System, UserFacilityAllotment
+from mycarehub.users.api.serializers import SimpleUserSerializer
+
+from ..models import Facility, UserFacilityAllotment
 from .base_serializers import BaseSerializer
 
 LOGGER = logging.getLogger(__name__)
@@ -15,14 +17,9 @@ class FacilitySerializer(BaseSerializer):
         fields = "__all__"
 
 
-class SystemSerializer(BaseSerializer):
-    class Meta(BaseSerializer.Meta):
-        model = System
-        fields = "__all__"
-
-
 class UserFacilityAllotmentSerializer(BaseSerializer):
 
+    user_data = SimpleUserSerializer(source="user", read_only=True)
     user_name = serializers.ReadOnlyField(source="user.__str__")
     allotment_type_name = serializers.ReadOnlyField(source="get_allotment_type_display")
 

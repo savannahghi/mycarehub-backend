@@ -4,7 +4,7 @@ Custom widgets to supplement/replace existing widgets.
 from django import forms
 
 
-class SearchableComboBox(forms.Select):
+class SearchableComboBox(forms.Select):  # pragma: nocover
     """A combo box with search capabilities.
 
     This is suitable as a replacement for select with many options.

@@ -29,7 +29,7 @@ def get_counties() -> Collection[FieldChoice]:
 
 @lru_cache(maxsize=None)
 def get_constituencies() -> Collection[FieldChoice]:
-    """Return a `Collection` of choices of the constituencies involved in the mycarehub ya Jamii Project.
+    """Return a `Collection` of choices of the constituencies involved in the myCareHub Project.
 
     :return: A Collection of choices of the constituencies involved in the
              mycarehub ya Jamii Project.

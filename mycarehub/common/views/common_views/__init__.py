@@ -1,4 +1,4 @@
-from .drf_common_views import FacilityViewSet, SystemViewSet, UserFacilityViewSet
+from .drf_common_views import FacilityViewSet, UserFacilityViewSet
 from .vanilla_common_views import (
     AboutView,
     FacilityCreateView,
@@ -6,10 +6,6 @@ from .vanilla_common_views import (
     FacilityUpdateView,
     FacilityView,
     HomeView,
-    SystemCreateView,
-    SystemDeleteView,
-    SystemsView,
-    SystemUpdateView,
     UserFacilityAllotmentCreateView,
     UserFacilityAllotmentDeleteView,
     UserFacilityAllotmentUpdateView,
@@ -24,11 +20,6 @@ __all__ = [
     "FacilityView",
     "FacilityViewSet",
     "HomeView",
-    "SystemCreateView",
-    "SystemDeleteView",
-    "SystemUpdateView",
-    "SystemsView",
-    "SystemViewSet",
     "UserFacilityAllotmentCreateView",
     "UserFacilityAllotmentDeleteView",
     "UserFacilityAllotmentUpdateView",

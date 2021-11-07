@@ -87,13 +87,6 @@ class ExcelIOMixin(Generic[EIO, EIO_T], GenericViewSet):
 
         return self.filename or "%s.xlsx" % self.get_queryset().model._meta.verbose_name_plural
 
-    def perform_dump_data(self, request: Request) -> Workbook:  # pragma: nocover
-        """Perform the actual dump data operation and return a workbook with the results."""
-
-        excel_io = self.get_excel_io()
-        serializer = self.get_serializer(self.get_queryset(), many=True)
-        return excel_io.dump_data(serializer.data)
-
 
 class DRFSerializerExcelIOMixin(
     ExcelIOMixin[DRFSerializerExcelIO, DRFSerializerExcelIOTemplate], DjangoFilterBackend
@@ -173,7 +166,7 @@ class DRFSerializerExcelIOMixin(
         def visit(fields: Dict[str, Any], parent_key="") -> List[Dict[str, Union[str, Any]]]:
             results = []
             for key, val in fields.items():
-                if isinstance(val, (ManyRelatedField, PrimaryKeyRelatedField)):
+                if isinstance(val, (ManyRelatedField, PrimaryKeyRelatedField)):  # pragma: nocover
                     # Skip primary key fields and many to many fields
                     continue
                 new_key = parent_key + nested_entries_delimiter + key if parent_key else key
@@ -182,7 +175,7 @@ class DRFSerializerExcelIOMixin(
                     "id": new_key,
                     "text": key.capitalize().replace("_", " "),
                 }
-                if isinstance(val, dict):
+                if isinstance(val, dict):  # pragma: nocover
                     new_value["children"] = visit(val, new_key)
                 results.append(new_value)
             return results

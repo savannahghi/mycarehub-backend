@@ -6,10 +6,10 @@ from django.test import TestCase
 from model_bakery import baker
 from openpyxl import Workbook
 
-from mycarehub.common.models import Organisation
+from mycarehub.common.models import Facility, Organisation
+from mycarehub.common.models.common_models import UserFacilityAllotment
 from mycarehub.common.serializers import FacilitySerializer
-from mycarehub.ops.models import FacilitySystem, FacilitySystemTicket
-from mycarehub.ops.serializers import FacilitySystemSerializer, FacilitySystemTicketSerializer
+from mycarehub.common.serializers.common_serializers import UserFacilityAllotmentSerializer
 from mycarehub.utils.excel_utils import (
     AuditSerializerExcelIO,
     DRFSerializerExcelIO,
@@ -23,7 +23,7 @@ class AuditSerializerExcelIOTestCase(TestCase):
 
     def setUp(self) -> None:
         self.excel_io = AuditSerializerExcelIO(
-            serializer_class=FacilitySystemSerializer,
+            serializer_class=FacilitySerializer,
             template_class=DRFSerializerExcelIOTemplate,
         )
         self.organisation = baker.make(Organisation, organisation_name="Savannah Informatics")
@@ -36,11 +36,6 @@ class AuditSerializerExcelIOTestCase(TestCase):
         for audit_field_name in audit_field_names:
             assert audit_field_name not in excel_io_fields
 
-        # Ensure that even nested audit fields are excluded
-        nested_fields = excel_io_fields["facility_data"]
-        for audit_field_name in audit_field_names:
-            assert audit_field_name not in nested_fields
-
 
 class DRFSerializerExcelIOTestCase(TestCase):
     """Tests for the `DRFSerializerExcelIO` class."""
@@ -49,13 +44,10 @@ class DRFSerializerExcelIOTestCase(TestCase):
         self.excel_io = DRFSerializerExcelIO(
             dump_fields=(
                 "id",
-                "facility_data:::name",
-                "system_data:::name",
-                "trainees",
-                "version",
+                "name",
             ),
             nested_entries_delimiter=":::",
-            serializer_class=FacilitySystemSerializer,
+            serializer_class=FacilitySerializer,
             template_class=DRFSerializerExcelIOTemplate,
         )
         self.organisation = baker.make(Organisation, organisation_name="Savannah Informatics")
@@ -82,29 +74,18 @@ class DRFSerializerExcelIOTestCase(TestCase):
     def test_dump_data(self) -> None:
         """Assert that writing to excel files works without any hitches expected."""
 
-        tickets = baker.make(FacilitySystemTicket, 10, organisation=self.organisation)
-        versions = baker.make(FacilitySystem, 10, organisation=self.organisation)
-        tickets_data = FacilitySystemTicketSerializer(tickets, many=True).data
-        versions_data = FacilitySystemSerializer(versions, many=True).data
-        workbook = self.excel_io.dump_data(versions_data)
+        facilities = baker.make(Facility, 10, organisation=self.organisation)
+        facilities_data = FacilitySerializer(facilities, many=True).data
+
+        workbook = self.excel_io.dump_data(facilities_data)
         workbook1 = DRFSerializerExcelIO(
-            dump_fields=(
-                "id",
-                "facility_system_data::facility_data::name",
-                "facility_system_data::system_data::name",
-                "facility_system_data::trainees",
-                "facility_system_data::version",
-            ),
-            serializer_class=FacilitySystemTicketSerializer,
+            dump_fields=("id",),
+            serializer_class=FacilitySerializer,
             template_class=DRFSerializerExcelIOTemplate,
-        ).dump_data(tickets_data)
-        workbook2 = DRFSerializerExcelIO(
-            serializer_class=FacilitySystemTicketSerializer,
-            template_class=DRFSerializerExcelIOTemplate,
-        ).dump_data(tickets_data)
+        ).dump_data(facilities_data)
+
         assert workbook is not None
         assert workbook1 is not None
-        assert workbook2 is not None
 
     def test_ingest_data(self) -> None:
         """Assert that ingest data works as expected.
@@ -138,13 +119,10 @@ class DRFSerializerExcelIOTemplateTestCase(TestCase):
         self.excel_io = DRFSerializerExcelIO(
             dump_fields=(
                 "id",
-                "facility_data:::name",
-                "system_data:::name",
-                "trainees",
-                "version",
+                "name",
             ),
             nested_entries_delimiter=":::",
-            serializer_class=FacilitySystemSerializer,
+            serializer_class=FacilitySerializer,
             template_class=DRFSerializerExcelIOTemplate,
         )
         self.excel_io_template = DRFSerializerExcelIOTemplate(
@@ -203,14 +181,106 @@ class DRFSerializerExcelIOTemplateTestCase(TestCase):
     def test_render(self) -> None:
         """Assert that rendering of data in excel workbook works as expected."""
 
-        versions = baker.make(FacilitySystem, 10, organisation=self.organisation)
-        versions_data = FacilitySystemSerializer(versions, many=True).data
+        facilities = baker.make(Facility, 10, organisation=self.organisation)
+        facility_data = FacilitySerializer(facilities, many=True).data
         # Even though this a DRFSerializerExcelIOTemplate test, an
         # "excel_io.dump_data" method(which will in turn call it's
         # "excel_io_template.render" method) has been used so that
         # any de-normalization of the given data can be performed
         # before rendering occurs.
-        workbook = self.excel_io.dump_data(versions_data)
+        workbook = self.excel_io.dump_data(facility_data)
+
+        assert workbook is not None
+        assert len(workbook.sheetnames) == 2
+        assert DRFSerializerExcelIOTemplate.DATA_WORKSHEET_NAME in workbook.sheetnames
+        assert DRFSerializerExcelIOTemplate.SCHEMA_WORKSHEET_NAME in workbook.sheetnames
+
+
+class DRFNestedSerializerExcelRenderTestCase(TestCase):
+    """Tests for the `DRFSerializerExcelIOTemplate` class with nested data."""
+
+    def setUp(self) -> None:
+        self.excel_io = DRFSerializerExcelIO(
+            dump_fields=(
+                "id",
+                "allotment_type",
+                "region_type",
+                "counties",
+                "constituencies",
+                "sub_counties",
+                "wards",
+                "user_name",
+                "user_data:::username",
+                "user_data:::name",
+                "user_data",
+                "facilities",
+            ),
+            nested_entries_delimiter=":::",
+            serializer_class=UserFacilityAllotmentSerializer,
+            template_class=DRFSerializerExcelIOTemplate,
+        )
+        self.excel_io_template = DRFSerializerExcelIOTemplate(
+            fields=self.excel_io.get_fields(), serializer=self.excel_io.get_serializer()
+        )
+        self.organisation = baker.make(Organisation, organisation_name="Savannah Informatics")
+
+    def test_render(self) -> None:
+        """Assert that rendering of nested data in excel workbook works as expected."""
+
+        facilities = baker.make(Facility, 10, organisation=self.organisation)
+        facility_allotments = baker.make(
+            UserFacilityAllotment,
+            10,
+            allotment_type="facility",
+            facilities=facilities,
+            organisation=self.organisation,
+        )
+        facility_allotment_data = UserFacilityAllotmentSerializer(
+            facility_allotments, many=True
+        ).data
+
+        # Even though this a DRFSerializerExcelIOTemplate test, an
+        # "excel_io.dump_data" method(which will in turn call it's
+        # "excel_io_template.render" method) has been used so that
+        # any de-normalization of the given data can be performed
+        # before rendering occurs.
+        workbook = self.excel_io.dump_data(facility_allotment_data)
+
+        assert workbook is not None
+        assert len(workbook.sheetnames) == 2
+        assert DRFSerializerExcelIOTemplate.DATA_WORKSHEET_NAME in workbook.sheetnames
+        assert DRFSerializerExcelIOTemplate.SCHEMA_WORKSHEET_NAME in workbook.sheetnames
+
+
+class DRFNestedSerializerExcelRenderNoFieldsTestCase(TestCase):
+    """Tests for the `DRFSerializerExcelIOTemplate` class with nested data."""
+
+    def setUp(self) -> None:
+        self.excel_io = DRFSerializerExcelIO(
+            nested_entries_delimiter=":::",
+            serializer_class=UserFacilityAllotmentSerializer,
+            template_class=DRFSerializerExcelIOTemplate,
+        )
+        self.excel_io_template = DRFSerializerExcelIOTemplate(
+            fields=self.excel_io.get_fields(), serializer=self.excel_io.get_serializer()
+        )
+        self.organisation = baker.make(Organisation, organisation_name="Savannah Informatics")
+
+    def test_render(self) -> None:
+        """Assert that rendering of nested data in works with no fields specified."""
+
+        facilities = baker.make(Facility, 10, organisation=self.organisation)
+        facility_allotments = baker.make(
+            UserFacilityAllotment,
+            10,
+            allotment_type="facility",
+            facilities=facilities,
+            organisation=self.organisation,
+        )
+        facility_allotment_data = UserFacilityAllotmentSerializer(
+            facility_allotments, many=True
+        ).data
+        workbook = self.excel_io.dump_data(facility_allotment_data)
 
         assert workbook is not None
         assert len(workbook.sheetnames) == 2

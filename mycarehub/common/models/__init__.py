@@ -8,7 +8,7 @@ from .base_models import (
     OwnerlessAbstractBaseQuerySet,
     ValidationMetaclass,
 )
-from .common_models import Facility, FacilityAttachment, System, UserFacilityAllotment
+from .common_models import Facility, FacilityAttachment, UserFacilityAllotment
 from .organisation_models import (
     Organisation,
     OrganisationAbstractBase,
@@ -29,7 +29,6 @@ __all__ = [
     "OwnerlessAbstractBase",
     "OwnerlessAbstractBaseManager",
     "OwnerlessAbstractBaseQuerySet",
-    "System",
     "UserFacilityAllotment",
     "ValidationMetaclass",
     "get_directory",

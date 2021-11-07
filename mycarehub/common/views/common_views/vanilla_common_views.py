@@ -2,14 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
 
-from mycarehub.common.dashboard import (
-    get_active_facility_count,
-    get_active_user_count,
-    get_appointments_mtd,
-    get_open_ticket_count,
-)
-from mycarehub.common.forms import FacilityForm, SystemForm, UserFacilityAllotmentForm
-from mycarehub.common.models import Facility, System, UserFacilityAllotment
+from mycarehub.common.dashboard import get_active_facility_count, get_active_user_count
+from mycarehub.common.forms import FacilityForm, UserFacilityAllotmentForm
+from mycarehub.common.models import Facility, UserFacilityAllotment
 
 from ..mixins import ApprovedMixin, BaseFormMixin
 
@@ -26,9 +21,7 @@ class HomeView(LoginRequiredMixin, ApprovedMixin, TemplateView):
         # dashboard summaries
         user = self.request.user
         context["active_facility_count"] = get_active_facility_count(user)
-        context["open_ticket_count"] = get_open_ticket_count(user)
         context["user_count"] = get_active_user_count(user)
-        context["appointments_mtd"] = get_appointments_mtd(user)
         return context
 
 
@@ -75,40 +68,6 @@ class FacilityDeleteView(FacilityContextMixin, DeleteView, BaseFormMixin):
     form_class = FacilityForm
     model = Facility
     success_url = reverse_lazy("common:facilities")
-
-
-class SystemContextMixin:
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)  # type: ignore
-        context["active"] = "facilities-nav"  # id of active nav element
-        context["available_fields_url"] = reverse_lazy("api:system-get-available-fields")
-        context["dump_data_url"] = reverse_lazy("api:system-dump-data")
-        context["get_filter_form_url"] = reverse_lazy("api:system-get-filter-form")
-        context["selected"] = "systems"  # id of selected page
-        return context
-
-
-class SystemsView(SystemContextMixin, LoginRequiredMixin, ApprovedMixin, TemplateView):
-    template_name = "pages/common/systems.html"
-    permission_required = "common.view_system"
-
-
-class SystemCreateView(SystemContextMixin, BaseFormMixin, CreateView):
-    form_class = SystemForm
-    success_url = reverse_lazy("common:systems")
-    model = System
-
-
-class SystemUpdateView(SystemContextMixin, UpdateView, BaseFormMixin):
-    form_class = SystemForm
-    model = System
-    success_url = reverse_lazy("common:systems")
-
-
-class SystemDeleteView(SystemContextMixin, DeleteView, BaseFormMixin):
-    form_class = SystemForm
-    model = System
-    success_url = reverse_lazy("common:systems")
 
 
 class UserFacilityAllotmentContextMixin:

@@ -18,24 +18,6 @@
                     User Facility Allotments
                 </a>
             {% endif %}
-
-            {% if perms.common.view_system %}
-            <a class="collapse-item {% if selected == "systems" %}active {% endif %}" id="systems" href="{% url 'common:systems' %}">
-                Systems
-            </a>
-            {% endif %}
-
-            {% if perms.ops.view_facilitysystem %}
-            <a class="collapse-item {% if selected == "versions" %}active {% endif %}" id="versions" href="{% url 'ops:versions' %}">
-                System Versions
-            </a>
-            {% endif %}
-
-            {% if perms.ops.view_facilitysystemticket %}
-            <a class="collapse-item {% if selected == "tickets" %}active {% endif %}" id="tickets" href="{% url 'ops:tickets' %}">
-                Tickets
-            </a>
-            {% endif %}
         </div>
     </div>
 </li>
