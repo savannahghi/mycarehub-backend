@@ -5,8 +5,12 @@ from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, re_path
 from django.views import defaults as default_views
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import RedirectView
+from graphene_django.views import GraphQLView
 from rest_framework.authtoken.views import obtain_auth_token
+from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.documents import urls as wagtaildocs_urls
 
 from mycarehub.common.views import AboutView, HomeView
 
@@ -29,6 +33,15 @@ urlpatterns = [
         r"^favicon\.ico$",
         RedirectView.as_view(url=settings.STATIC_URL + "favicon.ico", permanent=True),
     ),
+    path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True)), name="graphql"),
+    # content management
+    path("admin/", include(wagtailadmin_urls)),
+    path("documents/", include(wagtaildocs_urls)),
+    # re_path(r"content", include("mycarehub.content.urls")),
+    # For anything not caught by a more specific rule above, hand over to
+    # Wagtail's serving mechanism
+    # from wagtail.core import urls as wagtail_urls
+    # re_path(r"", include(wagtail_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     # Static file serving when using Gunicorn + Uvicorn for local web socket development
