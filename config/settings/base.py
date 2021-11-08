@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 
 import environ
+from django.utils.translation import ugettext_lazy as _
 from google.cloud import secretmanager
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
@@ -350,6 +351,25 @@ REFRESH_TOKEN_EXPIRE_SECONDS = env.int("REFRESH_TOKEN_EXPIRE_SECONDS", default=3
 REFRESH_TOKEN_GRACE_PERIOD_SECONDS = env.int("REFRESH_TOKEN_GRACE_PERIOD_SECONDS", default=600)
 
 CORS_URLS_REGEX = r"^/api/.*$"
+
+# wagtail CMS
+WAGTAIL_SITE_NAME = "myCareHub"
+WAGTAIL_APPEND_SLASH = True
+WAGTAILSEARCH_HITS_MAX_AGE = 30
+WAGTAIL_I18N_ENABLED = True
+WAGTAIL_CONTENT_LANGUAGES = [
+    ("en", _("English")),
+    ("sw", _("Swahili")),
+]
+WAGTAILEMBEDS_RESPONSIVE_HTML = True
+WAGTAILADMIN_RECENT_EDITS_LIMIT = 5
+WAGTAIL_MODERATION_ENABLED = True
+WAGTAIL_GRAVATAR_PROVIDER_URL = "//www.gravatar.com/avatar"
+WAGTAILSEARCH_BACKENDS = {
+    "default": {
+        "BACKEND": "wagtail.search.backends.database",
+    }
+}
 
 # Project specific settings
 # ------------------------------------------------------------------------------
