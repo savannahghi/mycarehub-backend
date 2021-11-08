@@ -13,6 +13,7 @@ django-mjml[requests]~=0.11.0
 django-taggit~=1.5.1
 django-modelcluster~=5.2
 django-model-utils~=4.2.0  # https://github.com/jazzband/django-model-utils
+django-oauth-toolkit~=1.5.0
 django-phonenumber-field~=5.2.0
 django-storages[google]~=1.12.3  # https://github.com/jschneier/django-storages
 djangorestframework-datatables~=0.6.0
