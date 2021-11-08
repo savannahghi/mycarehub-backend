@@ -36,7 +36,6 @@ urlpatterns = [
         r"^favicon\.ico$",
         RedirectView.as_view(url=settings.STATIC_URL + "favicon.ico", permanent=True),
     ),
-<<<<<<< HEAD
     path(
         "graphql", csrf_exempt(DRFAuthenticatedGraphQLView.as_view(graphiql=True)), name="graphql"
     ),
@@ -47,7 +46,6 @@ urlpatterns = [
     # For anything not caught by a more specific rule above, hand over to
     # Wagtail's serving mechanism
     re_path(r"content", include(wagtail_urls)),
-=======
     path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True)), name="graphql"),
     # content management
     path("admin/", include(wagtailadmin_urls)),
@@ -57,7 +55,6 @@ urlpatterns = [
     # Wagtail's serving mechanism
     # from wagtail.core import urls as wagtail_urls
     # re_path(r"", include(wagtail_urls)),
->>>>>>> 596fcae (feat: add graphene and wagtail dependencies (#5))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     # Static file serving when using Gunicorn + Uvicorn for local web socket development

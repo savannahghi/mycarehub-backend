@@ -3,7 +3,11 @@ from django.contrib.auth import admin as auth_admin
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
+from mycarehub.common.admin import BaseAdmin
 from mycarehub.users.forms import UserChangeForm, UserCreationForm
+from mycarehub.users.models import TermsOfService, UserPIN
+
+from .models import Metric
 
 User = get_user_model()
 
@@ -33,3 +37,31 @@ class UserAdmin(auth_admin.UserAdmin):
     )
     list_display = ["username", "name", "is_superuser", "permissions", "gps"]
     search_fields = ["name"]
+
+
+@admin.register(UserPIN)
+class UserPINAdmin(BaseAdmin):
+    list_display = [
+        "user",
+        "valid_from",
+        "valid_to",
+        "user_type",
+    ]
+
+
+@admin.register(Metric)
+class MetricAdmin(BaseAdmin):
+    list_display = [
+        "user",
+        "timestamp",
+        "metric_type",
+    ]
+
+
+@admin.register(TermsOfService)
+class TermsOfServiceAdmin(BaseAdmin):
+    list_display = [
+        "text",
+        "valid_from",
+        "valid_to",
+    ]
