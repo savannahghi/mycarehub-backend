@@ -279,6 +279,7 @@ class Client(AbstractBase):
     #   has at least one identifier
     #   has an enrollment date
     # TODO Create a FHIR patient record
+    # TODO: Languages []string ? should this be on the client profile ?
 
 
 # TODO Track client's past facilities
@@ -315,3 +316,4 @@ class Client(AbstractBase):
 # TODO: API to get current terms by flavour
 # TODO: Bring facilities API up to spec
 # TODO: document OAUth app setup + how to authenticate against this
+# TODO: CRUD API for faclities, with list, search, filter, patch

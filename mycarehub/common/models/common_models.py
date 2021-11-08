@@ -140,6 +140,7 @@ class Facility(AbstractBase):
         STAND_ALONE = "STAND ALONE", "Stand Alone"
 
     name = models.TextField(unique=True)
+    description = models.TextField(blank=True, default="")
     mfl_code = models.IntegerField(unique=True, help_text="MFL Code")
     county = models.CharField(max_length=64, choices=get_counties())
     sub_county = models.CharField(max_length=64, null=True, blank=True, choices=get_sub_counties())
