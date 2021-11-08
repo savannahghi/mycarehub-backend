@@ -3,9 +3,11 @@ from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.db.models.fields.json import JSONField
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
-from ..constants import WHITELIST_COUNTIES
+from ..constants import COUNTRY_CODES, WHITELIST_COUNTIES
 from ..utils import (
     get_constituencies,
     get_counties,
@@ -140,6 +142,7 @@ class Facility(AbstractBase):
         STAND_ALONE = "STAND ALONE", "Stand Alone"
 
     name = models.TextField(unique=True)
+    description = models.TextField(blank=True, default="")
     mfl_code = models.IntegerField(unique=True, help_text="MFL Code")
     county = models.CharField(max_length=64, choices=get_counties())
     sub_county = models.CharField(max_length=64, null=True, blank=True, choices=get_sub_counties())
@@ -456,3 +459,46 @@ class UserFacilityAllotment(AbstractBase):
         """Define ordering and other attributes for attachments."""
 
         ordering = ("-updated", "-created")
+
+
+class Address(AbstractBase):
+    class AddressType(models.TextChoices):
+        POSTAL = "POSTAL", _("Postal Address")
+        PHYSICAL = "PHYSICAL", _("Physical Address")
+        BOTH = "BOTH", _("Both physical and postal")
+
+    address_type = models.CharField(choices=AddressType.choices, max_length=16)
+    text = models.TextField()
+    postal_code = models.TextField()
+    country = models.CharField(max_length=255, choices=COUNTRY_CODES, default="KEN")
+
+
+class Contact(AbstractBase):
+    class ContactType(models.TextChoices):
+        PHONE = "PHONE", _("PHONE")
+        EMAIL = "EMAIL", _("EMAIL")
+
+    contact_type = models.CharField(choices=ContactType.choices, max_length=16)
+    contact_value = models.TextField()
+    opted_in = models.BooleanField(default=False)
+
+
+class AuditLog(AbstractBase):
+    """
+    AuditLog is used to record all senstive changes
+
+    e.g
+        - changing a client's treatment buddy
+        - changing a client's facility
+        - deactivating a client
+        - changing a client's assigned community health volunteer
+
+    Rules of thumb: is there a need to find out what/when/why something
+    occured? Is a mistake potentially serious? Is there potential for
+    fraud?
+    """
+
+    timestamp = models.DateTimeField(auto_now_add=True)
+    record_type = models.TextField()
+    notes = models.TextField()
+    payload = JSONField()

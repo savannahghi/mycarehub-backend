@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 import environ
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from google.cloud import secretmanager
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
@@ -102,6 +102,7 @@ LOCAL_APPS = [
     "mycarehub.users.apps.UsersConfig",
     "mycarehub.common.apps.CommonConfig",
     "mycarehub.content.apps.ContentConfig",
+    "mycarehub.clients.apps.ClientsConfig",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 

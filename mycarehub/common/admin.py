@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from mycarehub.common.models.common_models import Address, AuditLog, Contact
+
 from .models import Facility, FacilityAttachment, Organisation
 
 
@@ -55,4 +57,19 @@ class FacilityAttachmentAdmin(BaseAdmin):
 
 @admin.register(Organisation)
 class OrganisationAdmin(BaseAdmin):
+    pass
+
+
+@admin.register(Address)
+class AddressAdmin(BaseAdmin):
+    pass
+
+
+@admin.register(Contact)
+class ContactAdmin(BaseAdmin):
+    pass
+
+
+@admin.register(AuditLog)
+class AuditLogAdmin(BaseAdmin):
     pass

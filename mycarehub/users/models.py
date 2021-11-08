@@ -2,13 +2,36 @@ import uuid
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
-from django.db.models import PROTECT, BooleanField, CharField, ForeignKey, UUIDField
+from django.contrib.postgres.fields import ArrayField
+from django.db.models import (
+    PROTECT,
+    BooleanField,
+    CharField,
+    ForeignKey,
+    JSONField,
+    TextChoices,
+    TextField,
+    UUIDField,
+)
+from django.db.models.base import Model
+from django.db.models.fields import DateField, DateTimeField, IntegerField
 from django.db.utils import ProgrammingError
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
 DEFAULT_ORG_CODE = 1
+
+
+class UserTypes(TextChoices):
+    CLIENT = "CLIENT", _("Client")
+    STAFF = "STAFF", _("Staff")
+
+
+class GenderChoices(TextChoices):
+    MALE = "MALE", _("Male")
+    FEMALE = "FEMALE", _("Female")
 
 
 def default_organisation():
@@ -30,15 +53,44 @@ def default_organisation():
         return settings.DEFAULT_ORG_ID
 
 
+class TermsOfService(Model):
+    text = TextField()
+    valid_from = DateTimeField(auto_now_add=True)
+    valid_to = DateTimeField(null=True, blank=True)
+    active = BooleanField(default=True)
+    created = DateTimeField(default=timezone.now)
+    created_by = UUIDField(null=True, blank=True)
+    updated = DateTimeField(default=timezone.now)
+    updated_by = UUIDField(null=True, blank=True)
+
+
 class User(AbstractUser):
     """Default user model."""
 
     id = UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     #: First and last name do not cover name patterns around the globe
+    # this should be used as the display name
     name = CharField(_("Name of User"), blank=True, max_length=255)
-    first_name = None  # type: ignore
-    last_name = None  # type: ignore
+    middle_name = TextField(blank=True)
+    handle = TextField(blank=True)  # @handle
+
+    last_successful_login = DateTimeField(null=True, blank=True)
+    last_failed_login = DateTimeField(null=True, blank=True)
+    next_allowed_login = DateTimeField(null=True, blank=True)
+    failed_login_count = IntegerField(default=0)
+    accepted_terms_of_service = ForeignKey(
+        TermsOfService, null=True, blank=True, on_delete=PROTECT
+    )
+    push_tokens = ArrayField(
+        CharField(max_length=256),
+        null=True,
+        blank=True,
+    )
+    gender = CharField(choices=GenderChoices.choices, max_length=16, null=True, blank=True)
+    date_of_birth = DateField(null=True, blank=True)
+    user_type = CharField(choices=UserTypes.choices, max_length=32, null=True, blank=True)
+
     is_approved = BooleanField(
         default=False,
         help_text="When true, the user is able to log in to the main website (and vice versa)",
@@ -97,4 +149,48 @@ class User(AbstractUser):
             ("can_view_about", "Can View About Page"),
             ("can_export_data", "Can Export Data"),
             ("can_import_data", "Can Import Data"),
+            ("system_administration", "System Administration"),
+            ("community_management", "Community Management"),
+            ("content_management", "Content Management"),
+            ("client_management", "Client Management"),
         ]
+
+
+class UserPIN(Model):
+    """
+    UserPIN stores a user's PINs - including historical/invalid ones.
+    """
+
+    user = ForeignKey(User, on_delete=PROTECT)
+    hashed_pin = TextField()
+    valid_from = DateTimeField(auto_now_add=True)
+    valid_to = DateTimeField(auto_now_add=True)
+    user_type = CharField(choices=UserTypes.choices, max_length=32, null=True, blank=True)
+    active = BooleanField(default=True)
+    created = DateTimeField(default=timezone.now)
+    created_by = UUIDField(null=True, blank=True)
+    updated = DateTimeField(default=timezone.now)
+    updated_by = UUIDField(null=True, blank=True)
+
+    class Meta:
+        index_together = (
+            "user",
+            "user_type",
+        )
+
+
+class Metric(Model):
+    class MetricType(TextChoices):
+        ENGAGEMENT = "ENGAGEMENT", _("Engagement Metrics")
+        CONTENT = "CONTENT", _("Content Metrics")
+        SYSTEM = "SYSTEM", _("System Metrics")
+
+    timestamp = DateTimeField(auto_now_add=True)
+    payload = JSONField()
+    user = ForeignKey(User, on_delete=PROTECT)
+    metric_type = CharField(choices=MetricType.choices, max_length=32)
+    active = BooleanField(default=True)
+    created = DateTimeField(default=timezone.now)
+    created_by = UUIDField(null=True, blank=True)
+    updated = DateTimeField(default=timezone.now)
+    updated_by = UUIDField(null=True, blank=True)
