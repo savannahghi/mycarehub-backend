@@ -84,3 +84,17 @@ Deployment
 
 This application is deployed via Google Cloud Build ( <https://cloud.google.com/build> ) to Google Cloud Run ( <https://cloud.google.com/run> ).
 There's a `cloudbuild.yaml` file in the home folder. Secrets (e.g production settings) are managed with Google Secret Manager ( <https://cloud.google.com/secret-manager> ).
+
+Changing OAuth Token Behavior
+------------------------------
+The following environment variables are available:
+
+```python
+ACCESS_TOKEN_EXPIRE_SECONDS = env.int("ACCESS_TOKEN_EXPIRE_SECONDS", default=3600)
+ALLOWED_REDIRECT_URI_SCHEMES = env.list("ALLOWED_REDIRECT_URI_SCHEMES", default=["http", "https"])
+AUTHORIZATION_CODE_EXPIRE_SECONDS = env.int("AUTHORIZATION_CODE_EXPIRE_SECONDS", default=600)
+REFRESH_TOKEN_EXPIRE_SECONDS = env.int("REFRESH_TOKEN_EXPIRE_SECONDS", default=3600)
+REFRESH_TOKEN_GRACE_PERIOD_SECONDS = env.int("REFRESH_TOKEN_GRACE_PERIOD_SECONDS", default=600)
+```
+
+The indicated defaults can be overidden during deployment by setting those variables.

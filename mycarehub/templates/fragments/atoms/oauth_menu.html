@@ -1,0 +1,41 @@
+{% load static i18n compress%}
+
+<li class="nav-item {% if active == " oauth-nav" %}active{% endif %}" id="oauth-nav">
+    <a class="nav-link collapsed" id="oauth-nav-link" href="#" data-toggle="collapse" data-target="#oauth-menu"
+        aria-expanded="true" aria-controls="oauth-menu">
+        <i class="fas fa-fw fa-lock"></i>
+        <span>OAuth</span>
+    </a>
+    <div id="oauth-menu" class="collapse {% if active == " oauth-nav" %}show{% endif %}"
+        data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            {% if request.user.is_superuser  %}
+            <a class="collapse-item  {% if selected == " applications" %}active {% endif %}" id="applications"
+                href="{% url 'oauth2_provider:list' %}">
+                Applications
+            </a>
+            {% endif %}
+
+            <a class="collapse-item {% if selected == " authorized-tokens" %}active {% endif %}"
+                id="authorized-tokens" href="{% url 'oauth2_provider:authorized-token-list' %}">
+                My Tokens
+            </a>
+        </div>
+    </div>
+</li>
+
+<script>
+    function collapseMenu() {
+        const facilities_nav_link = document.getElementById("oauth-nav-link");
+        facilities_nav_link.className = "nav-link collapsed";
+        const facilities_menu = document.getElementById("oauth-menu");
+        facilities_menu.className = "collapse";
+    }
+
+    const items = document.querySelectorAll('.collapse-item');
+    items.forEach(input => input.addEventListener('click', collapseMenu()));
+
+    document.addEventListener("DOMContentLoaded", () => {
+        collapseMenu()
+    });
+</script>

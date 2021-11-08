@@ -79,6 +79,7 @@ THIRD_PARTY_APPS = [
     "rest_framework_datatables",
     "corsheaders",
     "mjml",
+    "oauth2_provider",
     "django.contrib.admin",
     "graphene_django",
     "wagtail.contrib.forms",
@@ -284,6 +285,7 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 # ------------------------------------------------------------------------------
 INSTALLED_APPS += ["compressor"]
 STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
+
 # django-rest-framework
 # -------------------------------------------------------------------------------
 REST_FRAMEWORK = {
@@ -314,6 +316,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.DjangoModelPermissions",),
     "DEFAULT_METADATA_CLASS": "rest_framework.metadata.SimpleMetadata",
@@ -326,6 +329,25 @@ REST_FRAMEWORK = {
     "DATE_FORMAT": "iso-8601",
     "TIME_FORMAT": "iso-8601",
 }
+
+# OAuth
+OAUTH2_PROVIDER = {
+    # using the default HS256 keys
+    # see https://django-oauth-toolkit.readthedocs.io/en/1.5.0/oidc.html#using-hs256-keys
+    "OIDC_ENABLED": True,
+    # this is the list of available scopes
+    "SCOPES": {
+        "read": "Read scope",
+        "write": "Write scope",
+        "openid": "OpenID Connect scope",
+    },
+}
+
+ACCESS_TOKEN_EXPIRE_SECONDS = env.int("ACCESS_TOKEN_EXPIRE_SECONDS", default=3600)
+ALLOWED_REDIRECT_URI_SCHEMES = env.list("ALLOWED_REDIRECT_URI_SCHEMES", default=["http", "https"])
+AUTHORIZATION_CODE_EXPIRE_SECONDS = env.int("AUTHORIZATION_CODE_EXPIRE_SECONDS", default=600)
+REFRESH_TOKEN_EXPIRE_SECONDS = env.int("REFRESH_TOKEN_EXPIRE_SECONDS", default=3600)
+REFRESH_TOKEN_GRACE_PERIOD_SECONDS = env.int("REFRESH_TOKEN_GRACE_PERIOD_SECONDS", default=600)
 
 CORS_URLS_REGEX = r"^/api/.*$"
 
