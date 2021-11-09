@@ -97,6 +97,7 @@ THIRD_PARTY_APPS = [
     "wagtail.core",
     "taggit",
     "modelcluster",
+    "django_extensions",
 ]
 
 LOCAL_APPS = [

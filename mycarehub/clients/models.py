@@ -76,10 +76,14 @@ class RelatedPerson(AbstractBase):
     last_name = models.TextField()
     other_name = models.TextField()
     date_of_birth = models.DateField(null=True, blank=True)
-    addresses = models.ManyToManyField(Address, related_name="related_person_addresses")
-    contacts = models.ManyToManyField(Contact, related_name="related_person_contacts")
     gender = models.CharField(max_length=16, choices=GenderChoices.choices)
     relationship_type = models.CharField(max_length=64, choices=RelationshipType.choices)
+    addresses = models.ManyToManyField(
+        Address, related_name="related_person_addresses", null=True, blank=True
+    )
+    contacts = models.ManyToManyField(
+        Contact, related_name="related_person_contacts", null=True, blank=True
+    )
 
 
 class Client(AbstractBase):
@@ -186,7 +190,7 @@ class Client(AbstractBase):
     )
 
     # a client can be assigned a treatment buddy
-    treatment_buddy = models.TextField(blank=True)
+    treatment_buddy = models.TextField(null=True, blank=True)
 
     # a client should only be invited to the platform after they have been
     # counselled
@@ -195,12 +199,15 @@ class Client(AbstractBase):
     # a client can have multiple unique identifiers
     identifiers = models.ManyToManyField(Identifier, related_name="client_identifiers")
 
-    addresses = models.ManyToManyField(Address, related_name="client_addresses")
-
-    contacts = models.ManyToManyField(Contact, related_name="client_contacts")
-
-    related_persons = models.ManyToManyField(RelatedPerson, related_name="client_related_persons")
-
+    addresses = models.ManyToManyField(
+        Address, related_name="client_addresses", null=True, blank=True
+    )
+    contacts = models.ManyToManyField(
+        Contact, related_name="client_contacts", null=True, blank=True
+    )
+    related_persons = models.ManyToManyField(
+        RelatedPerson, related_name="client_related_persons", null=True, blank=True
+    )
     languages = ArrayField(
         models.CharField(max_length=150, choices=Languages.choices, null=True, blank=True),
         null=True,
@@ -215,5 +222,12 @@ class ClientFacility(AbstractBase):
 
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
     facility = models.ForeignKey(Facility, on_delete=models.PROTECT)
+    notes = models.TextField(default="-")
     assigned = models.DateTimeField(default=timezone.now)
     transferred_out = models.DateTimeField(null=True, blank=True)
+
+    class Meta(AbstractBase.Meta):
+        unique_together = (
+            "client",
+            "facility",
+        )
