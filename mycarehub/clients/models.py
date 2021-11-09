@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.enums import TextChoices
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from mycarehub.common.models import AbstractBase
@@ -30,7 +31,7 @@ class Identifier(AbstractBase):
         choices=IdentifierUse.choices, max_length=64, null=False, blank=False
     )
     description = models.TextField()
-    valid_from = models.DateTimeField(auto_now_add=True)
+    valid_from = models.DateTimeField(default=timezone.now)
     valid_to = models.DateTimeField(null=True, blank=True)
     is_primary_identifier = models.BooleanField(default=False)
 
@@ -51,7 +52,7 @@ class SecurityQuestion(AbstractBase):
 class SecurityQuestionResponse(AbstractBase):
     user = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
     question = models.ForeignKey(SecurityQuestion, on_delete=models.PROTECT)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(default=timezone.now)
     response = models.TextField()  # should be hashed
 
     class Meta:
@@ -157,7 +158,7 @@ class Client(AbstractBase):
 
     # a client must have an enrollment date.
     # if it is not known, integration code should set a sensible default.
-    enrollment_date = models.DateTimeField(null=False, blank=False, auto_now_add=True)
+    enrollment_date = models.DateTimeField(null=False, blank=False, default=timezone.now)
 
     # the client's FHIR health record ID
     # optional because the client's FHIR health record is created after the client is enrolled
@@ -214,5 +215,5 @@ class ClientFacility(AbstractBase):
 
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
     facility = models.ForeignKey(Facility, on_delete=models.PROTECT)
-    assigned = models.DateTimeField(auto_now_add=False)
+    assigned = models.DateTimeField(default=timezone.now)
     transferred_out = models.DateTimeField(null=True, blank=True)
