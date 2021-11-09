@@ -55,7 +55,7 @@ def default_organisation():
 
 class TermsOfService(Model):
     text = TextField()
-    valid_from = DateTimeField(auto_now_add=True)
+    valid_from = DateTimeField(default=timezone.now)
     valid_to = DateTimeField(null=True, blank=True)
     active = BooleanField(default=True)
     created = DateTimeField(default=timezone.now)
@@ -163,8 +163,8 @@ class UserPIN(Model):
 
     user = ForeignKey(User, on_delete=PROTECT)
     hashed_pin = TextField()
-    valid_from = DateTimeField(auto_now_add=True)
-    valid_to = DateTimeField(auto_now_add=True)
+    valid_from = DateTimeField(default=timezone.now)
+    valid_to = DateTimeField(default=timezone.now)
     user_type = CharField(choices=UserTypes.choices, max_length=32, null=True, blank=True)
     active = BooleanField(default=True)
     created = DateTimeField(default=timezone.now)
@@ -185,7 +185,7 @@ class Metric(Model):
         CONTENT = "CONTENT", _("Content Metrics")
         SYSTEM = "SYSTEM", _("System Metrics")
 
-    timestamp = DateTimeField(auto_now_add=True)
+    timestamp = DateTimeField(default=timezone.now)
     payload = JSONField()
     user = ForeignKey(User, on_delete=PROTECT)
     metric_type = CharField(choices=MetricType.choices, max_length=32)

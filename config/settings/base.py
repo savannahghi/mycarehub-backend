@@ -78,6 +78,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "rest_framework_datatables",
+    "drf_generators",
     "corsheaders",
     "mjml",
     "oauth2_provider",

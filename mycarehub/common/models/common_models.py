@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db.models.fields.json import JSONField
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from ..constants import COUNTRY_CODES, WHITELIST_COUNTIES
@@ -498,7 +499,7 @@ class AuditLog(AbstractBase):
     fraud?
     """
 
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(default=timezone.now)
     record_type = models.TextField()
     notes = models.TextField()
     payload = JSONField()
