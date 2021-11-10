@@ -120,6 +120,7 @@ class OwnerlessAbstractBase(models.Model, metaclass=ValidationMetaclass):
     created_by = models.UUIDField(null=True, blank=True)
     updated = models.DateTimeField(default=timezone.now)
     updated_by = models.UUIDField(null=True, blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     objects = OwnerlessAbstractBaseManager()
 
