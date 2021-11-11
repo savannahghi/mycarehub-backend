@@ -35,19 +35,8 @@ class FacilityAdmin(BaseAdmin):
         "name",
         "mfl_code",
         "county",
-        "sub_county",
-        "constituency",
-        "ward",
-        "registration_number",
-        "keph_level",
     )
-    list_filter = (
-        "county",
-        "operation_status",
-        "keph_level",
-        "facility_type",
-        "owner_type",
-    )
+    list_filter = ("county",)
 
 
 @admin.register(FacilityAttachment)

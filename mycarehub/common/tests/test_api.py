@@ -179,7 +179,6 @@ class FacilityViewsetTest(LoggedInMixin, APITestCase):
             "operation_status": "Operational",
             "organisation": self.global_organisation.pk,
         }
-
         response = self.client.post(self.url_list, data)
         assert response.status_code == 201, response.json()
         assert response.data["mfl_code"] == data["mfl_code"]
@@ -237,9 +236,7 @@ class FacilityViewsetTest(LoggedInMixin, APITestCase):
         """Test retrieving facility."""
         facility = baker.make(
             Facility,
-            is_mycarehub_facility=True,
             county=random.choice(WHITELIST_COUNTIES),
-            operation_status="Operational",
             organisation=self.global_organisation,
         )
 
@@ -254,9 +251,7 @@ class FacilityViewsetTest(LoggedInMixin, APITestCase):
         """Test retrieving facility."""
         facility = baker.make(
             Facility,
-            is_mycarehub_facility=True,
             county=random.choice(WHITELIST_COUNTIES),
-            operation_status="Operational",
             organisation=self.global_organisation,
         )
 
@@ -274,9 +269,7 @@ class FacilityViewsetTest(LoggedInMixin, APITestCase):
         """Test retrieving facility."""
         facility = baker.make(
             Facility,
-            is_mycarehub_facility=True,
             county=random.choice(WHITELIST_COUNTIES),
-            operation_status="Operational",
             organisation=self.global_organisation,
         )
 
@@ -292,9 +285,7 @@ class FacilityViewsetTest(LoggedInMixin, APITestCase):
         """Test retrieving facility."""
         facility = baker.make(
             Facility,
-            is_mycarehub_facility=True,
             county=random.choice(WHITELIST_COUNTIES),
-            operation_status="Operational",
             organisation=self.global_organisation,
         )
 
@@ -310,7 +301,6 @@ class FacilityViewsetTest(LoggedInMixin, APITestCase):
         """Test changing user facility."""
         facility = baker.make(
             Facility,
-            is_mycarehub_facility=True,
             county=random.choice(WHITELIST_COUNTIES),
             organisation=self.global_organisation,
         )
@@ -326,7 +316,6 @@ class FacilityViewsetTest(LoggedInMixin, APITestCase):
         """Test changing user and add new facility."""
         facility = baker.make(
             Facility,
-            is_mycarehub_facility=True,
             county=random.choice(WHITELIST_COUNTIES),
             organisation=self.global_organisation,
         )
@@ -334,8 +323,6 @@ class FacilityViewsetTest(LoggedInMixin, APITestCase):
             "name": fake.name(),
             "mfl_code": random.randint(1, 999_999_999),
             "county": random.choice(WHITELIST_COUNTIES),
-            "is_mycarehub_facility": True,
-            "operation_status": "Operational",
             "organisation": self.global_organisation.pk,
         }
 
@@ -367,7 +354,6 @@ class FacilityFormTest(LoggedInMixin, TestCase):
     def test_update(self):
         facility = baker.make(
             Facility,
-            is_mycarehub_facility=True,
             county=random.choice(WHITELIST_COUNTIES),
             organisation=self.global_organisation,
         )
@@ -393,7 +379,6 @@ class FacilityFormTest(LoggedInMixin, TestCase):
     def test_delete(self):
         facility = baker.make(
             Facility,
-            is_mycarehub_facility=True,
             county=random.choice(WHITELIST_COUNTIES),
             organisation=self.global_organisation,
         )
@@ -415,7 +400,6 @@ class UserFacilityViewSetTest(LoggedInMixin, APITestCase):
         self.facilities = baker.make(
             Facility,
             20,
-            is_mycarehub_facility=True,
             county="Nairobi",
             organisation=self.global_organisation,
         )
@@ -508,7 +492,6 @@ class UserFacilityAllotmentFormTest(LoggedInMixin, TestCase):
         self.facilities = baker.make(
             Facility,
             20,
-            is_mycarehub_facility=True,
             county="Nairobi",
             organisation=self.global_organisation,
         )
@@ -576,7 +559,7 @@ class DRFSerializerExcelIOMixinTest(LoggedInMixin, APITestCase):
         """Test `dump_data` action."""
 
         url = reverse("api:facility-dump-data")
-        data = {"dump_fields": ["name", "mfl_code", "county", "sub_county"]}
+        data = {"dump_fields": ["name", "mfl_code", "county"]}
         response = self.client.get(url, data=data)
 
         assert response.status_code == status.HTTP_200_OK
