@@ -9,15 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from ..constants import COUNTRY_CODES, WHITELIST_COUNTIES
-from ..utils import (
-    get_constituencies,
-    get_counties,
-    get_sub_counties,
-    get_wards,
-    has_constituency,
-    has_sub_county,
-    has_ward,
-)
+from ..utils import get_constituencies, get_counties, get_sub_counties, get_wards
 from .base_models import AbstractBase, AbstractBaseManager, AbstractBaseQuerySet, Attachment
 
 User = get_user_model()
@@ -34,8 +26,6 @@ class FacilityQuerySet(AbstractBaseQuerySet):
     def mycarehub_facilities(self):
         """Return all the facilities that are part of the FYJ program."""
         return self.active().filter(
-            is_mycarehub_facility=True,
-            operation_status="Operational",
             county__in=WHITELIST_COUNTIES,
         )
 
@@ -67,124 +57,15 @@ class Facility(AbstractBase):
     The data is fetched - and updated - from the Kenya Master Health Facilities List.
     """
 
-    class KEPHLevels(models.TextChoices):
-        """The different Kenya Package for Health (KEPH) levels.
-
-        This are the different tiers of health care delivery as
-        defined by the Ministry of Health.
-        """
-
-        LEVEL_1 = "Level 1", "Level 1"
-        LEVEL_2 = "Level 2", "Level 2"
-        LEVEL_3 = "Level 3", "Level 3"
-        LEVEL_4 = "Level 4", "Level 4"
-        LEVEL_5 = "Level 5", "Level 5"
-        LEVEL_6 = "Level 6", "Level 6"
-
-    class FacilityOwnerType(models.TextChoices):
-        """The different types of medical facility ownerships."""
-
-        PRIVATE_PRACTICE = "Private Practice", "Private Practice"
-        MINISTRY_OF_HEALTH = "Ministry of Health", "Ministry of Health"
-        FAITH_BASED_ORG = "Faith Based Organization", "Faith Based Organization"
-        NON_GOVERNMENT_ORG = "Non-Governmental Organizations", "Non-Governmental Organizations"
-
-    class FacilityType(models.TextChoices):
-        """The different types of facility types."""
-
-        BASIC_HEALTH_CENTER = "Basic Health Centre", "Basic Health Centre"
-        CTTRH = (
-            "Comprehensive Teaching & Tertiary Referral Hospital",
-            "Comprehensive Teaching & Tertiary Referral Hospital",
-        )
-        COMPREHENSIVE_HEALTH_CENTRE = "Comprehensive health Centre", "Comprehensive health Centre"
-        DENTAL_CLINIC = "Dental Clinic", "Dental Clinic"
-        DIALYSIS_CENTER = "Dialysis Center", "Dialysis Center"
-        DCPO = (
-            "Dispensaries and clinic-out patient only",
-            "Dispensaries and clinic-out patient only",
-        )
-        DISPENSARY = "Dispensary", "Dispensary"
-        FAREWELL_HOME = "Farewell Home", "Farewell Home"
-        HEALTH_CENTRE = "Health Centre", "Health Centre"
-        LABORATORY = "Laboratory", "Laboratory"
-        MEDICAL_CENTER = "Medical Center", "Medical Center"
-        MEDICAL_CLINIC = "Medical Clinic", "Medical Clinic"
-        NURSING_HOMES = "Nursing Homes", "Nursing Home"
-        NURSING_AND_MATERNITY_HOME = "Nursing and Maternity Home", "Nursing and Maternity Home"
-        OPHTHALMOLOGY = "Ophthalmology", "Ophthalmology"
-        PHARMACY = "Pharmacy", "Pharmacy"
-        PRIMARY_CARE_HOSPITAL = "Primary care hospitals", "Primary care hospital"
-        RADIOLOGY_CLINIC = "Radiology Clinic", "Radiology Clinic"
-        RCDASA = (
-            "Rehab. Center - Drug and Substance abuse",
-            "Rehab. Center - Drug and Substance abuse",
-        )
-        SECONDARY_CARE_HOSPITAL = "Secondary care hospitals", "Secondary care hospital"
-        STRH = (
-            "Specialized & Tertiary Referral hospitals",
-            "Specialized & Tertiary Referral hospital",
-        )
-        VCT = "VCT", "VCT"
-
-    class FacilityTypeCategory(models.TextChoices):
-        """The different types of facility type categories."""
-
-        DISPENSARY = "DISPENSARY", "Dispensary"
-        HEALTH_CENTRE = "HEALTH CENTRE", "Health Centre"
-        HOSPITAL = "HOSPITALS", "Hospital"
-        MEDICAL_CENTER = "MEDICAL CENTER", "Medical Center"
-        MEDICAL_CLINIC = "MEDICAL CLINIC", "Medical Clinic"
-        NURSING_HOME = "NURSING HOME", "Nursing Home"
-        PRIMARY_HEALTH_CARE_SERVICES = (
-            "Primary health  care services",
-            "Primary Health Care Service",
-        )
-        STAND_ALONE = "STAND ALONE", "Stand Alone"
-
     name = models.TextField(unique=True)
     description = models.TextField(blank=True, default="")
     mfl_code = models.IntegerField(unique=True, help_text="MFL Code")
     county = models.CharField(max_length=64, choices=get_counties())
-    sub_county = models.CharField(max_length=64, null=True, blank=True, choices=get_sub_counties())
-    constituency = models.CharField(
-        max_length=64, null=True, blank=True, choices=get_constituencies()
-    )
-    ward = models.CharField(max_length=64, null=True, blank=True, choices=get_wards())
-    operation_status = models.CharField(max_length=24, default="Operational")
-    registration_number = models.CharField(max_length=64, null=True, blank=True)
-    keph_level = models.CharField(max_length=12, choices=KEPHLevels.choices, null=True, blank=True)
-    facility_type = models.CharField(
-        max_length=64, null=True, blank=True, choices=FacilityType.choices
-    )
-    facility_type_category = models.CharField(
-        max_length=64, null=True, blank=True, choices=FacilityTypeCategory.choices
-    )
-    facility_owner = models.CharField(max_length=64, null=True, blank=True)
-    owner_type = models.CharField(
-        max_length=64, null=True, choices=FacilityOwnerType.choices, blank=True
-    )
-    regulatory_body = models.CharField(max_length=64, null=True, blank=True)
-    beds = models.IntegerField(default=0)
-    cots = models.IntegerField(default=0)
-    open_whole_day = models.BooleanField(default=False)
-    open_public_holidays = models.BooleanField(default=False)
-    open_weekends = models.BooleanField(default=False)
-    open_late_night = models.BooleanField(default=False)
-    approved = models.BooleanField(default=True)
-    public_visible = models.BooleanField(default=True)
-    closed = models.BooleanField(default=False)
-    lon = models.FloatField(default=0.0)
-    lat = models.FloatField(default=0.0)
-    is_mycarehub_facility = models.BooleanField(default=True)
 
     objects = FacilityManager()
 
     model_validators = [
         "check_facility_name_longer_than_three_characters",
-        "check_constituency_belongs_to_selected_county",
-        "check_sub_county_belongs_to_selected_county",
-        "check_ward_belongs_to_selected_sub_county",
     ]
 
     def get_absolute_url(self):
@@ -194,44 +75,6 @@ class Facility(AbstractBase):
     def check_facility_name_longer_than_three_characters(self):
         if len(self.name) < 3:
             raise ValidationError("the facility name should exceed 3 characters")
-
-    def check_constituency_belongs_to_selected_county(self):
-        if self.constituency and not has_constituency(self.county, self.constituency):
-            raise ValidationError(
-                {
-                    "constituency": '"{}" constituency does not belong to "{}" county'.format(
-                        self.constituency, self.county
-                    )
-                }
-            )
-
-    def check_sub_county_belongs_to_selected_county(self):
-        if self.sub_county and not has_sub_county(self.county, self.sub_county):
-            raise ValidationError(
-                {
-                    "sub_county": '"{}" sub county does not belong to "{}" county'.format(
-                        self.sub_county, self.county
-                    )
-                }
-            )
-
-    def check_ward_belongs_to_selected_sub_county(self):
-        if self.ward and not self.sub_county:
-            raise ValidationError(
-                {
-                    "ward": 'The sub county in which "{}" ward belongs to must be provided'.format(
-                        self.ward
-                    )
-                }
-            )
-        elif self.ward and self.sub_county and not has_ward(self.sub_county, self.ward):
-            raise ValidationError(
-                {
-                    "ward": '"{}" ward does not belong to "{}" sub county'.format(
-                        self.ward, self.sub_county
-                    )
-                }
-            )
 
     def __str__(self):
         return f"{self.name} - {self.mfl_code} ({self.county})"
@@ -447,12 +290,6 @@ class UserFacilityAllotment(AbstractBase):
         by_region_filter = {}
         if allotment.region_type == UserFacilityAllotment.RegionType.COUNTY.value:
             by_region_filter["county__in"] = allotment.counties
-        elif allotment.region_type == UserFacilityAllotment.RegionType.CONSTITUENCY.value:
-            by_region_filter["constituency__in"] = allotment.constituencies
-        elif allotment.region_type == UserFacilityAllotment.RegionType.SUB_COUNTY.value:
-            by_region_filter["sub_county__in"] = allotment.sub_counties
-        elif allotment.region_type == UserFacilityAllotment.RegionType.WARD.value:
-            by_region_filter["ward__in"] = allotment.wards
 
         return by_region_filter
 

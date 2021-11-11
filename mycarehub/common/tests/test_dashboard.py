@@ -19,8 +19,6 @@ fake = Faker()
 def test_get_active_facility_count(user):
     baker.make(
         Facility,
-        is_mycarehub_facility=True,
-        operation_status="Operational",
         county=random.choice(WHITELIST_COUNTIES),
         active=True,
         organisation=user.organisation,
