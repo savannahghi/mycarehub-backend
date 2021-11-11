@@ -68,6 +68,8 @@ target/
 .venv
 venv/
 ENV/
+.env
+mycarehub-venv/
 
 # Rope project settings
 .ropeproject
