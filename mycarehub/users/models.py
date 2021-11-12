@@ -34,6 +34,11 @@ class GenderChoices(TextChoices):
     FEMALE = "FEMALE", _("Female")
 
 
+class FlavourChoices(TextChoices):
+    PRO = "PRO", _("PRO")
+    CONSUMER = "CONSUMER", _("CONSUMER")
+
+
 def default_organisation():
     try:
         from mycarehub.common.models import Organisation  # intentional late import
@@ -105,6 +110,7 @@ class User(AbstractUser):
         on_delete=PROTECT,
         default=default_organisation,
     )
+    flavour = CharField(choices=FlavourChoices.choices, max_length=32, null=True)
 
     @property
     def permissions(self):
@@ -171,6 +177,7 @@ class UserPIN(Model):
     created_by = UUIDField(null=True, blank=True)
     updated = DateTimeField(default=timezone.now)
     updated_by = UUIDField(null=True, blank=True)
+    flavour = CharField(choices=FlavourChoices.choices, max_length=32, null=True)
 
     class Meta:
         index_together = (
