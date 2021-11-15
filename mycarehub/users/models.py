@@ -111,6 +111,7 @@ class User(AbstractUser):
         default=default_organisation,
     )
     flavour = CharField(choices=FlavourChoices.choices, max_length=32, null=True)
+    terms_accepted = BooleanField(default=False, null=False)
 
     @property
     def permissions(self):
