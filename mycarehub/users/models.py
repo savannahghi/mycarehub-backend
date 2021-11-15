@@ -170,6 +170,7 @@ class UserPIN(Model):
 
     user = ForeignKey(User, on_delete=PROTECT)
     hashed_pin = TextField()
+    salt = TextField(null=True)
     valid_from = DateTimeField(default=timezone.now)
     valid_to = DateTimeField(default=timezone.now)
     user_type = CharField(choices=UserTypes.choices, max_length=32, null=True, blank=True)
