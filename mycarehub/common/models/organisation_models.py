@@ -38,6 +38,7 @@ class OrganisationAbstractBase(models.Model):
     updated = models.DateTimeField(default=timezone.now)
     created_by = models.UUIDField(blank=True, null=True)
     updated_by = models.UUIDField(blank=True, null=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def preserve_created_and_created_by(self):
         """Ensure that created and created_by values are not overwritten."""
@@ -75,7 +76,6 @@ class Organisation(OrganisationAbstractBase):
 
     code = models.IntegerField(unique=True)
     active = models.BooleanField(default=True)
-    deleted = models.BooleanField(default=False)
     org_code = models.CharField(
         max_length=15,
         unique=True,

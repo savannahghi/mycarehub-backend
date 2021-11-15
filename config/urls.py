@@ -7,55 +7,39 @@ from django.urls import include, path, re_path
 from django.views import defaults as default_views
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import RedirectView, TemplateView
-from graphene_django.views import GraphQLView
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.schemas import get_schema_view
 from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.api.v2.router import WagtailAPIRouter
+from wagtail.api.v2.views import PagesAPIViewSet
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
+from wagtail.documents.api.v2.views import DocumentsAPIViewSet
+from wagtail.images.api.v2.views import ImagesAPIViewSet
+from wagtail.images.views.serve import ServeView
 
 from mycarehub.common.views import AboutView, HomeView
 
 from .graphql_auth import DRFAuthenticatedGraphQLView
 
 urlpatterns = [
-    path("", HomeView.as_view(), name="home"),
-    path(
-        "about/",
-        AboutView.as_view(),
-        name="about",
-    ),
-    # Django Admin, use {% url 'admin:index' %}
-    path(settings.ADMIN_URL, admin.site.urls),
-    # User management
-    path("users/", include("mycarehub.users.urls", namespace="users")),
-    path("accounts/", include("allauth.urls")),
-    # Our apps
-    path("common/", include("mycarehub.common.urls", namespace="common")),
-    # favicon
+    path("sysadmin/", HomeView.as_view(), name="home"),
     re_path(
         r"^favicon\.ico$",
         RedirectView.as_view(url=settings.STATIC_URL + "favicon.ico", permanent=True),
     ),
     path(
+        "about/",
+        AboutView.as_view(),
+        name="about",
+    ),
+    path(settings.ADMIN_URL, admin.site.urls),
+    path("users/", include("mycarehub.users.urls", namespace="users")),
+    path("accounts/", include("allauth.urls")),
+    path("common/", include("mycarehub.common.urls", namespace="common")),
+    path(
         "graphql", csrf_exempt(DRFAuthenticatedGraphQLView.as_view(graphiql=True)), name="graphql"
     ),
-    # content management
-    path("admin/", include(wagtailadmin_urls)),
-    path("documents/", include(wagtaildocs_urls)),
-    # re_path(r"authoring", include("mycarehub.content.urls")),
-    # For anything not caught by a more specific rule above, hand over to
-    # Wagtail's serving mechanism
-    re_path(r"content", include(wagtail_urls), name="wagtail"),
-    path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True)), name="graphql"),
-    # content management
-    path("admin/", include(wagtailadmin_urls)),
-    path("documents/", include(wagtaildocs_urls)),
-    # re_path(r"content", include("mycarehub.content.urls")),
-    # For anything not caught by a more specific rule above, hand over to
-    # Wagtail's serving mechanism
-    # from wagtail.core import urls as wagtail_urls
-    # re_path(r"", include(wagtail_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     # Static file serving when using Gunicorn + Uvicorn for local web socket development
@@ -125,3 +109,20 @@ if settings.DEBUG:
         import debug_toolbar
 
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
+
+
+# content management via wagtail
+wagtail_api_router = WagtailAPIRouter("wagtailapi")
+wagtail_api_router.register_endpoint("pages", PagesAPIViewSet)
+wagtail_api_router.register_endpoint("images", ImagesAPIViewSet)
+wagtail_api_router.register_endpoint("documents", DocumentsAPIViewSet)
+
+urlpatterns += [
+    path("api/cms/", wagtail_api_router.urls),
+    path("admin/", include(wagtailadmin_urls)),
+    path("documents/", include(wagtaildocs_urls)),
+    re_path(
+        r"^images/([^/]*)/(\d*)/([^/]*)/[^/]*$", ServeView.as_view(), name="wagtailimages_serve"
+    ),
+    path("", include(wagtail_urls), name="wagtail"),
+]

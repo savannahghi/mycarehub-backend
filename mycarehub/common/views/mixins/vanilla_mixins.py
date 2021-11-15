@@ -29,5 +29,5 @@ class BaseFormMixin(ModelFormMixin, View):
             and isinstance(user, User)
             and getattr(user, "organisation", None) is not None
         ):
-            instance.organisation = user.organisation
+            instance.organisation = user.organisation  # pragma: nocover
         return super().form_valid(form)

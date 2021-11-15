@@ -86,10 +86,12 @@ class RelatedPerson(AbstractBase):
     gender = models.CharField(max_length=16, choices=GenderChoices.choices)
     relationship_type = models.CharField(max_length=64, choices=RelationshipType.choices)
     addresses = models.ManyToManyField(
-        Address, related_name="related_person_addresses", null=True, blank=True
+        Address,
+        related_name="related_person_addresses",
     )
     contacts = models.ManyToManyField(
-        Contact, related_name="related_person_contacts", null=True, blank=True
+        Contact,
+        related_name="related_person_contacts",
     )
 
 
@@ -207,16 +209,25 @@ class Client(AbstractBase):
     identifiers = models.ManyToManyField(Identifier, related_name="client_identifiers")
 
     addresses = models.ManyToManyField(
-        Address, related_name="client_addresses", null=True, blank=True
+        Address,
+        related_name="client_addresses",
+        blank=True,
     )
     contacts = models.ManyToManyField(
-        Contact, related_name="client_contacts", null=True, blank=True
+        Contact,
+        related_name="client_contacts",
+        blank=True,
     )
     related_persons = models.ManyToManyField(
-        RelatedPerson, related_name="client_related_persons", null=True, blank=True
+        RelatedPerson,
+        related_name="client_related_persons",
+        blank=True,
     )
     languages = ArrayField(
-        models.CharField(max_length=150, choices=Languages.choices, null=True, blank=True),
+        models.CharField(
+            max_length=150,
+            choices=Languages.choices,
+        ),
         null=True,
         blank=True,
     )

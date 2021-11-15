@@ -97,12 +97,20 @@ THIRD_PARTY_APPS = [
     "wagtail.core",
     "taggit",
     "modelcluster",
+    "wagtail.api.v2",
+    "wagtail.contrib.settings",
+    "wagtail.contrib.frontend_cache",
+    "wagtail.contrib.search_promotions",
+    "wagtail.contrib.modeladmin",
     "django_extensions",
+    "wagtailvideos",
+    "wagtailmedia",
 ]
 
 LOCAL_APPS = [
     "mycarehub.users.apps.UsersConfig",
     "mycarehub.common.apps.CommonConfig",
+    "mycarehub.home.apps.HomeConfig",
     "mycarehub.content.apps.ContentConfig",
     "mycarehub.clients.apps.ClientsConfig",
 ]
@@ -371,10 +379,10 @@ WAGTAILADMIN_RECENT_EDITS_LIMIT = 5
 WAGTAIL_MODERATION_ENABLED = True
 WAGTAIL_GRAVATAR_PROVIDER_URL = "//www.gravatar.com/avatar"
 WAGTAILSEARCH_BACKENDS = {
-    "default": {
-        "BACKEND": "wagtail.search.backends.database",
-    }
+    "default": {"BACKEND": "wagtail.search.backends.database", "AUTO_UPDATE": True},
 }
+WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = True
+TAGGIT_CASE_INSENSITIVE = True
 
 # Project specific settings
 # ------------------------------------------------------------------------------
@@ -408,3 +416,17 @@ WHITELISTED_DOMAINS = env.list(
 
 GRAPHENE = {"SCHEMA": "mycarehub.schema.schema.schema"}
 API_VERSION = "0.0.1"
+
+# debug_toolbar
+if DEBUG:
+    # django-debug-toolbar
+    # ------------------------------------------------------------------------------
+    # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#prerequisites
+    INSTALLED_APPS += ["debug_toolbar"]  # noqa F405
+    # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#middleware
+    MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]  # noqa F405
+    # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-config
+    DEBUG_TOOLBAR_CONFIG = {
+        # "DISABLE_PANELS": ["debug_toolbar.panels.redirects.RedirectsPanel"],
+        "SHOW_TEMPLATE_CONTEXT": True,
+    }

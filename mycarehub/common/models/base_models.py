@@ -12,6 +12,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from PIL import Image
 
+from mycarehub.users.models import default_organisation
+
 from ..constants import CONTENT_TYPES
 from .organisation_models import Organisation
 from .utils import get_directory, is_image_type, unique_list
@@ -199,6 +201,7 @@ class AbstractBase(OwnerlessAbstractBase):
         Organisation,
         on_delete=models.PROTECT,
         related_name="%(app_label)s_%(class)s_related",
+        default=default_organisation,
     )
 
     objects = AbstractBaseManager()

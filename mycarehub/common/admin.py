@@ -11,6 +11,7 @@ class BaseAdmin(admin.ModelAdmin):
         "created_by",
         "updated",
         "updated_by",
+        "deleted_at",
     )
 
     def save_model(self, request, obj, form, change):

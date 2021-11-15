@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block page %}{% endblock page %}
+
+{% block inner %}
+
+    {% if request.GET.tag %}
+        <h4>Showing pages tagged "{{ request.GET.tag }}"</h4>
+    {% endif %}
+
+    {% for content_item in tagged_items %}
+          <p>
+              <strong><a href="{% pageurl content_item %}">{{ content_item.title }}</a></strong><br />
+              <small>Revised: {{ content_item.latest_revision_created_at }}</small><br />
+              {% if content_item.author %}
+                <p>By {{ content_item.author.name }}</p>
+              {% endif %}
+          </p>
+
+    {% empty %}
+        No pages found with that tag.
+    {% endfor %}
+
+{% endblock inner %}
