@@ -1,10 +1,13 @@
 import pytest
 from django.conf import settings
 from django.contrib.auth.models import Group, Permission
+from faker import Faker
 from model_bakery import baker
 
 from mycarehub.users.models import User
 from mycarehub.users.tests.factories import UserFactory
+
+fake = Faker()
 
 
 @pytest.fixture(autouse=True)
@@ -56,3 +59,10 @@ def request_with_user(rf, django_user_model):
     user = baker.make(django_user_model)
     request.user = user
     return request
+
+
+def gen_rich_text_field():
+    return fake.text()  # pragma: nocover
+
+
+baker.generators.add("wagtail.core.fields.RichTextField", gen_rich_text_field)

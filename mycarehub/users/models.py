@@ -67,6 +67,7 @@ class TermsOfService(Model):
     created_by = UUIDField(null=True, blank=True)
     updated = DateTimeField(default=timezone.now)
     updated_by = UUIDField(null=True, blank=True)
+    deleted_at = DateTimeField(null=True, blank=True)
 
 
 class User(AbstractUser):
@@ -183,6 +184,7 @@ class UserPIN(Model):
     created_by = UUIDField(null=True, blank=True)
     updated = DateTimeField(default=timezone.now)
     updated_by = UUIDField(null=True, blank=True)
+    deleted_at = DateTimeField(null=True, blank=True)
     flavour = CharField(choices=FlavourChoices.choices, max_length=32, null=True)
 
     class Meta:
@@ -207,6 +209,7 @@ class Metric(Model):
     created_by = UUIDField(null=True, blank=True)
     updated = DateTimeField(default=timezone.now)
     updated_by = UUIDField(null=True, blank=True)
+    deleted_at = DateTimeField(null=True, blank=True)
 
 
 class UserOTP(Model):
@@ -226,3 +229,4 @@ class UserOTP(Model):
     created_by = UUIDField(null=True, blank=True)
     updated = DateTimeField(default=timezone.now)
     updated_by = UUIDField(null=True, blank=True)
+    deleted_at = DateTimeField(null=True, blank=True)

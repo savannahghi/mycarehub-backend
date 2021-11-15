@@ -29,7 +29,7 @@ steps:
       '--set-env-vars', 'GOOGLE_CLOUD_PROJECT=$PROJECT_ID,SETTINGS_NAME=${_SETTINGS_NAME},DJANGO_SETTINGS_MODULE=config.settings.production,DEFAULT_ORG_ID=4181df12-ca96-4f28-b78b-8e8ad88b25df',
       '--min-instances', '1',
       '--max-instances', '8',
-      '--memory', '512M',
+      '--memory', '1G',
       '--cpu', '1',
       '--set-secrets', '/tmp/secrets/.env=${_SETTINGS_NAME}:latest',
       '--timeout', '59m59s'

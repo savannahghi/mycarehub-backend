@@ -23,7 +23,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
   build-essential wget \
   # psycopg2 dependencies
-  libpq-dev postgis gdal-bin libgdal-dev
+  libpq-dev postgis gdal-bin libgdal-dev libsm6 \
+  # image and video processing dependencies
+  libxrender1 libxext6 ffmpeg
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements .
