@@ -319,7 +319,7 @@ class Contact(AbstractBase):
     contact_type = models.CharField(choices=ContactType.choices, max_length=16)
     contact_value = models.TextField(unique=True)
     opted_in = models.BooleanField(default=False)
-    user_id = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
 
 
 class AuditLog(AbstractBase):
