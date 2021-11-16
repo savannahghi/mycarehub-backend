@@ -58,6 +58,7 @@ class SecurityQuestionViewsetTest(CRUDTestMixin):
             stem=fake.text(),
             description=fake.text(),
             organisation=self.global_organisation,
+            flavour="CONSUMER",
         )
         self.data = {
             "identifier_type": "NATIONAL_ID",
@@ -66,6 +67,7 @@ class SecurityQuestionViewsetTest(CRUDTestMixin):
             "sequence": random.randint(1, 999_999),
             "response_type": "TEXT",
             "organisation": self.global_organisation.pk,
+            "flavour": "CONSUMER",
         }
         self.detail_url = reverse(self.url_detail_base, kwargs={"pk": self.instance.pk})
         super().setUp()
@@ -82,6 +84,7 @@ class SecurityQuestionResponseViewsetTest(CRUDTestMixin):
             stem=fake.text(),
             description=fake.text(),
             organisation=self.global_organisation,
+            flavour="CONSUMER",
         )
         self.instance = baker.make(
             SecurityQuestionResponse,
