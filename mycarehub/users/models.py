@@ -203,3 +203,21 @@ class Metric(Model):
     created_by = UUIDField(null=True, blank=True)
     updated = DateTimeField(default=timezone.now)
     updated_by = UUIDField(null=True, blank=True)
+
+
+class UserOTP(Model):
+    """
+    UserOTP stores a user's OTP
+    """
+
+    user = ForeignKey(User, on_delete=PROTECT)
+    is_valid = BooleanField()
+    generated_at = DateTimeField(default=timezone.now)
+    valid_until = DateTimeField(null=True, blank=True)
+    channel = CharField(max_length=10)
+    flavour = CharField(choices=FlavourChoices.choices, max_length=32, null=True)
+    phonenumber = TextField()
+    created = DateTimeField(default=timezone.now)
+    created_by = UUIDField(null=True, blank=True)
+    updated = DateTimeField(default=timezone.now)
+    updated_by = UUIDField(null=True, blank=True)
