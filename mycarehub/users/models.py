@@ -217,6 +217,7 @@ class UserOTP(Model):
     channel = CharField(max_length=10)
     flavour = CharField(choices=FlavourChoices.choices, max_length=32, null=True)
     phonenumber = TextField()
+    otp = CharField(max_length=8)
     created = DateTimeField(default=timezone.now)
     created_by = UUIDField(null=True, blank=True)
     updated = DateTimeField(default=timezone.now)
