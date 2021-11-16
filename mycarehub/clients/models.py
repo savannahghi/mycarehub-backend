@@ -10,6 +10,11 @@ from mycarehub.common.models.common_models import Address, Contact, Facility
 from mycarehub.users.models import GenderChoices
 
 
+class FlavourChoices(TextChoices):
+    PRO = "PRO", _("PRO")
+    CONSUMER = "CONSUMER", _("CONSUMER")
+
+
 class Identifier(AbstractBase):
     class IdentifierType(models.TextChoices):
         CCC = "CCC", _("Comprehensive Care Clinic Number")
@@ -47,9 +52,11 @@ class SecurityQuestion(AbstractBase):
     description = models.TextField()
     sequence = models.IntegerField(default=0)
     response_type = models.CharField(max_length=32, choices=ResponseType.choices)
+    flavour = models.CharField(choices=FlavourChoices.choices, max_length=32, null=True)
 
 
 class SecurityQuestionResponse(AbstractBase):
+
     user = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
     question = models.ForeignKey(SecurityQuestion, on_delete=models.PROTECT)
     timestamp = models.DateTimeField(default=timezone.now)
