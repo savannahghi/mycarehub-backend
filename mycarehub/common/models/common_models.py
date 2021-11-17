@@ -316,9 +316,14 @@ class Contact(AbstractBase):
         PHONE = "PHONE", _("PHONE")
         EMAIL = "EMAIL", _("EMAIL")
 
+    class FlavourChoices(models.TextChoices):
+        PRO = "PRO", _("PRO")
+        CONSUMER = "CONSUMER", _("CONSUMER")
+
     contact_type = models.CharField(choices=ContactType.choices, max_length=16)
     contact_value = models.TextField(unique=True)
     opted_in = models.BooleanField(default=False)
+    flavour = models.CharField(choices=FlavourChoices.choices, max_length=32, null=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
 
 
