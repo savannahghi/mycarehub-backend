@@ -112,6 +112,10 @@ class User(AbstractUser):
     )
     flavour = CharField(choices=FlavourChoices.choices, max_length=32, null=True)
     terms_accepted = BooleanField(default=False, null=False)
+    avatar = TextField(blank=True)
+    is_suspended = BooleanField(
+        default=False,
+    )
 
     @property
     def permissions(self):
