@@ -61,6 +61,7 @@ class SecurityQuestionResponse(AbstractBase):
     question = models.ForeignKey(SecurityQuestion, on_delete=models.PROTECT)
     timestamp = models.DateTimeField(default=timezone.now)
     response = models.TextField()  # should be hashed
+    is_correct = models.BooleanField(default=True)
 
     class Meta:
         unique_together = (
