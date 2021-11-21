@@ -117,6 +117,7 @@ class User(AbstractUser):
     is_suspended = BooleanField(
         default=False,
     )
+    pin_change_required = BooleanField(default=True, blank=True, null=True)
 
     @property
     def permissions(self):
