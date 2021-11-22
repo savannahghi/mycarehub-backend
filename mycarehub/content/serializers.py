@@ -10,6 +10,7 @@ class MediaSerializedField(Field):
         for value in val.all():
             media.append(
                 {
+                    "id": value.featured_media.id,
                     "url": value.featured_media.file.url,
                     "title": value.featured_media.title,
                     "type": value.featured_media.type,
