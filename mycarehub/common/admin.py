@@ -8,8 +8,13 @@ from .models import Facility, FacilityAttachment, Organisation
 class BaseAdmin(admin.ModelAdmin):
     readonly_fields = (
         "created",
-        "created_by",
         "updated",
+        "created_by",
+        "updated_by",
+        "deleted_at",
+    )
+    exclude = (
+        "created_by",
         "updated_by",
         "deleted_at",
     )

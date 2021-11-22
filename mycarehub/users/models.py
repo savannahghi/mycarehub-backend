@@ -14,6 +14,7 @@ from django.db.models import (
     UUIDField,
 )
 from django.db.models.base import Model
+from django.db.models.deletion import CASCADE
 from django.db.models.fields import DateField, DateTimeField, IntegerField
 from django.db.utils import ProgrammingError
 from django.urls import reverse
@@ -218,7 +219,7 @@ class UserOTP(Model):
     UserOTP stores a user's OTP
     """
 
-    user = ForeignKey(User, on_delete=PROTECT)
+    user = ForeignKey(User, on_delete=CASCADE)
     is_valid = BooleanField()
     generated_at = DateTimeField(default=timezone.now)
     valid_until = DateTimeField(null=True, blank=True)
