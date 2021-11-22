@@ -389,6 +389,9 @@ WAGTAILMEDIA = {
     "AUDIO_EXTENSIONS": ["aac", "wav"],
     "VIDEO_EXTENSIONS": ["mp4"],
 }
+WAGTAILDOCS_EXTENSIONS = [
+    "pdf",
+]
 
 # Project specific settings
 # ------------------------------------------------------------------------------
