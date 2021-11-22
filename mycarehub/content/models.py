@@ -133,6 +133,10 @@ class ContentItemTagIndexPage(Page):
     e.g https://<site>/?tag=<tag>
     """
 
+    parent_page_types = [
+        "home.HomePage",
+    ]
+
     def get_context(self, request):
 
         # Filter by tag

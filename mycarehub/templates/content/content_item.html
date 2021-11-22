@@ -12,7 +12,12 @@
     <h1>{{ page.title }}</h1>
     <p class="meta">{{ page.date }}</p>
 
-    {% video self.header_video autoplay controls width=256 %}
+    {% if page.hero_image %}
+    <div style="float: left; margin: 10px">
+        {% image page.hero_image fill-320x240 %}
+        <p>{{ page.hero_image.caption }}</p>
+    </div>
+    {% endif %}
 
     {% with categories=page.categories.all %}
     {% if categories %}
@@ -20,7 +25,9 @@
         <ul>
             {% for category in categories %}
                 <li style="display: inline">
-                    {% image category.icon fill-32x32 style="vertical-align: middle" %}
+                    {% if category.icon %}
+                        {% image category.icon fill-32x32 style="vertical-align: middle" %}
+                    {% endif %}
                     {{ category.name }}
                 </li>
             {% endfor %}
