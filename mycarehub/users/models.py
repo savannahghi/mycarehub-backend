@@ -55,7 +55,7 @@ def default_organisation():
         return org.pk
     except (ProgrammingError, Exception):  # pragma: nocover
         # this will occur during initial migrations on a clean db
-        return settings.DEFAULT_ORG_ID
+        return uuid.UUID(settings.DEFAULT_ORG_ID)
 
 
 class TermsOfService(Model):
