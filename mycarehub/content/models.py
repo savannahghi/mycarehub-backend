@@ -320,9 +320,6 @@ class ContentItem(Page):
         InlinePanel("documents", label="Documents"),
         InlinePanel("featured_media", label="Audio and Video (media)"),
     ]
-    promote_panels = Page.promote_panels + [
-        FieldPanel("hero_image"),
-    ]
 
     # these fields determine the content that is indexed for search purposes
     search_fields = Page.search_fields + [
