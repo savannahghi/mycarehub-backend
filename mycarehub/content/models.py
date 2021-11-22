@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db import models
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
+from rest_framework.fields import ReadOnlyField
 from taggit.models import TaggedItemBase
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.api import APIField
@@ -93,7 +94,7 @@ class ContentItemCategory(models.Model):
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        related_name="+",
+        related_name="content_item_category_icons",
         help_text="An optional icon for the content item category. "
         "This will be shown in the user interface so it should be chosen "
         "with care.",
@@ -258,7 +259,7 @@ class ContentItem(Page):
     # content item e.g before the text of an article
     hero_image = models.ForeignKey(
         "wagtailimages.Image",
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         related_name="content_hero_image",
         null=True,
         blank=True,
@@ -287,8 +288,9 @@ class ContentItem(Page):
     def category_details(self):
         return [
             {
+                "category_id": cat.id,
                 "category_name": cat.name,
-                "category_icon": cat.icon.url,
+                "category_icon": cat.icon.file.url if cat.icon is not None else "",
             }
             for cat in self.categories.all()
         ]
@@ -339,9 +341,10 @@ class ContentItem(Page):
         APIField("time_estimate_seconds"),
         APIField("body"),
         APIField("tag_names"),
+        APIField("hero_image"),
         APIField(
             "hero_image_rendition",
-            serializer=ImageRenditionField("fill-800x1200", source="hero_image"),
+            serializer=ImageRenditionField("fill-800x1200|jpegquality-60", source="hero_image"),
         ),
         APIField("like_count"),
         APIField("bookmark_count"),
@@ -351,7 +354,10 @@ class ContentItem(Page):
         APIField("featured_media"),
         APIField("gallery_images"),
         APIField("questionnaires"),
-        APIField("category_details"),
+        APIField(
+            "category_details",
+            serializer=ReadOnlyField(),
+        ),
     ]
 
     # limit the parent page types
@@ -371,7 +377,7 @@ class ContentItemDocumentLink(Orderable):
     document = models.ForeignKey(
         "wagtaildocs.Document",
         on_delete=models.CASCADE,
-        related_name="+",
+        related_name="content_item_documents",
         help_text="Select or upload a PDF document. It is IMPORTANT to limit "
         "these documents to PDFs - otherwise the mobile app may not be able "
         "to display them properly.",
@@ -405,7 +411,7 @@ class ContentItemMediaLink(Orderable):
     featured_media = models.ForeignKey(
         "wagtailmedia.Media",
         on_delete=models.CASCADE,
-        related_name="+",
+        related_name="content_item_media",
         help_text="Select or upload an audio or video file. "
         "In order to maximize compatibility, please stick to common audio/video "
         "formats. For video, H264 encoded MP4 files are recommended. "
@@ -431,7 +437,7 @@ class ContentItemGalleryImage(Orderable):
     image = models.ForeignKey(
         "wagtailimages.Image",
         on_delete=models.PROTECT,
-        related_name="+",
+        related_name="content_item_gallery_images",
         help_text="Select or upload an image. Most of these images will be viewed on mobile "
         "devices. The ideal image should be large enough to render clearly on high end mobile "
         "devices but not so large that it costs a lot of bandwidth to download. One good size "
