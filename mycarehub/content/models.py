@@ -17,6 +17,7 @@ from wagtail.snippets.models import register_snippet
 from wagtailmedia.edit_handlers import MediaChooserPanel
 
 from mycarehub.common.models import AbstractBase
+from mycarehub.content.serializers import MediaSerializedField
 
 RICH_TEXT_FIELD_FEATURES = [
     "h1",
@@ -341,14 +342,20 @@ class ContentItem(Page):
         APIField("hero_image"),
         APIField(
             "hero_image_rendition",
-            serializer=ImageRenditionField("fill-800x1200|jpegquality-60", source="hero_image"),
+            serializer=ImageRenditionField(
+                "fill-800x1200|jpegquality-60",
+                source="hero_image",
+            ),
         ),
         APIField("like_count"),
         APIField("bookmark_count"),
         APIField("view_count"),
         APIField("share_count"),
         APIField("documents"),
-        APIField("featured_media"),
+        APIField(
+            "featured_media",
+            serializer=MediaSerializedField(),
+        ),
         APIField("gallery_images"),
         APIField("questionnaires"),
         APIField(
