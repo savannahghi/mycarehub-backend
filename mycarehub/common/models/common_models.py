@@ -310,6 +310,9 @@ class Address(AbstractBase):
     postal_code = models.TextField()
     country = models.CharField(max_length=255, choices=COUNTRY_CODES, default="KEN")
 
+    def __str__(self):
+        return f"{self.text} ({self.address_type})"
+
 
 class Contact(AbstractBase):
     class ContactType(models.TextChoices):
@@ -323,8 +326,13 @@ class Contact(AbstractBase):
     contact_type = models.CharField(choices=ContactType.choices, max_length=16)
     contact_value = models.TextField(unique=True)
     opted_in = models.BooleanField(default=False)
-    flavour = models.CharField(choices=FlavourChoices.choices, max_length=32, null=True)
-    user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
+    flavour = models.CharField(
+        choices=FlavourChoices.choices, max_length=32, null=True, blank=True
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.contact_value} ({self.contact_type})"
 
 
 class AuditLog(AbstractBase):

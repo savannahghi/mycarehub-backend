@@ -40,6 +40,9 @@ class Identifier(AbstractBase):
     valid_to = models.DateTimeField(null=True, blank=True)
     is_primary_identifier = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"{self.identifier_value} ({self.identifier_type}, {self.identifier_use})"
+
 
 class SecurityQuestion(AbstractBase):
     class ResponseType(models.TextChoices):
@@ -94,6 +97,9 @@ class RelatedPerson(AbstractBase):
         Contact,
         related_name="related_person_contacts",
     )
+
+    def __str__(self):
+        return f"{self.first_name} {self.other_name} {self.last_name} ({self.relationship_type})"
 
 
 class Client(AbstractBase):
@@ -232,6 +238,11 @@ class Client(AbstractBase):
         null=True,
         blank=True,
     )
+
+    def __str__(self):
+        return (
+            f"{self.user.name} ({self.client_type})" if self.user else f"{self.client_type} client"
+        )
 
 
 class ClientFacility(AbstractBase):

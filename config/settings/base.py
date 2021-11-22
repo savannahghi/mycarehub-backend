@@ -95,16 +95,16 @@ THIRD_PARTY_APPS = [
     "wagtail.search",
     "wagtail.admin",
     "wagtail.core",
+    "wagtail.contrib.modeladmin",
+    "wagtailvideos",
+    "wagtailmedia",
     "taggit",
     "modelcluster",
     "wagtail.api.v2",
     "wagtail.contrib.settings",
     "wagtail.contrib.frontend_cache",
     "wagtail.contrib.search_promotions",
-    "wagtail.contrib.modeladmin",
     "django_extensions",
-    "wagtailvideos",
-    "wagtailmedia",
 ]
 
 LOCAL_APPS = [

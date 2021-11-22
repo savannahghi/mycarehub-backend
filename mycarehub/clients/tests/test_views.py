@@ -7,10 +7,7 @@ from django.utils import timezone
 from faker import Faker
 from model_bakery import baker
 
-from mycarehub.common.models.common_models import Facility
-from mycarehub.common.tests.test_api import CRUDTestMixin
-
-from .models import (
+from mycarehub.clients.models import (
     Client,
     ClientFacility,
     Identifier,
@@ -18,6 +15,8 @@ from .models import (
     SecurityQuestion,
     SecurityQuestionResponse,
 )
+from mycarehub.common.models.common_models import Facility
+from mycarehub.common.tests.test_api import CRUDTestMixin
 
 fake = Faker()
 
