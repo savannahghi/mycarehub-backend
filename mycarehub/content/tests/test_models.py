@@ -110,3 +110,15 @@ def test_content_item_properties(request_with_user):
     assert content_item.author_avatar_url == ""
     assert content_item.category_details == []
     assert content_item.tag_names == []
+
+    # add categories
+    icon = baker.make("wagtailimages.Image", _create_files=True)
+    cat = baker.make(ContentItemCategory, icon=icon)
+    content_item.categories.add(cat)
+    assert content_item.category_details == [
+        {
+            "category_id": cat.id,
+            "category_name": cat.name,
+            "category_icon": cat.icon.file.url,
+        }
+    ]

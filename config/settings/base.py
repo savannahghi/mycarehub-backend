@@ -383,6 +383,12 @@ WAGTAILSEARCH_BACKENDS = {
 }
 WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = True
 TAGGIT_CASE_INSENSITIVE = True
+WAGTAILMEDIA = {
+    "MEDIA_MODEL": "wagtailmedia.Media",
+    "MEDIA_FORM_BASE": "",
+    "AUDIO_EXTENSIONS": ["aac", "wav"],
+    "VIDEO_EXTENSIONS": ["mp4"],
+}
 
 # Project specific settings
 # ------------------------------------------------------------------------------
