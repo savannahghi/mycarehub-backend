@@ -57,7 +57,7 @@ baker.generators.add("phonenumber_field.modelfields.PhoneNumberField", gen_func)
 # https://django-storages.readthedocs.io/en/latest/#installation
 INSTALLED_APPS += ["storages"]  # noqa F405
 GS_BUCKET_NAME = env("DJANGO_GCP_STORAGE_BUCKET_NAME", default="mycarehub-ya-jamii-test")
-GS_DEFAULT_ACL = "project-private"
+GS_DEFAULT_ACL = "publicRead"
 # STATIC
 # ------------------------
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
