@@ -124,5 +124,6 @@ urlpatterns += [
     re_path(
         r"^images/([^/]*)/(\d*)/([^/]*)/[^/]*$", ServeView.as_view(), name="wagtailimages_serve"
     ),
+    path("content/", include(wagtail_urls), name="wagtail"),
     path("", include(wagtail_urls), name="wagtail"),
 ]
