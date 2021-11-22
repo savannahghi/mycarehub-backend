@@ -10,6 +10,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.http import HttpRequest
 from django.template.loader import get_template
+from rest_framework.authtoken.models import Token
 
 LOGGER = logging.getLogger(__name__)
 BASIC_PERMISSIONS = [
@@ -148,3 +149,9 @@ def send_user_account_approved_email(user):
     # record the notification so that we do not re-send it
     user.approval_notified = True
     user.save()
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)

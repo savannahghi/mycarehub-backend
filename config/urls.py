@@ -118,7 +118,7 @@ wagtail_api_router.register_endpoint("images", ImagesAPIViewSet)
 wagtail_api_router.register_endpoint("documents", DocumentsAPIViewSet)
 
 urlpatterns += [
-    path("api/cms/", wagtail_api_router.urls),
+    path("contentapi/", wagtail_api_router.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     re_path(
