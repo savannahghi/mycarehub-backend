@@ -83,7 +83,7 @@ class User(AbstractUser):
 
     last_successful_login = DateTimeField(null=True, blank=True)
     last_failed_login = DateTimeField(null=True, blank=True)
-    next_allowed_login = DateTimeField(null=True, blank=True)
+    next_allowed_login = DateTimeField(default=timezone.now)
     failed_login_count = IntegerField(default=0)
     accepted_terms_of_service = ForeignKey(
         TermsOfService, null=True, blank=True, on_delete=PROTECT
@@ -117,6 +117,7 @@ class User(AbstractUser):
     is_suspended = BooleanField(
         default=False,
     )
+    pin_change_required = BooleanField(default=True, blank=True, null=True)
 
     @property
     def permissions(self):
