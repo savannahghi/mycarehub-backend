@@ -393,6 +393,11 @@ WAGTAILDOCS_EXTENSIONS = [
     "pdf",
 ]
 
+# phone numbers
+PHONENUMBER_DB_FORMAT = "E164"
+PHONENUMBER_DEFAULT_REGION = "KE"
+PHONENUMBER_DEFAULT_FORMAT = "E164"
+
 # Project specific settings
 # ------------------------------------------------------------------------------
 # these are used by the base model classes for validation

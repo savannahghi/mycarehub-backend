@@ -1,11 +1,13 @@
 import random
 import uuid
 
+import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
 from faker import Faker
 from model_bakery import baker
+from rest_framework import status
 
 from mycarehub.clients.models import (
     Client,
@@ -19,6 +21,8 @@ from mycarehub.common.models.common_models import Facility
 from mycarehub.common.tests.test_api import CRUDTestMixin
 
 fake = Faker()
+
+pytestmark = pytest.mark.django_db
 
 
 class IdentifierViewsetTest(CRUDTestMixin):
@@ -241,3 +245,42 @@ class ClientFacilityViewsetTest(CRUDTestMixin):
             "organisation": self.global_organisation.pk,
         }
         self.detail_url = reverse(self.url_detail_base, kwargs={"pk": self.instance.pk})
+
+
+def test_client_registration_view_valid(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+    url = reverse("client_registration")
+    org = user_with_all_permissions.organisation
+    facility = baker.make(Facility, organisation=org)
+    response = client.post(
+        url,
+        data={
+            "facility": facility.pk,
+            "client_type": "PMTCT",
+            "name": fake.name(),
+            "gender": "MALE",
+            "date_of_birth": fake.date_of_birth(minimum_age=5),
+            "phone_number": "+254722000000",
+            "enrollment_date": fake.date_this_century(),
+            "ccc_number": fake.random_int(),
+            "counselled": True,
+        },
+        content_type="application/json",
+        accept="application/json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response_data = response.json()
+    assert response_data["id"] is not None
+
+
+def test_client_registration_view_invalid(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+    url = reverse("client_registration")
+    response = client.post(
+        url,
+        data={},  # blank, invalid by default
+        content_type="application/json",
+        accept="application/json",
+    )
+    assert response.status_code == 400

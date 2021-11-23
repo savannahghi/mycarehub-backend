@@ -16,6 +16,60 @@ class FlavourChoices(TextChoices):
     CONSUMER = "CONSUMER", _("CONSUMER")
 
 
+class ClientType(models.TextChoices):
+    """
+    The client types shown below can be expanded over time:
+
+        - PMTCT: Prevention of mother-to-child transmission;
+        all pregnant and breastfeeding women living with HIV.
+        Exit when baby turns 2 years.
+
+        - OTZ:  Operation Tripple Zero – for Zero Missed Appointments, zero
+        missed Drugs and Zero Viral Load – all HIV positive persons aged
+        between 0-19 years
+
+        - OTZ Plus: All women aged between 10-24 years who are pregnant or
+        breastfeeding. Exit when baby turns 2 years
+
+        - HVL: High Viral Load – All HIV positive clients with a viral load
+        >1,000 copies per ml. Exit when VL is <1,000 copies/ml
+
+        - OVC: Orphans and Vulnerable Children – all children and
+        adolescents aged 0-17 years who are enrolled with an OVC partner.
+        Exit when they 18 years
+
+        - DREAMS: Determined, Resilient, Empowered, AIDS-free, mentored and
+        Safe – all HIV positive 9-24 year old women enroll with a DREAMS
+        partner. Exit when they turn 25 years
+
+        - High Risk Clients: all paediatric patients 0-4 yrs, all 0-4 year
+        olds with a HIV negative guardian, all clients with low viremia
+        (50-999 copies/ml). TI and new in the last 1 year, RTC in the last
+        6 months.
+
+        - Spouses of PMTCT mothers who have disclosed – exit when the
+        baby turns 2 years
+
+        - Youth: 20–24-year-olds both male and female. Exit when they turn
+        25 years
+    """
+
+    PMTCT = "PMTCT", _("PMTCT")
+    OTZ = "OTZ", _("OTZ")
+    OTZ_PLUS = "OTZ_PLUS", _("OTZ Plus")
+    HVL = "HVL", _("HVL")
+    OVC = "OVC", _("OVC")
+    DREAMS = "DREAMS", _("DREAMS")
+    HIGH_RISK = "HIGH_RISK", _("High Risk Clients")
+    SPOUSES = "SPOUSES", _("SPOUSES")
+    YOUTH = "YOUTH", _("Youth")
+
+
+class Languages(TextChoices):
+    en = "en", "English"
+    sw = "sw", "Swahili"
+
+
 @register_snippet
 class Identifier(AbstractBase):
     class IdentifierType(models.TextChoices):
@@ -33,7 +87,7 @@ class Identifier(AbstractBase):
     identifier_type = models.CharField(
         choices=IdentifierType.choices, max_length=64, null=False, blank=False
     )
-    identifier_value = models.TextField()
+    identifier_value = models.TextField(unique=True)
     identifier_use = models.CharField(
         choices=IdentifierUse.choices, max_length=64, null=False, blank=False
     )
@@ -120,58 +174,6 @@ class Client(AbstractBase):
     """
     A client is a patient or non-professional end user.
     """
-
-    class ClientType(models.TextChoices):
-        """
-        The client types shown below can be expanded over time:
-
-            - PMTCT: Prevention of mother-to-child transmission;
-            all pregnant and breastfeeding women living with HIV.
-            Exit when baby turns 2 years.
-
-            - OTZ:  Operation Tripple Zero – for Zero Missed Appointments, zero
-            missed Drugs and Zero Viral Load – all HIV positive persons aged
-            between 0-19 years
-
-            - OTZ Plus: All women aged between 10-24 years who are pregnant or
-            breastfeeding. Exit when baby turns 2 years
-
-            - HVL: High Viral Load – All HIV positive clients with a viral load
-            >1,000 copies per ml. Exit when VL is <1,000 copies/ml
-
-            - OVC: Orphans and Vulnerable Children – all children and
-            adolescents aged 0-17 years who are enrolled with an OVC partner.
-            Exit when they 18 years
-
-            - DREAMS: Determined, Resilient, Empowered, AIDS-free, mentored and
-            Safe – all HIV positive 9-24 year old women enroll with a DREAMS
-            partner. Exit when they turn 25 years
-
-            - High Risk Clients: all paediatric patients 0-4 yrs, all 0-4 year
-            olds with a HIV negative guardian, all clients with low viremia
-            (50-999 copies/ml). TI and new in the last 1 year, RTC in the last
-            6 months.
-
-            - Spouses of PMTCT mothers who have disclosed – exit when the
-            baby turns 2 years
-
-            - Youth: 20–24-year-olds both male and female. Exit when they turn
-            25 years
-        """
-
-        PMTCT = "PMTCT", _("PMTCT")
-        OTZ = "OTZ", _("OTZ")
-        OTZ_PLUS = "OTZ_PLUS", _("OTZ Plus")
-        HVL = "HVL", _("HVL")
-        OVC = "OVC", _("OVC")
-        DREAMS = "DREAMS", _("DREAMS")
-        HIGH_RISK = "HIGH_RISK", _("High Risk Clients")
-        SPOUSES = "SPOUSES", _("SPOUSES")
-        YOUTH = "YOUTH", _("Youth")
-
-    class Languages(TextChoices):
-        en = "en", "English"
-        sw = "sw", "Swahili"
 
     client_type = models.CharField(
         max_length=64,
