@@ -53,11 +53,10 @@ def user_with_group(user, group_with_all_permissions) -> User:
 
 
 @pytest.fixture
-def request_with_user(rf, django_user_model):
+def request_with_user(rf, django_user_model, user_with_all_permissions):
     url = settings.ADMIN_URL + "/common/organisation/add/"
     request = rf.get(url)
-    user = baker.make(django_user_model)
-    request.user = user
+    request.user = user_with_all_permissions
     return request
 
 

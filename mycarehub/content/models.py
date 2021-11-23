@@ -563,8 +563,3 @@ class ContentItemQuestionnaire(Orderable):
             "page",
             # "document",
         )
-
-
-# TODO Theme for articles, tags, blog home
-# TODO Implement questionnaires and questionnaire responses...pre or post
-# TODO API: query categories with at least one article...
