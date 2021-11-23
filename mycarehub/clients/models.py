@@ -58,7 +58,12 @@ class SecurityQuestion(AbstractBase):
     description = models.TextField()
     sequence = models.IntegerField(default=0)
     response_type = models.CharField(max_length=32, choices=ResponseType.choices)
-    flavour = models.CharField(choices=FlavourChoices.choices, max_length=32, null=True)
+    flavour = models.CharField(
+        choices=FlavourChoices.choices, max_length=32, null=True, blank=True
+    )
+
+    def __str__(self) -> str:
+        return self.stem
 
 
 @register_snippet
@@ -75,6 +80,9 @@ class SecurityQuestionResponse(AbstractBase):
             "user",
             "question",
         )
+
+    def __str__(self) -> str:
+        return f"Response to '{self.question}' by '{self.user.name}'"
 
 
 @register_snippet

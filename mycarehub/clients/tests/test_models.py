@@ -1,7 +1,14 @@
 import pytest
 from model_bakery import baker
 
-from mycarehub.clients.models import Client, Identifier, RelatedPerson
+from mycarehub.clients.models import (
+    Client,
+    Identifier,
+    RelatedPerson,
+    SecurityQuestion,
+    SecurityQuestionResponse,
+)
+from mycarehub.users.models import User
 
 pytestmark = pytest.mark.django_db
 
@@ -30,3 +37,15 @@ def test_related_person_str():
 def test_client_str(user_with_all_permissions):
     client = baker.make(Client, user=user_with_all_permissions, client_type="PMTCT")
     assert str(client) == f"{user_with_all_permissions.name} (PMTCT)"
+
+
+def test_security_question_str():
+    qn = baker.make(SecurityQuestion, stem="swali")
+    assert str(qn) == "swali"
+
+
+def test_security_question_response_str():
+    qn = baker.make(SecurityQuestion, stem="swali")
+    user = baker.make(User, name="Juha Kalulu")
+    resp = baker.make(SecurityQuestionResponse, question=qn, user=user)
+    assert str(resp) == "Response to 'swali' by 'Juha Kalulu'"
