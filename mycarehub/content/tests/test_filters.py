@@ -37,6 +37,9 @@ def content_item_with_tag_and_category(request_with_user):
     home.add_child(instance=content_item_index)
     home.save_revision().publish()
 
+    # get a hero image
+    hero = baker.make("wagtailimages.Image", _create_files=True)
+
     # set up a content item
     author = baker.make(Author)
     content_item = ContentItem(
@@ -47,6 +50,7 @@ def content_item_with_tag_and_category(request_with_user):
         item_type="ARTICLE",
         date=timezone.now().date(),
         author=author,
+        hero_image=hero,
     )
     content_item_index.add_child(instance=content_item)
     content_item_index.save_revision().publish()

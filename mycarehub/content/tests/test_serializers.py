@@ -34,6 +34,9 @@ def test_media_serialized_field():
     )
     home.add_child(instance=content_item_index)
 
+    # get a hero image
+    hero = baker.make("wagtailimages.Image", _create_files=True)
+
     # set up a content item
     author = baker.make(Author)
     content_item = ContentItem(
@@ -44,6 +47,7 @@ def test_media_serialized_field():
         item_type="ARTICLE",
         date=timezone.now().date(),
         author=author,
+        hero_image=hero,
     )
     content_item_index.add_child(instance=content_item)
 

@@ -1,5 +1,6 @@
 from django import forms
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
@@ -299,6 +300,10 @@ class ContentItem(Page):
     @property
     def tag_names(self):
         return [tag.name for tag in self.tags.all()]
+
+    def clean(self):
+        if self.item_type == "ARTICLE" and self.hero_image is None:
+            raise ValidationError("an article must have a hero image")
 
     content_panels = Page.content_panels + [
         MultiFieldPanel(
