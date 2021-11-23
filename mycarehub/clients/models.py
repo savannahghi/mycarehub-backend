@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.enums import TextChoices
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from wagtail.snippets.models import register_snippet
 
 from mycarehub.common.models import AbstractBase
 from mycarehub.common.models.common_models import Address, Contact, Facility
@@ -15,6 +16,7 @@ class FlavourChoices(TextChoices):
     CONSUMER = "CONSUMER", _("CONSUMER")
 
 
+@register_snippet
 class Identifier(AbstractBase):
     class IdentifierType(models.TextChoices):
         CCC = "CCC", _("Comprehensive Care Clinic Number")
@@ -44,6 +46,7 @@ class Identifier(AbstractBase):
         return f"{self.identifier_value} ({self.identifier_type}, {self.identifier_use})"
 
 
+@register_snippet
 class SecurityQuestion(AbstractBase):
     class ResponseType(models.TextChoices):
         TEXT = "TEXT", _("Text Response")
@@ -58,6 +61,7 @@ class SecurityQuestion(AbstractBase):
     flavour = models.CharField(choices=FlavourChoices.choices, max_length=32, null=True)
 
 
+@register_snippet
 class SecurityQuestionResponse(AbstractBase):
 
     user = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
@@ -73,6 +77,7 @@ class SecurityQuestionResponse(AbstractBase):
         )
 
 
+@register_snippet
 class RelatedPerson(AbstractBase):
     class RelationshipType(TextChoices):
         SPOUSE = "SPOUSE", _("Spouse")
@@ -102,6 +107,7 @@ class RelatedPerson(AbstractBase):
         return f"{self.first_name} {self.other_name} {self.last_name} ({self.relationship_type})"
 
 
+@register_snippet
 class Client(AbstractBase):
     """
     A client is a patient or non-professional end user.
@@ -245,6 +251,7 @@ class Client(AbstractBase):
         )
 
 
+@register_snippet
 class ClientFacility(AbstractBase):
     """
     ClientFacility tracks a client's assigned facilities and changes over time.

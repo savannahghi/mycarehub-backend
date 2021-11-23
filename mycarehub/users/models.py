@@ -21,6 +21,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
+from wagtail.snippets.models import register_snippet
 
 DEFAULT_ORG_CODE = 1
 
@@ -59,6 +60,7 @@ def default_organisation():
         return uuid.UUID(settings.DEFAULT_ORG_ID)
 
 
+@register_snippet
 class TermsOfService(Model):
     text = TextField()
     valid_from = DateTimeField(default=timezone.now)
