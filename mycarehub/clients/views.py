@@ -57,14 +57,11 @@ class ClientFacilityViewSet(ModelViewSet):
 
 class ClientRegistrationView(APIView):
     queryset = Client.objects.all()  # to enable model permissions
+    serializer_class = ClientRegistrationSerializer
 
     @transaction.atomic
     def post(self, request, format=None):
-        serializer_data = request.data
-        serializer_data["organisation"] = request.user.organisation
-        serializer_data["user"] = request.user
-
-        serializer = ClientRegistrationSerializer(data=serializer_data)
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
             request_user = request.user
@@ -113,9 +110,9 @@ class ClientRegistrationView(APIView):
                 },
             )
 
-            # retrieve the facility
-            facility_id = data["facility"]
-            facility = Facility.objects.get(pk=facility_id)
+            # retrieve the facility by the unique name
+            facility_name = data["facility"]
+            facility = Facility.objects.get(name=facility_name)
 
             # create a client
             client, _ = Client.objects.get_or_create(
