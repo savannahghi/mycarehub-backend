@@ -255,7 +255,7 @@ def test_client_registration_view_valid(user_with_all_permissions, client):
     response = client.post(
         url,
         data={
-            "facility": facility.pk,
+            "facility": facility.name,
             "client_type": "PMTCT",
             "name": fake.name(),
             "gender": "MALE",

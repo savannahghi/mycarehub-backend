@@ -28,7 +28,7 @@ def validate_date_past(value):
 def get_facility_choices():
     choices = []
     for facility in Facility.objects.all():
-        choices.append((facility.pk, facility.name))
+        choices.append((facility.name, facility.name))
 
     return choices
 
