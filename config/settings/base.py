@@ -85,6 +85,7 @@ THIRD_PARTY_APPS = [
     "django.contrib.admin",
     "graphene_django",
     "wagtail.contrib.forms",
+    "wagtail_automatic_redirects",
     "wagtail.contrib.redirects",
     "wagtail.embeds",
     "wagtail.sites",
