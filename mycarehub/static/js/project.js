@@ -6,7 +6,7 @@
         dataLayer.push(arguments);
     }
     gtag("js", new Date());
-    gtag("config", "G-WW2W29ZMTZ");
+    gtag("config", "G-XRMT75P1B3");
 
     // auto-collapse open menus in responsive mode
     $(".navbar-collapse a").click(function() {
