@@ -63,89 +63,92 @@ class ClientRegistrationView(APIView):
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            data = serializer.validated_data
-            request_user = request.user
-            org = request_user.organisation
-            flavour = "CONSUMER"
+            try:
+                data = serializer.validated_data
+                request_user = request.user
+                org = request_user.organisation
+                flavour = "CONSUMER"
 
-            new_user, _ = User.objects.get_or_create(
-                name=data["name"],
-                gender=data["gender"],
-                date_of_birth=data["date_of_birth"],
-                user_type="CLIENT",
-                phone=data["phone_number"],
-                flavour=flavour,
-                organisation=org,
-                defaults={
-                    "username": data["name"],
-                },
-            )
+                new_user, _ = User.objects.get_or_create(
+                    name=data["name"],
+                    gender=data["gender"],
+                    date_of_birth=data["date_of_birth"],
+                    user_type="CLIENT",
+                    phone=data["phone_number"],
+                    flavour=flavour,
+                    organisation=org,
+                    defaults={
+                        "username": data["name"],
+                    },
+                )
 
-            # create a contact, already opted in
-            contact, _ = Contact.objects.get_or_create(
-                contact_type="PHONE",
-                contact_value=data["phone_number"],
-                opted_in=True,
-                flavour=flavour,
-                user=new_user,
-                organisation=org,
-                created_by=request_user.pk,
-                updated_by=request_user.pk,
-                defaults={
-                    "contact_value": data["phone_number"],
-                },
-            )
+                # create a contact, already opted in
+                contact, _ = Contact.objects.get_or_create(
+                    contact_type="PHONE",
+                    contact_value=data["phone_number"],
+                    opted_in=True,
+                    flavour=flavour,
+                    user=new_user,
+                    organisation=org,
+                    created_by=request_user.pk,
+                    updated_by=request_user.pk,
+                    defaults={
+                        "contact_value": data["phone_number"],
+                    },
+                )
 
-            # create an identifier (CCC)
-            identifier, _ = Identifier.objects.get_or_create(
-                identifier_type="CCC",
-                identifier_use="OFFICIAL",
-                description="CCC Number, Primary Identifier",
-                is_primary_identifier=True,
-                organisation=org,
-                created_by=request_user.pk,
-                updated_by=request_user.pk,
-                defaults={
-                    "identifier_value": data["ccc_number"],
-                },
-            )
+                # create an identifier (CCC)
+                identifier, _ = Identifier.objects.get_or_create(
+                    identifier_type="CCC",
+                    identifier_use="OFFICIAL",
+                    description="CCC Number, Primary Identifier",
+                    is_primary_identifier=True,
+                    organisation=org,
+                    created_by=request_user.pk,
+                    updated_by=request_user.pk,
+                    defaults={
+                        "identifier_value": data["ccc_number"],
+                    },
+                )
 
-            # retrieve the facility by the unique name
-            facility_name = data["facility"]
-            facility = Facility.objects.get(name=facility_name)
+                # retrieve the facility by the unique name
+                facility_name = data["facility"]
+                facility = Facility.objects.get(name=facility_name)
 
-            # create a client
-            client, _ = Client.objects.get_or_create(
-                client_type=data["client_type"],
-                user=new_user,
-                enrollment_date=data["enrollment_date"],
-                current_facility=facility,
-                counselled=data["counselled"],
-                organisation=org,
-                created_by=request_user.pk,
-                updated_by=request_user.pk,
-                defaults={
-                    "user": new_user,
-                },
-            )
+                # create a client
+                client, _ = Client.objects.get_or_create(
+                    client_type=data["client_type"],
+                    user=new_user,
+                    enrollment_date=data["enrollment_date"],
+                    current_facility=facility,
+                    counselled=data["counselled"],
+                    organisation=org,
+                    created_by=request_user.pk,
+                    updated_by=request_user.pk,
+                    defaults={
+                        "user": new_user,
+                    },
+                )
 
-            # add the contact to the client
-            client.contacts.add(contact)
+                # add the contact to the client
+                client.contacts.add(contact)
 
-            # add the identifier to the client
-            client.identifiers.add(identifier)
+                # add the identifier to the client
+                client.identifiers.add(identifier)
 
-            ClientFacility.objects.get_or_create(
-                organisation=org,
-                created_by=request_user.pk,
-                updated_by=request_user.pk,
-                defaults={
-                    "client": client,
-                    "facility": facility,
-                },
-            )
+                ClientFacility.objects.get_or_create(
+                    organisation=org,
+                    created_by=request_user.pk,
+                    updated_by=request_user.pk,
+                    defaults={
+                        "client": client,
+                        "facility": facility,
+                    },
+                )
 
-            # return the newly created client
-            serialized_client = ClientSerializer(client)
-            return Response(serialized_client.data, status=status.HTTP_201_CREATED)
+                # return the newly created client
+                serialized_client = ClientSerializer(client)
+                return Response(serialized_client.data, status=status.HTTP_201_CREATED)
+            except Exception as e:  # noqa # pragma: nocover
+                return Response({"exception": str(e)})  # pragma: nocover
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -104,6 +104,9 @@ THIRD_PARTY_APPS = [
     "wagtail.contrib.settings",
     "wagtail.contrib.frontend_cache",
     "wagtail.contrib.search_promotions",
+    "wagtailreadinglevel",
+    "wagtailfontawesome",
+    "wagtailquickcreate",
     "django_extensions",
 ]
 
@@ -182,7 +185,9 @@ MEDIA_URL = "/media/"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [str(APPS_DIR / "templates")],
+        "DIRS": [
+            str(APPS_DIR / "templates"),
+        ],
         "OPTIONS": {
             "loaders": [
                 "django.template.loaders.filesystem.Loader",
@@ -394,6 +399,13 @@ WAGTAILMEDIA = {
 WAGTAILDOCS_EXTENSIONS = [
     "pdf",
 ]
+MULTI_IMAGE_EDIT_FIELDS = [
+    "title",
+    "tags",
+]
+WAGTAIL_QUICK_CREATE_PAGE_TYPES = ["content.ContentItem"]
+WAGTAIL_QUICK_CREATE_DOCUMENTS = True
+WAGTAIL_QUICK_CREATE_IMAGES = True
 
 # phone numbers
 PHONENUMBER_DB_FORMAT = "E164"
