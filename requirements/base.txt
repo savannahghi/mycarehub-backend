@@ -42,3 +42,6 @@ opencv_python~=4.5.4.58
 rustface~=0.1.0
 wagtailvideos~=2.10.9
 wagtailmedia~=0.8.0
+wagtail-readinglevel~=3.5.0
+wagtailfontawesome~=1.2.1
+wagtail-quick-create~=1.0.7
