@@ -268,6 +268,8 @@ def test_client_registration_view_valid(user_with_all_permissions, client):
         content_type="application/json",
         accept="application/json",
     )
+
+    print(response.content)
     assert response.status_code == status.HTTP_201_CREATED
 
     response_data = response.json()

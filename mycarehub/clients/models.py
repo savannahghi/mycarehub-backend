@@ -87,7 +87,7 @@ class Identifier(AbstractBase):
     identifier_type = models.CharField(
         choices=IdentifierType.choices, max_length=64, null=False, blank=False
     )
-    identifier_value = models.TextField(unique=True)
+    identifier_value = models.TextField()
     identifier_use = models.CharField(
         choices=IdentifierUse.choices, max_length=64, null=False, blank=False
     )
@@ -98,6 +98,12 @@ class Identifier(AbstractBase):
 
     def __str__(self):
         return f"{self.identifier_value} ({self.identifier_type}, {self.identifier_use})"
+
+    class Meta(AbstractBase.Meta):
+        unique_together = (
+            "identifier_type",
+            "identifier_value",
+        )
 
 
 @register_snippet
