@@ -70,44 +70,44 @@ class ClientRegistrationView(APIView):
                 flavour = "CONSUMER"
 
                 new_user, _ = User.objects.get_or_create(
-                    name=data["name"],
-                    gender=data["gender"],
-                    date_of_birth=data["date_of_birth"],
-                    user_type="CLIENT",
-                    phone=data["phone_number"],
-                    flavour=flavour,
-                    organisation=org,
+                    username=data["name"],
                     defaults={
-                        "username": data["name"],
+                        "name": data["name"],
+                        "gender": data["gender"],
+                        "date_of_birth": data["date_of_birth"],
+                        "user_type": "CLIENT",
+                        "phone": data["phone_number"],
+                        "flavour": flavour,
+                        "organisation": org,
                     },
                 )
 
                 # create a contact, already opted in
                 contact, _ = Contact.objects.get_or_create(
-                    contact_type="PHONE",
                     contact_value=data["phone_number"],
-                    opted_in=True,
-                    flavour=flavour,
-                    user=new_user,
-                    organisation=org,
-                    created_by=request_user.pk,
-                    updated_by=request_user.pk,
                     defaults={
+                        "contact_type": "PHONE",
                         "contact_value": data["phone_number"],
+                        "opted_in": True,
+                        "flavour": flavour,
+                        "user": new_user,
+                        "organisation": org,
+                        "created_by": request_user.pk,
+                        "updated_by": request_user.pk,
                     },
                 )
 
                 # create an identifier (CCC)
                 identifier, _ = Identifier.objects.get_or_create(
+                    identifier_value=data["ccc_number"],
                     identifier_type="CCC",
-                    identifier_use="OFFICIAL",
-                    description="CCC Number, Primary Identifier",
-                    is_primary_identifier=True,
-                    organisation=org,
-                    created_by=request_user.pk,
-                    updated_by=request_user.pk,
                     defaults={
-                        "identifier_value": data["ccc_number"],
+                        "identifier_use": "OFFICIAL",
+                        "description": "CCC Number, Primary Identifier",
+                        "is_primary_identifier": True,
+                        "organisation": org,
+                        "created_by": request_user.pk,
+                        "updated_by": request_user.pk,
                     },
                 )
 
@@ -117,16 +117,16 @@ class ClientRegistrationView(APIView):
 
                 # create a client
                 client, _ = Client.objects.get_or_create(
-                    client_type=data["client_type"],
                     user=new_user,
-                    enrollment_date=data["enrollment_date"],
-                    current_facility=facility,
-                    counselled=data["counselled"],
-                    organisation=org,
-                    created_by=request_user.pk,
-                    updated_by=request_user.pk,
                     defaults={
+                        "client_type": data["client_type"],
                         "user": new_user,
+                        "enrollment_date": data["enrollment_date"],
+                        "current_facility": facility,
+                        "counselled": data["counselled"],
+                        "organisation": org,
+                        "created_by": request_user.pk,
+                        "updated_by": request_user.pk,
                     },
                 )
 
@@ -137,12 +137,12 @@ class ClientRegistrationView(APIView):
                 client.identifiers.add(identifier)
 
                 ClientFacility.objects.get_or_create(
-                    organisation=org,
-                    created_by=request_user.pk,
-                    updated_by=request_user.pk,
+                    client=client,
+                    facility=facility,
                     defaults={
-                        "client": client,
-                        "facility": facility,
+                        "organisation": org,
+                        "created_by": request_user.pk,
+                        "updated_by": request_user.pk,
                     },
                 )
 
@@ -150,5 +150,7 @@ class ClientRegistrationView(APIView):
                 serialized_client = ClientSerializer(client)
                 return Response(serialized_client.data, status=status.HTTP_201_CREATED)
             except Exception as e:  # noqa # pragma: nocover
-                return Response({"exception": str(e)})  # pragma: nocover
+                return Response(
+                    {"exception": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )  # pragma: nocover
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
