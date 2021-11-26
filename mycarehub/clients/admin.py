@@ -13,6 +13,7 @@ from .models import (
     RelatedPerson,
     SecurityQuestion,
     SecurityQuestionResponse,
+    ServiceRequest,
 )
 
 
@@ -88,3 +89,8 @@ class HealthDiaryAttachmentAdmin(BaseAdmin):
 @admin.register(HealthDiaryQuote)
 class HealthDiaryQuoteAdmin(BaseAdmin):
     list_display = ("quote",)
+
+
+@admin.register(ServiceRequest)
+class ServiceRequestAdmin(BaseAdmin):
+    list_display = ("client", "request_type", "status")

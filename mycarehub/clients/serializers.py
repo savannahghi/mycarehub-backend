@@ -6,6 +6,7 @@ from rest_framework.serializers import ModelSerializer
 from mycarehub.clients.models import (
     Client,
     ClientFacility,
+    HealthDiaryAttachment,
     Identifier,
     RelatedPerson,
     SecurityQuestion,
@@ -58,3 +59,9 @@ class ClientRegistrationSerializer(FormSerializer):
         field_mapping = {
             PhoneNumberField: make_form_serializer_field(CharField),
         }
+
+
+class HealthDiaryAttachmentSerializer(ModelSerializer):
+    class Meta:
+        model = HealthDiaryAttachment
+        fields = "__all__"
