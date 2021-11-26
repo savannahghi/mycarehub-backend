@@ -305,7 +305,7 @@ class HealthDiaryEntry(AbstractBase):
 
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
     mood = models.CharField(choices=MoodScale.choices, max_length=16)
-    note = models.TextField()
+    note = models.TextField(null=True, blank=True)
     entry_type = models.CharField(
         choices=HealthDiaryEntryType.choices,
         max_length=36,
@@ -344,6 +344,7 @@ class HealthDiaryQuote(AbstractBase):
     """
 
     quote = models.TextField(unique=True)
+    by = models.TextField()  # quote author
 
 
 class ServiceRequest(AbstractBase):
