@@ -6,6 +6,9 @@ from mycarehub.common.admin import BaseAdmin
 from .models import (
     Client,
     ClientFacility,
+    HealthDiaryAttachment,
+    HealthDiaryEntry,
+    HealthDiaryQuote,
     Identifier,
     RelatedPerson,
     SecurityQuestion,
@@ -54,3 +57,34 @@ class ClientAdmin(BaseAdmin):
 @admin.register(ClientFacility)
 class ClientFacilityAdmin(BaseAdmin):
     pass
+
+
+@admin.register(HealthDiaryEntry)
+class HealthDiaryEntryAdmin(BaseAdmin):
+    list_display = (
+        "client",
+        "entry_type",
+        "mood",
+        "note",
+        "share_with_health_worker",
+        "shared_at",
+    )
+    date_hierarchy = "created"
+
+
+@admin.register(HealthDiaryAttachment)
+class HealthDiaryAttachmentAdmin(BaseAdmin):
+    list_display = (
+        "title",
+        "content_type",
+        "description",
+        "health_diary_entry",
+        "size",
+        "aspect_ratio",
+    )
+    date_hierarchy = "creation_date"
+
+
+@admin.register(HealthDiaryQuote)
+class HealthDiaryQuoteAdmin(BaseAdmin):
+    list_display = ("quote",)

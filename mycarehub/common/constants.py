@@ -398,6 +398,8 @@ CONTENT_TYPES = (
         "xlsx",
     ),
     ("text/plain", "text"),
+    ("video/mp4", "MP4 Video"),
+    ("audio/mp4", "MP4 Audio"),
 )
 
 
