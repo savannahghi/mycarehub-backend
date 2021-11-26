@@ -344,3 +344,48 @@ class HealthDiaryQuote(AbstractBase):
     """
 
     quote = models.TextField(unique=True)
+
+
+class ServiceRequest(AbstractBase):
+    """
+    ServiceRequest is used to consolidate service requests sent by clients.
+    """
+
+    class ServiceRequestType(models.TextChoices):
+        HEALTH_DIARY_ENTRY = "HEALTH_DIARY_ENTRY", _("HEALTH DIARY ENTRY")
+        RED_FLAG = "RED_FLAG", _("RED FLAG")
+
+    class ServiceRequestStatus(models.TextChoices):
+        PENDING = "PENDING", _("PENDING")
+        IN_PROGRESS = "IN PROGRESS", _("IN PROGRESS")
+        RESOLVED = "RESOLVED", _("RESOLVED")
+
+    client = models.ForeignKey(Client, on_delete=models.PROTECT)
+    request_type = models.CharField(
+        choices=ServiceRequestType.choices,
+        max_length=36,
+    )
+    request = models.TextField()
+    status = models.CharField(
+        choices=ServiceRequestStatus.choices,
+        max_length=36,
+        default=ServiceRequestStatus.PENDING,
+    )
+
+    in_progress_by = models.ForeignKey(
+        get_user_model(),
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="service_request_in_progress_by_users",
+    )
+    in_progress_at = models.DateTimeField(null=True, blank=True)
+
+    resolved_by = models.ForeignKey(
+        get_user_model(),
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="service_request_resolved_by_users",
+    )
+    resolved_at = models.DateTimeField(null=True, blank=True)
