@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from wagtail.snippets.models import register_snippet
 
 from mycarehub.common.models import AbstractBase
+from mycarehub.common.models.base_models import Attachment
 from mycarehub.common.models.common_models import Address, Contact, Facility
 from mycarehub.users.models import GenderChoices
 
@@ -284,3 +285,62 @@ class ClientFacility(AbstractBase):
             "client",
             "facility",
         )
+
+
+@register_snippet
+class HealthDiaryEntry(AbstractBase):
+    class HealthDiaryEntryType(models.TextChoices):
+        HOME_PAGE_HEALTH_DIARY_ENTRY = (
+            "HOME_PAGE_HEALTH_DIARY_ENTRY",
+            "Home page health diary entry",
+        )
+        OTHER_NOTE = "OTHER_NOTE", "Other note e.g a note taken after a conversation"
+
+    class MoodScale(models.TextChoices):
+        VERY_HAPPY = "VERY_HAPPY", _("Very happy")
+        HAPPY = "HAPPY", _("Happy")
+        NEUTRAL = "NEUTRAL", _("Neutral")
+        SAD = "SAD", _("Sad")
+        VERY_SAD = "VERY_SAD", _("Very sad")
+
+    client = models.ForeignKey(Client, on_delete=models.PROTECT)
+    mood = models.CharField(choices=MoodScale.choices, max_length=16)
+    note = models.TextField()
+    entry_type = models.CharField(
+        choices=HealthDiaryEntryType.choices,
+        max_length=36,
+        default=HealthDiaryEntryType.HOME_PAGE_HEALTH_DIARY_ENTRY,
+    )
+    share_with_health_worker = models.BooleanField(default=False)
+    shared_at = models.DateTimeField(null=True, blank=True)
+
+    organisation_verify = ["client"]
+
+    def __str__(self) -> str:
+        return f"{self.client}'s {self.entry_type} ({self.mood})"
+
+    class Meta(AbstractBase.Meta):
+        verbose_name_plural = "health diary entries"
+
+
+class HealthDiaryAttachment(Attachment):
+    """
+    A client can attach videos and pictures to their health diary.
+    """
+
+    health_diary_entry = models.ForeignKey(HealthDiaryEntry, on_delete=models.PROTECT)
+
+    organisation_verify = ["health_diary_entry"]
+
+
+@register_snippet
+class HealthDiaryQuote(AbstractBase):
+    """
+    Clients will only be allowed to make health diary entries once every
+    e.g 24 hours.
+
+    In between, a random quote should be displayed each time the health diary
+    is rendered.
+    """
+
+    quote = models.TextField(unique=True)
