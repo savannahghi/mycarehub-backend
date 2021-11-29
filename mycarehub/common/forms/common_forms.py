@@ -15,6 +15,7 @@ class FacilityForm(BaseModelForm):
         "active",
         "is_mycarehub_facility",
         "county",
+        "phone",
         "sub_county",
         "constituency",
         "ward",

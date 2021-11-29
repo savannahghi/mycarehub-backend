@@ -10,7 +10,7 @@ class FacilityViewSet(BaseView):
     queryset = get_mycarehub_facilities_queryset()
     serializer_class = FacilitySerializer
     filterset_class = FacilityFilter
-    ordering_fields = ("name", "mfl_code", "county", "sub_county", "ward")
+    ordering_fields = ("name", "mfl_code", "county", "phone", "sub_county", "ward")
     search_fields = (
         "name",
         "mfl_code",
