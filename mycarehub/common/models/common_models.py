@@ -355,3 +355,16 @@ class AuditLog(AbstractBase):
     record_type = models.TextField()
     notes = models.TextField()
     payload = JSONField()
+
+
+class FAQ(AbstractBase):
+    class FlavourChoices(models.TextChoices):
+        PRO = "PRO", _("PRO")
+        CONSUMER = "CONSUMER", _("CONSUMER")
+
+    title = models.TextField(unique=True)
+    description = models.TextField(unique=True, null=True, blank=True)
+    body = models.TextField(unique=True)
+    flavour = models.CharField(
+        choices=FlavourChoices.choices, max_length=32, null=True, blank=True
+    )

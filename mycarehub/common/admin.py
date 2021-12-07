@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from mycarehub.common.models.common_models import Address, AuditLog, Contact
+from mycarehub.common.models.common_models import FAQ, Address, AuditLog, Contact
 
 from .models import Facility, FacilityAttachment, Organisation
 
@@ -67,4 +67,9 @@ class ContactAdmin(BaseAdmin):
 
 @admin.register(AuditLog)
 class AuditLogAdmin(BaseAdmin):
+    pass
+
+
+@admin.register(FAQ)
+class FAQAdmin(BaseAdmin):
     pass
