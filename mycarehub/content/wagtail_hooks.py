@@ -33,6 +33,8 @@ def before_publish_page(request, page):
     Audio_Video type pages must have media linked before publishing.
 
     Document type pages must have documents linked before publishing.
+
+    Gallery types must have an image attachement linked before publishing.
     """
 
     if page.specific_class == ContentItem:
@@ -42,6 +44,10 @@ def before_publish_page(request, page):
                 "an AUDIO_VIDEO content item must have at least one video "
                 "or audio file before publication"
             )
+            raise ValidationError(msg)
+
+        if page.item_type == "GALLERY" and page.featured_media.count() == 0:
+            msg = "a GALLERY content item must have at least one image " "file before publication"
             raise ValidationError(msg)
 
         if page.item_type == "PDF_DOCUMENT" and page.documents.count() == 0:

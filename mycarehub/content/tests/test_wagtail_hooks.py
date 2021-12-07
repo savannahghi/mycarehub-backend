@@ -32,6 +32,25 @@ def test_before_publish_content_item_audio_video_no_media(
     ) in str(c.value.messages)
 
 
+def test_before_publish_content_item_gallery_with_no_image(
+    request_with_user,
+    content_item_with_tag_and_category,
+):
+    page = content_item_with_tag_and_category
+    page.item_type = "GALLERY"
+    page.save()
+    page.refresh_from_db()
+    assert page.documents.count() == 0
+    assert page.item_type == "GALLERY"
+
+    with pytest.raises(ValidationError) as e:
+        before_publish_page(request_with_user, page)
+
+    assert (
+        "a GALLERY content item must have at least one image " "file before publication"
+    ) in str(e.value.messages)
+
+
 def test_before_publish_content_item_pdf_document_no_document(
     request_with_user,
     content_item_with_tag_and_category,

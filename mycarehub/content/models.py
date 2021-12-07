@@ -196,6 +196,7 @@ class ContentItem(Page):
         ARTICLE = "ARTICLE"
         AUDIO_VIDEO = "AUDIO_VIDEO"
         PDF_DOCUMENT = "PDF_DOCUMENT"
+        GALLERY = "GALLERY"
 
     # basic properties that each post has
     date = models.DateField(
