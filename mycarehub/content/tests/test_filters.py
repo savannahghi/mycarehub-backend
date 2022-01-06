@@ -83,3 +83,23 @@ def test_category_filter_absent_categories(
     assert response.status_code == status.HTTP_200_OK
     response_data = response.json()
     assert response_data["meta"]["total_count"] == 0
+
+
+def test_category_get_all_categories(
+    content_item_with_tag_and_category,
+    request_with_user,
+    client,
+):
+    assert content_item_with_tag_and_category is not None
+    assert content_item_with_tag_and_category.categories.count() == 1
+    assert content_item_with_tag_and_category.categories.filter().count() == 1
+
+    client.force_login(request_with_user.user)
+    url = (
+        reverse("wagtailapi:pages:listing")
+        + "?type=content.ContentItem&fields=*&order=-first_published_at"
+    )
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    response_data = response.json()
+    assert response_data["meta"]["total_count"] == 1
