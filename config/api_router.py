@@ -2,6 +2,7 @@ from django.conf import settings
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from mycarehub.clients.views import (
+    CaregiverViewSet,
     ClientFacilityViewSet,
     ClientViewSet,
     IdentifierViewSet,
@@ -26,6 +27,7 @@ router.register("security_question_responses", SecurityQuestionResponseViewSet)
 router.register("related_persons", RelatedPersonViewSet)
 router.register("clients", ClientViewSet)
 router.register("client_facilities", ClientFacilityViewSet)
+router.register("caregivers", CaregiverViewSet)
 
 app_name = "api"
 urlpatterns = router.urls
