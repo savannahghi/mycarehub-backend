@@ -3,6 +3,7 @@ from django.contrib import admin
 from mycarehub.common.admin import BaseAdmin
 
 from .models import (
+    Caregiver,
     Client,
     ClientFacility,
     Identifier,
@@ -29,6 +30,11 @@ class SecurityQuestionResponseAdmin(BaseAdmin):
 
 @admin.register(RelatedPerson)
 class RelatedPersonAdmin(BaseAdmin):
+    pass
+
+
+@admin.register(Caregiver)
+class CaregiverAdmin(BaseAdmin):
     pass
 
 

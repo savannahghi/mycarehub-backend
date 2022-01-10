@@ -1,6 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 
 from mycarehub.clients.models import (
+    Caregiver,
     Client,
     ClientFacility,
     Identifier,
@@ -9,6 +10,7 @@ from mycarehub.clients.models import (
     SecurityQuestionResponse,
 )
 from mycarehub.clients.serializers import (
+    CaregiverSerializer,
     ClientFacilitySerializer,
     ClientSerializer,
     IdentifierSerializer,
@@ -36,6 +38,11 @@ class SecurityQuestionResponseViewSet(ModelViewSet):
 class RelatedPersonViewSet(ModelViewSet):
     queryset = RelatedPerson.objects.order_by("pk")
     serializer_class = RelatedPersonSerializer
+
+
+class CaregiverViewSet(ModelViewSet):
+    queryset = Caregiver.objects.order_by("pk")
+    serializer_class = CaregiverSerializer
 
 
 class ClientViewSet(ModelViewSet):

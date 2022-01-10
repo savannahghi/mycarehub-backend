@@ -11,6 +11,7 @@ from mycarehub.common.models.common_models import Facility
 from mycarehub.common.tests.test_api import CRUDTestMixin
 
 from .models import (
+    Caregiver,
     Client,
     ClientFacility,
     Identifier,
@@ -123,6 +124,25 @@ class RelatedPersonViewsetTest(CRUDTestMixin):
             "gender": "FEMALE",
             "relationship_type": "SPOUSE",
             "organisation": self.global_organisation.pk,
+        }
+        self.detail_url = reverse(self.url_detail_base, kwargs={"pk": self.instance.pk})
+        super().setUp()
+
+
+class CaregiverViewsetTest(CRUDTestMixin):
+    def setUp(self):
+        self.url_list = reverse("api:caregiver-list")
+        self.comparison_field = "first_name"
+        self.url_detail_base = "api:caregiver-detail"
+        self.instance = baker.make(
+            Caregiver,
+            organisation=self.global_organisation,
+        )
+        self.data = {
+            "first_name": fake.first_name(),
+            "last_name": fake.last_name(),
+            "caregiver_type": "FATHER",
+            "phone_number": fake.phone_number(),
         }
         self.detail_url = reverse(self.url_detail_base, kwargs={"pk": self.instance.pk})
         super().setUp()
