@@ -4,6 +4,7 @@ from django.contrib.admin.decorators import display
 from mycarehub.common.admin import BaseAdmin
 
 from .models import (
+    Caregiver,
     Client,
     ClientFacility,
     HealthDiaryAttachment,
@@ -34,6 +35,11 @@ class SecurityQuestionResponseAdmin(BaseAdmin):
 
 @admin.register(RelatedPerson)
 class RelatedPersonAdmin(BaseAdmin):
+    pass
+
+
+@admin.register(Caregiver)
+class CaregiverAdmin(BaseAdmin):
     pass
 
 

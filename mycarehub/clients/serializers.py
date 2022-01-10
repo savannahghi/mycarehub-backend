@@ -4,6 +4,7 @@ from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer
 
 from mycarehub.clients.models import (
+    Caregiver,
     Client,
     ClientFacility,
     HealthDiaryAttachment,
@@ -37,6 +38,12 @@ class SecurityQuestionResponseSerializer(ModelSerializer):
 class RelatedPersonSerializer(ModelSerializer):
     class Meta:
         model = RelatedPerson
+        fields = "__all__"
+
+
+class CaregiverSerializer(ModelSerializer):
+    class Meta:
+        model = Caregiver
         fields = "__all__"
 
 

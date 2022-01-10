@@ -176,6 +176,23 @@ class RelatedPerson(AbstractBase):
         return f"{self.first_name} {self.other_name} {self.last_name} ({self.relationship_type})"
 
 
+class Caregiver(AbstractBase):
+    """
+    A caregiver is a person who is assigned to a client.
+    """
+
+    class CaregiverType(models.TextChoices):
+        FATHER = "FATHER", _("Father")
+        MOTHER = "MOTHER", _("Mother")
+        SIBLING = "SIBLING", _("Sibling")
+        HEALTHCARE_PROFESSIONAL = "HEALTHCARE_PROFESSIONAL", _("Healthcare Professional")
+
+    first_name = models.TextField()
+    last_name = models.TextField()
+    caregiver_type = models.CharField(max_length=64, choices=CaregiverType.choices)
+    phone_number = models.TextField(null=True, blank=True, max_length=14)
+
+
 @register_snippet
 class Client(AbstractBase):
     """
@@ -260,6 +277,9 @@ class Client(AbstractBase):
         ),
         null=True,
         blank=True,
+    )
+    caregiver = models.OneToOneField(
+        Caregiver, related_name="client_caregiver", on_delete=models.PROTECT, null=True, blank=True
     )
 
     def __str__(self):
