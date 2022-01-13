@@ -68,23 +68,6 @@ jobs:
     needs: linter
     runs-on: ubuntu-latest
 
-    # Service containers to run with `container-job`
-    services:
-      postgres:
-        image: postgis/postgis:14-3.1
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
 
     steps:
       - name: Checkout Code Repository
@@ -95,13 +78,49 @@ jobs:
         env:
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
 
-      - name: Install requirements
+      - name: Purge postgres 
+        run: |
+          sudo apt-get --purge remove postgresql postgresql-*
+      
+      # This will remove postgres 14 files which are causing problems with starting postgres
+      # instances in this container
+      - name: Upgrade packages
         run: |
           sudo apt-get update && sudo apt-get upgrade
-          sudo apt-get install postgis gdal-bin libgdal-dev
+        
+      - name: Install Postgresql/PostGIS 12
+        run: |
+          sudo apt-get install postgresql-12 postgresql-12-postgis-3
+      
+      - name: Install requirements
+        run: |
+          sudo apt-get install gdal-bin libgdal-dev libtbb2 libtbb-dev
+          sudo apt install python3-testresources
           pip install -r requirements/local.txt && pip install -r requirements/production.txt
           npm ci
           npm install -g mjml
+       
+      - name: Setup and start postgres service
+        run: |
+          sudo pg_ctlcluster 12 main start
+          sudo -u ${POSTGRES_USER} psql -p ${POSTGRES_PORT} -c "ALTER USER ${POSTGRES_USER} WITH PASSWORD '${POSTGRES_PASSWORD}';" 
+
+      - name: Check if postgres instance has started running before running migrations
+        run: |
+          wget https://github.com/mxssl/wait-for-pg/releases/download/v0.0.7/wait-for-pg-linux-amd64.tar.gz
+          tar xvzf wait-for-pg-linux-amd64.tar.gz
+          cp wait-for-pg /usr/local/bin/wait-for-pg
+          chmod +x /usr/local/bin/wait-for-pg
+
+          wait-for-pg check \
+          --host ${POSTGRES_HOST} \
+          --user ${POSTGRES_USER} \
+          --port ${POSTGRES_PORT} \
+          --password ${POSTGRES_PASSWORD} \
+          --dbname ${POSTGRES_DB} \
+          --sslmode disable \
+          --retry 5 \
+          --sleep 2
 
       - name: Set up Django
         run: |
