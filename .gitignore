@@ -310,3 +310,5 @@ secrets/*
 cloud_sql_proxy
 env.sh
 
+env/
+
