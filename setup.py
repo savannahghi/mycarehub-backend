@@ -5,7 +5,7 @@ name = "mycarehub_django"
 
 setup(
     name=name,
-    version="0.0.20",
+    version="0.0.16",
     packages=find_packages(exclude=["tests", "tests.*"]),
     description="Field Reporting Database for the mycarehub care delivery projects.",
     long_description="Description",
