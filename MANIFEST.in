@@ -1,0 +1,13 @@
+include LICENSE
+include README.rst
+include manage.py
+recursive-include mycarehub/common *
+recursive-include mycarehub/content *
+recursive-include mycarehub/contrib *
+recursive-include mycarehub/home *
+recursive-include mycarehub/media *
+recursive-include mycarehub/schema *
+recursive-include mycarehub/static *
+recursive-include mycarehub/templates *
+recursive-include mycarehub/users *
+recursive-include mycarehub/utils *
