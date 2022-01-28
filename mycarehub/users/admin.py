@@ -62,6 +62,7 @@ class MetricAdmin(BaseAdmin):
 class TermsOfServiceAdmin(BaseAdmin):
     list_display = [
         "text",
+        "flavour",
         "valid_from",
         "valid_to",
     ]
