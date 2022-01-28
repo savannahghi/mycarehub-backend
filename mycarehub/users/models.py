@@ -66,6 +66,7 @@ class TermsOfService(Model):
     valid_from = DateTimeField(default=timezone.now)
     valid_to = DateTimeField(null=True, blank=True)
     active = BooleanField(default=True)
+    flavour = CharField(choices=FlavourChoices.choices, max_length=32, null=True)
     created = DateTimeField(default=timezone.now)
     created_by = UUIDField(null=True, blank=True)
     updated = DateTimeField(default=timezone.now)
