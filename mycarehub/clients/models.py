@@ -253,7 +253,9 @@ class Client(AbstractBase):
     counselled = models.BooleanField(default=False)
 
     # a client can have multiple unique identifiers
-    identifiers = models.ManyToManyField(Identifier, related_name="client_identifiers")
+    identifiers = models.ManyToManyField(
+        Identifier, related_name="client_identifiers", through="ClientIdentifier"
+    )
 
     addresses = models.ManyToManyField(
         Address,
@@ -286,6 +288,19 @@ class Client(AbstractBase):
         return (
             f"{self.user.name} ({self.client_type})" if self.user else f"{self.client_type} client"
         )
+
+
+@register_snippet
+class ClientIdentifier(models.Model):
+    """
+    A client can have multiple unique identifiers.
+    """
+
+    client = models.ForeignKey(Client, on_delete=models.PROTECT)
+    identifier = models.ForeignKey(Identifier, on_delete=models.PROTECT, unique=True)
+
+    def __str__(self):
+        return f"{self.client} - {self.identifier}"
 
 
 @register_snippet

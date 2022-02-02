@@ -7,6 +7,7 @@ from .models import (
     Caregiver,
     Client,
     ClientFacility,
+    ClientIdentifier,
     HealthDiaryAttachment,
     HealthDiaryEntry,
     HealthDiaryQuote,
@@ -59,6 +60,15 @@ class ClientAdmin(BaseAdmin):
     @display(ordering="user__name", description="User")
     def get_user_name(self, obj):
         return obj.user.name if obj.user else "-"
+
+    def formfield_for_manytomany(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        # TODO(dmu) MEDIUM: Remove `auto_created = True` after these issues are fixed:
+        #                   https://code.djangoproject.com/ticket/12203 and
+        #                   https://github.com/django/django/pull/10829
+
+        # We trick Django here to avoid `./manage.py makemigrations` produce unneeded migrations
+        ClientIdentifier._meta.auto_created = True  # pylint: disable=protected-access
+        return super().formfield_for_manytomany(*args, **kwargs)
 
 
 @admin.register(ClientFacility)
