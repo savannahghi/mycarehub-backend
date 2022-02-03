@@ -9,6 +9,7 @@ from wagtail.snippets.models import register_snippet
 from mycarehub.common.models import AbstractBase
 from mycarehub.common.models.base_models import Attachment
 from mycarehub.common.models.common_models import Address, Contact, Facility
+from mycarehub.staff.models import Staff
 from mycarehub.users.models import GenderChoices
 
 
@@ -394,19 +395,19 @@ class ServiceRequest(AbstractBase):
     )
 
     in_progress_by = models.ForeignKey(
-        get_user_model(),
+        Staff,
         null=True,
         blank=True,
         on_delete=models.PROTECT,
-        related_name="service_request_in_progress_by_users",
+        related_name="service_request_in_progress_by_staff",
     )
     in_progress_at = models.DateTimeField(null=True, blank=True)
 
     resolved_by = models.ForeignKey(
-        get_user_model(),
+        Staff,
         null=True,
         blank=True,
         on_delete=models.PROTECT,
-        related_name="service_request_resolved_by_users",
+        related_name="service_request_resolved_by_staff",
     )
     resolved_at = models.DateTimeField(null=True, blank=True)
