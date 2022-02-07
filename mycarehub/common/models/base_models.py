@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from PIL import Image
 
-from mycarehub.users.models import default_organisation
+from mycarehub.utils.general_utils import default_organisation
 
 from ..constants import CONTENT_TYPES
 from .organisation_models import Organisation

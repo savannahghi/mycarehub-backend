@@ -1,6 +1,6 @@
 import pytest
 
-from mycarehub.users.models import User, default_organisation
+from mycarehub.users.models import User
 from mycarehub.users.tests.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
@@ -34,9 +34,3 @@ def test_user_string_representation():
     assert str(user1) == "Juha Kalulu (admin)"
     assert str(user2) == "anonymous_weasel"
     assert str(user3) == "{} ({})".format(user3.name, user3.username)
-
-
-def test_default_organisation():
-    first_fetch_org = default_organisation()
-    second_fetch_org = default_organisation()
-    assert str(first_fetch_org) == str(second_fetch_org)

@@ -1,6 +1,5 @@
 import uuid
 
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import ArrayField
 from django.db.models import (
@@ -16,14 +15,13 @@ from django.db.models import (
 from django.db.models.base import Model
 from django.db.models.deletion import CASCADE
 from django.db.models.fields import DateField, DateTimeField, IntegerField
-from django.db.utils import ProgrammingError
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 from wagtail.snippets.models import register_snippet
 
-DEFAULT_ORG_CODE = 1
+from mycarehub.utils.general_utils import default_organisation
 
 
 class UserTypes(TextChoices):
@@ -39,25 +37,6 @@ class GenderChoices(TextChoices):
 class FlavourChoices(TextChoices):
     PRO = "PRO", _("PRO")
     CONSUMER = "CONSUMER", _("CONSUMER")
-
-
-def default_organisation():
-    try:
-        from mycarehub.common.models import Organisation  # intentional late import
-
-        org, _ = Organisation.objects.get_or_create(
-            code=DEFAULT_ORG_CODE,
-            id=settings.DEFAULT_ORG_ID,
-            defaults={
-                "organisation_name": settings.ORGANISATION_NAME,
-                "email_address": settings.ORGANISATION_EMAIL,
-                "phone_number": settings.ORGANISATION_PHONE,
-            },
-        )
-        return org.pk
-    except (ProgrammingError, Exception):  # pragma: nocover
-        # this will occur during initial migrations on a clean db
-        return uuid.UUID(settings.DEFAULT_ORG_ID)
 
 
 @register_snippet
