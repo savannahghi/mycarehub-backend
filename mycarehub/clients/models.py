@@ -411,3 +411,5 @@ class ServiceRequest(AbstractBase):
         related_name="service_request_resolved_by_staff",
     )
     resolved_at = models.DateTimeField(null=True, blank=True)
+
+    facility = models.CharField(max_length=100, null=True, blank=True)
