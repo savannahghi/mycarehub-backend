@@ -412,4 +412,4 @@ class ServiceRequest(AbstractBase):
     )
     resolved_at = models.DateTimeField(null=True, blank=True)
 
-    facility = models.CharField(max_length=100, null=True, blank=True)
+    facility = models.ForeignKey(Facility, null=True, blank=True, on_delete=models.SET_NULL)
