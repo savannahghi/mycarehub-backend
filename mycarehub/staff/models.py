@@ -3,7 +3,7 @@ from django.db import models
 from wagtail.snippets.models import register_snippet
 
 from mycarehub.common.models import AbstractBase
-from mycarehub.common.models.common_models import Facility
+from mycarehub.common.models.common_models import Address, Contact, Facility
 
 
 @register_snippet
@@ -29,6 +29,19 @@ class Staff(AbstractBase):
         null=False,
         blank=False,
     )
+    # a staff can have multiple unique identifiers
+    identifiers = models.ManyToManyField(to="clients.Identifier", related_name="staff_identifiers")
 
-    def __str__(self) -> str:
-        return f"{self.staff_number}"
+    addresses = models.ManyToManyField(
+        Address,
+        related_name="staff_addresses",
+        blank=True,
+    )
+    contacts = models.ManyToManyField(
+        Contact,
+        related_name="staff_contacts",
+        blank=True,
+    )
+
+    def __str__(self):
+        return f"{self.user.name} {self.staff_number}" if self.user else f"{self.staff_number}"
