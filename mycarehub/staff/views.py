@@ -41,6 +41,7 @@ class StaffRegistrationView(APIView):
                 # create a contact, already opted in
                 contact, _ = Contact.objects.get_or_create(
                     contact_value=data["phone_number"],
+                    flavour=flavour,
                     defaults={
                         "contact_type": "PHONE",
                         "contact_value": data["phone_number"],
@@ -98,6 +99,7 @@ class StaffRegistrationView(APIView):
                 return Response(serialized_staff.data, status=status.HTTP_201_CREATED)
             except Exception as e:  # noqa # pragma: nocover
                 return Response(
-                    {"exception": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                    {"exception": str(e)},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )  # pragma: nocover
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
