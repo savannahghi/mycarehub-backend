@@ -186,7 +186,10 @@ class Caregiver(AbstractBase):
         FATHER = "FATHER", _("Father")
         MOTHER = "MOTHER", _("Mother")
         SIBLING = "SIBLING", _("Sibling")
-        HEALTHCARE_PROFESSIONAL = "HEALTHCARE_PROFESSIONAL", _("Healthcare Professional")
+        HEALTHCARE_PROFESSIONAL = (
+            "HEALTHCARE_PROFESSIONAL",
+            _("Healthcare Professional"),
+        )
 
     first_name = models.TextField()
     last_name = models.TextField()
@@ -280,7 +283,11 @@ class Client(AbstractBase):
         blank=True,
     )
     caregiver = models.OneToOneField(
-        Caregiver, related_name="client_caregiver", on_delete=models.PROTECT, null=True, blank=True
+        Caregiver,
+        related_name="client_caregiver",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
     )
 
     def __str__(self):
@@ -315,7 +322,10 @@ class HealthDiaryEntry(AbstractBase):
             "HOME_PAGE_HEALTH_DIARY_ENTRY",
             "Home page health diary entry",
         )
-        OTHER_NOTE = "OTHER_NOTE", "Other note e.g a note taken after a conversation"
+        OTHER_NOTE = (
+            "OTHER_NOTE",
+            "Other note e.g a note taken after a conversation",
+        )
 
     class MoodScale(models.TextChoices):
         VERY_HAPPY = "VERY_HAPPY", _("Very happy")
@@ -374,8 +384,9 @@ class ServiceRequest(AbstractBase):
     """
 
     class ServiceRequestType(models.TextChoices):
-        HEALTH_DIARY_ENTRY = "HEALTH_DIARY_ENTRY", _("HEALTH DIARY ENTRY")
         RED_FLAG = "RED_FLAG", _("RED FLAG")
+        PIN_RESET = "PIN_RESET", _("PIN_RESET")
+        PROFILE_UPDATE = "PROFILE_UPDATE", _("PROFILE_UPDATE")
 
     class ServiceRequestStatus(models.TextChoices):
         PENDING = "PENDING", _("PENDING")
