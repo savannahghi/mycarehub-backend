@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from mycarehub.authority.models import AuthorityRole
 from mycarehub.clients.models import Identifier
 from mycarehub.common.models.common_models import Contact, Facility
 from mycarehub.users.models import User
@@ -94,6 +95,9 @@ class StaffRegistrationView(APIView):
                 # add the identifier to the staff
                 staff.identifiers.add(identifier)
 
+                # add user to roles
+                for role in AuthorityRole.objects.filter(name=data["role"]):
+                    role.users.add(new_user)
                 # return the newly created staff
                 serialized_staff = StaffSerializer(staff)
                 return Response(serialized_staff.data, status=status.HTTP_201_CREATED)
