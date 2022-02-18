@@ -325,7 +325,7 @@ class Contact(AbstractBase):
         CONSUMER = "CONSUMER", _("CONSUMER")
 
     contact_type = models.CharField(choices=ContactType.choices, max_length=16)
-    contact_value = models.TextField(unique=True)
+    contact_value = models.TextField()
     opted_in = models.BooleanField(default=False)
     flavour = models.CharField(
         choices=FlavourChoices.choices, max_length=32, null=True, blank=True
@@ -334,6 +334,9 @@ class Contact(AbstractBase):
 
     def __str__(self):
         return f"{self.contact_value} ({self.contact_type})"
+
+    class Meta:
+        unique_together = ["contact_value", "flavour"]
 
 
 class AuditLog(AbstractBase):
