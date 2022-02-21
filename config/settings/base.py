@@ -119,6 +119,7 @@ LOCAL_APPS = [
     "mycarehub.clients.apps.ClientsConfig",
     "mycarehub.staff.apps.StaffConfig",
     "mycarehub.authority.apps.AuthorityConfig",
+    "mycarehub.communities.apps.CommunityConfig",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
