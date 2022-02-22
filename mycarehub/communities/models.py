@@ -1,4 +1,4 @@
-from django.contrib.postgres.fields import ArrayField, IntegerRangeField
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from mycarehub.clients.models import Client, ClientType
@@ -35,11 +35,8 @@ class Community(AbstractBase):
         null=True,
         blank=True,
     )
-    ages = IntegerRangeField(
-        null=True,
-        blank=True,
-        help_text=("The allowed age band for clients joining the community"),
-    )
+    min_age = models.IntegerField(blank=True, null=True)
+    max_age = models.IntegerField(blank=True, null=True)
     invite_only = models.BooleanField(
         default=True,
         help_text=("Whether a client can join a community without invitation."),
