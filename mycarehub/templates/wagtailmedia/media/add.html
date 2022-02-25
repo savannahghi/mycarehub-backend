@@ -1,0 +1,150 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+{% load wagtailimages_tags %}
+{% block titletag %}
+    {% if media_type == 'audio' %}
+        {% trans "Add audio" %}
+    {% elif media_type == 'video' %}
+        {% trans "Add video" %}
+    {% else %}
+        {% trans "Add audio or video" %}
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    {{ form.media.js }}
+
+    {% url 'wagtailadmin_tag_autocomplete' as autocomplete_url %}
+    <script>
+        $(function() {
+            $('#id_tags').tagit({
+                autocomplete: {source: "{{ autocomplete_url|addslashes }}"}
+            });
+        });
+
+    </script>
+{% endblock %}
+
+{% block extra_css %}
+    {{ block.super }}
+    {{ form.media.css }}
+{% endblock %}
+
+{% block content %}
+    {% if media_type == 'audio' %}
+        {% trans "Add audio" as add_str %}
+    {% elif media_type == 'video' %}
+        {% trans "Add video" as add_str %}
+    {% else %}
+        {% trans "Add audio or video" as add_str %}
+    {% endif %}
+    {% include "wagtailadmin/shared/header.html" with title=add_str icon="media" %}
+
+    <div class="nice-padding">
+        <form id="fileForm" action="{% block action %}{% url 'wagtailmedia:add' media_type %}{% endblock %}" method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            <ul class="fields">
+                {% for field in form %}
+                    {% include "wagtailadmin/shared/field_as_li.html" with field=field %}
+                {% endfor %}
+                <li>
+                    <button type="submit" id="submitBtn" class="button button-longrunning"><em>{% trans 'Upload' %}</em></button>
+                </li>
+            </ul>
+        </form>
+        <div>
+            <h3 id="uploadStatus"></h3>
+        </div>
+    </div>
+
+    <script>
+        let file = null;
+
+        function setFile(val) {
+            file = val;
+        }
+
+        function _(el) {
+            return document.getElementById(el);
+        }
+
+        const submitButton = _('submitBtn');
+
+        _('id_file').addEventListener('change', (event) => {
+            setFile(event.target.files[0]);
+        });
+
+        const getSignedURL = async () => {
+            const body = {
+                fileName: file.name,
+                fileType: file.type,
+            };
+
+            const response = await fetch("{% url 'signed-url' %}", {
+                method: 'POST',
+                body: JSON.stringify(body),
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+            });
+
+            const { url } = await response.json();
+
+            return url;
+        };
+
+        function progressHandler(event) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            _('uploadStatus').innerHTML = `${percent}% uploaded... please wait`;
+            submitButton.disabled = true;
+        }
+
+        function completeHandler() {
+            _('uploadStatus').innerHTML = 'Upload Completed';
+            _('fileForm').submit();
+        }
+
+        function errorHandler() {
+            submitButton.disabled = false;
+            _('uploadStatus').innerHTML = 'Upload Failed';
+        }
+
+        function abortHandler() {
+            submitButton.disabled = false;
+            _('uploadStatus').innerHTML = 'Upload Aborted';
+        }
+
+        function uploadFile(signedURL) {
+            const xhr = new XMLHttpRequest();
+
+            xhr.upload.addEventListener('progress', progressHandler);
+            xhr.addEventListener('load', completeHandler);
+            xhr.addEventListener('error', errorHandler);
+            xhr.addEventListener('abort', abortHandler);
+
+            xhr.open('PUT', signedURL);
+            xhr.setRequestHeader('Content-Type', file.type);
+            xhr.send(file);
+        }
+
+        const handleSubmit = async (event) => {
+            event.preventDefault();
+
+            const url = await getSignedURL();
+
+            try {
+                if (url === '') {
+                _('fileForm').submit();
+                } else {
+                uploadFile(url);
+                }
+            } catch (err) {
+                console.log(err);
+                alert('There was an error uploading your file.');
+            }
+        };
+
+        _('fileForm').addEventListener('submit', (event) => {
+            handleSubmit(event);
+        });
+    </script>
+{% endblock %}

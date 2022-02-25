@@ -390,13 +390,16 @@ WAGTAILADMIN_RECENT_EDITS_LIMIT = 5
 WAGTAIL_MODERATION_ENABLED = True
 WAGTAIL_GRAVATAR_PROVIDER_URL = "//www.gravatar.com/avatar"
 WAGTAILSEARCH_BACKENDS = {
-    "default": {"BACKEND": "wagtail.search.backends.database", "AUTO_UPDATE": True},
+    "default": {
+        "BACKEND": "wagtail.search.backends.database",
+        "AUTO_UPDATE": True,
+    },
 }
 WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = True
 TAGGIT_CASE_INSENSITIVE = True
 WAGTAILMEDIA = {
     "MEDIA_MODEL": "wagtailmedia.Media",
-    "MEDIA_FORM_BASE": "",
+    "MEDIA_FORM_BASE": "mycarehub.content.forms.CustomBaseMediaForm",
     "AUDIO_EXTENSIONS": ["aac", "wav"],
     "VIDEO_EXTENSIONS": ["mp4"],
 }
