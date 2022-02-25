@@ -19,7 +19,7 @@ from wagtail.images.views.serve import ServeView
 
 from mycarehub.clients.views import ClientRegistrationView
 from mycarehub.common.views import AboutView, HomeView
-from mycarehub.content.views import CustomPageAPIViewset
+from mycarehub.content.views import CustomPageAPIViewset, SignedURLView
 from mycarehub.staff.views import StaffRegistrationView
 
 from .graphql_auth import DRFAuthenticatedGraphQLView
@@ -40,10 +40,20 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("common/", include("mycarehub.common.urls", namespace="common")),
     path(
-        "graphql", csrf_exempt(DRFAuthenticatedGraphQLView.as_view(graphiql=True)), name="graphql"
+        "graphql",
+        csrf_exempt(DRFAuthenticatedGraphQLView.as_view(graphiql=True)),
+        name="graphql",
     ),
-    path("client_registration", ClientRegistrationView.as_view(), name="client_registration"),
-    path("staff_registration", StaffRegistrationView.as_view(), name="staff_registration"),
+    path(
+        "client_registration",
+        ClientRegistrationView.as_view(),
+        name="client_registration",
+    ),
+    path(
+        "staff_registration",
+        StaffRegistrationView.as_view(),
+        name="staff_registration",
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     # Static file serving when using Gunicorn + Uvicorn for local web socket development
@@ -75,14 +85,16 @@ urlpatterns += [
     path(
         "swagger/",
         TemplateView.as_view(
-            template_name="swagger-ui.html", extra_context={"schema_url": "openapi-schema"}
+            template_name="swagger-ui.html",
+            extra_context={"schema_url": "openapi-schema"},
         ),
         name="swagger-ui",
     ),
     path(
         "redoc/",
         TemplateView.as_view(
-            template_name="redoc.html", extra_context={"schema_url": "openapi-schema"}
+            template_name="redoc.html",
+            extra_context={"schema_url": "openapi-schema"},
         ),
         name="redoc",
     ),
@@ -125,8 +137,11 @@ urlpatterns += [
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     re_path(
-        r"^images/([^/]*)/(\d*)/([^/]*)/[^/]*$", ServeView.as_view(), name="wagtailimages_serve"
+        r"^images/([^/]*)/(\d*)/([^/]*)/[^/]*$",
+        ServeView.as_view(),
+        name="wagtailimages_serve",
     ),
     path("content/", include(wagtail_urls), name="wagtail"),
+    path("signed-url/", SignedURLView.as_view(), name="signed-url"),
     path("", include(wagtail_urls), name="wagtail"),
 ]
