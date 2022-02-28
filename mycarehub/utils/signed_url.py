@@ -1,5 +1,8 @@
 import datetime
 
+from google.auth import compute_engine
+from google.auth.exceptions import TransportError
+from google.auth.transport import requests
 from google.cloud import storage  # type: ignore[attr-defined]
 
 
@@ -7,17 +10,31 @@ def generate_signed_upload_url(bucket_name, blob_name, content_type):
     """
     Generates a v4 signed URL for uploading a blob using HTTP PUT.
     """
+    auth_request = requests.Request()
     storage_client = storage.Client()
+
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(blob_name)
 
-    url = blob.generate_signed_url(
-        version="v4",
-        # TODO: set shorter time or get from config
-        expiration=datetime.timedelta(hours=1),
-        method="PUT",
-        content_type=content_type,
-    )
+    url = ""
+
+    # Retrieve credentials from within the cloudrun environment using a try block
+    try:  # pragma: nocover
+        signing_credentials = compute_engine.IDTokenCredentials(auth_request, "")
+        url = blob.generate_signed_url(
+            version="v4",
+            credentials=signing_credentials,
+            expiration=datetime.timedelta(hours=1),
+            method="PUT",
+            content_type=content_type,
+        )
+    except TransportError:
+        url = blob.generate_signed_url(
+            version="v4",
+            expiration=datetime.timedelta(hours=1),
+            method="PUT",
+            content_type=content_type,
+        )
 
     return url
 
