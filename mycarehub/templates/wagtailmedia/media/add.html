@@ -75,7 +75,7 @@
             setFile(event.target.files[0]);
         });
 
-        const getSignedURL = async () => {
+        const getSignedURL = async() => {
             const body = {
                 fileName: file.name,
                 fileType: file.type,
@@ -84,10 +84,19 @@
             const response = await fetch("{% url 'signed-url' %}", {
                 method: 'POST',
                 body: JSON.stringify(body),
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+            }).catch((err) => {
+                return {
+                    url: ""
+                }
             });
 
-            const { url } = await response.json();
+            const {
+                url
+            } = await response.json();
 
             return url;
         };
@@ -100,7 +109,26 @@
 
         function completeHandler() {
             _('uploadStatus').innerHTML = 'Upload Completed';
-            _('fileForm').submit();
+
+            var formData = new FormData(_('fileForm'))
+            var tempFile = new File(["temporary"], file.name, {
+                type: file.type
+            });
+            formData.set('file', tempFile, tempFile.name);
+
+            fetch("{% url 'wagtailmedia:add' media_type %}", {
+                method: 'POST',
+                redirect: 'follow',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                mode: "same-origin",
+            })
+            .then(response => window.location.replace(response.url))
+            .catch((err) => {
+                alert('There was an error uploading your file.')
+            });
         }
 
         function errorHandler() {
@@ -126,19 +154,18 @@
             xhr.send(file);
         }
 
-        const handleSubmit = async (event) => {
+        const handleSubmit = async(event) => {
             event.preventDefault();
 
-            const url = await getSignedURL();
-
             try {
+                const url = await getSignedURL();
+
                 if (url === '') {
                     _('fileForm').submit();
                 } else {
                     uploadFile(url);
                 }
             } catch (err) {
-                console.log(err);
                 alert('There was an error uploading your file.');
             }
         };
