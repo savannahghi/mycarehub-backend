@@ -4,6 +4,7 @@ from google.auth import compute_engine
 from google.auth.exceptions import TransportError
 from google.auth.transport import requests
 from google.cloud import storage  # type: ignore[attr-defined]
+from urllib3.exceptions import NewConnectionError
 
 
 def generate_signed_upload_url(bucket_name, blob_name, content_type):
@@ -28,7 +29,7 @@ def generate_signed_upload_url(bucket_name, blob_name, content_type):
             method="PUT",
             content_type=content_type,
         )
-    except TransportError:
+    except (TransportError, NewConnectionError):
         url = blob.generate_signed_url(
             version="v4",
             expiration=datetime.timedelta(hours=1),
