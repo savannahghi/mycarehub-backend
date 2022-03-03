@@ -113,18 +113,17 @@ class ClientRegistrationView(APIView):
                 )
 
                 # create an identifier (CCC)
-                identifier, _ = Identifier.objects.get_or_create(
-                    identifier_value=data["ccc_number"],
-                    identifier_type="CCC",
-                    defaults={
-                        "identifier_use": "OFFICIAL",
-                        "description": "CCC Number, Primary Identifier",
-                        "is_primary_identifier": True,
-                        "organisation": org,
-                        "created_by": request_user.pk,
-                        "updated_by": request_user.pk,
-                    },
-                )
+                identifier_data = {
+                    "identifier_type": "CCC",
+                    "identifier_value": data["ccc_number"],
+                    "identifier_use": "OFFICIAL",
+                    "description": "CCC Number, Primary Identifier",
+                    "is_primary_identifier": True,
+                    "organisation": org,
+                    "created_by": request_user.pk,
+                    "updated_by": request_user.pk,
+                }
+                identifier = Identifier.objects.create(**identifier_data)
 
                 # retrieve the facility by the unique name
                 facility_name = data["facility"]

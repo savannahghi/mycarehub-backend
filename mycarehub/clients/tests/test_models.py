@@ -25,6 +25,27 @@ def test_identifier_str():
     assert str(identifier) == "222 (NATIONAL_ID, OFFICIAL)"
 
 
+def test_validate_if_identifier_value_exists():
+    identifier_value = "111"
+    identifier_type = "NATIONAL_ID"
+    identifier_use = "OFFICIAL"
+    baker.make(
+        Identifier,
+        identifier_value=identifier_value,
+        identifier_type=identifier_type,
+        identifier_use=identifier_use,
+    )
+
+    duplicate_identifier = baker.prepare(
+        Identifier,
+        identifier_value=identifier_value,
+        identifier_type=identifier_type,
+        identifier_use=identifier_use,
+    )
+    with pytest.raises(Exception):
+        duplicate_identifier.save()
+
+
 def test_related_person_str():
     related_person = baker.make(
         RelatedPerson,
