@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.enums import TextChoices
 from django.utils import timezone
@@ -98,6 +99,8 @@ class Identifier(AbstractBase):
     valid_to = models.DateTimeField(null=True, blank=True)
     is_primary_identifier = models.BooleanField(default=False)
 
+    model_validators = ["validate_if_identifier_value_exists"]
+
     def __str__(self):
         return f"{self.identifier_value} ({self.identifier_type}, {self.identifier_use})"
 
@@ -106,6 +109,22 @@ class Identifier(AbstractBase):
             "identifier_type",
             "identifier_value",
         )
+
+    def validate_if_identifier_value_exists(self):
+        if Identifier.objects.filter(
+            identifier_value=self.identifier_value,
+            identifier_type=self.identifier_type,
+        ).exists():
+            raise ValidationError(
+                _(
+                    "Identifier value %(identifier_value)s of "
+                    "type %(identifier_type)s already exists"
+                ),
+                params={
+                    "identifier_value": self.identifier_value,
+                    "identifier_type": self.identifier_type,
+                },
+            )
 
 
 @register_snippet
