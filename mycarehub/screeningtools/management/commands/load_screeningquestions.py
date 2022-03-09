@@ -23,6 +23,8 @@ class Command(BaseCommand):
         count = len(data_screeningtools)
 
         for screeningtool in data_screeningtools:
+            if ScreeningToolsQuestion.objects.filter(question=screeningtool["question"]).exists():
+                continue
             r, created = ScreeningToolsQuestion.objects.get_or_create(
                 question=screeningtool["question"],
                 tool_type=screeningtool["tool_type"],
@@ -32,4 +34,5 @@ class Command(BaseCommand):
                 sequence=screeningtool["sequence"],
                 meta=screeningtool["meta"],
             )
+            r.save()
             print(f"screeningtool: {screeningtool}; Created: {created}; {count}")
