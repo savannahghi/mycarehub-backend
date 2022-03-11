@@ -10,7 +10,9 @@
         "response_type": "INTEGER",
         "sequence": 0,
         "meta": {
-            "violence_type": "EMOTIONAL"
+            "helper_text": "Emotional violence Assessment",
+            "violence_type": "EMOTIONAL",
+            "violence_code": "GBV-EV"
         }
     },
     {
@@ -24,7 +26,9 @@
         "response_type": "INTEGER",
         "sequence": 1,
         "meta": {
-            "violence_type": "PHYSICAL"
+            "helper_text": "Physical violence Assessment",
+            "violence_type": "PHYSICAL",
+            "violence_code": " GBV-PV"
         }
     },
     {
@@ -38,7 +42,9 @@
         "response_type": "INTEGER",
         "sequence": 2,
         "meta": {
-            "violence_type": "SEXUAL"
+            "helper_text": "Sexual violence",
+            "violence_type": "SEXUAL",
+            "violence_code": "GBV-SV"
         }
      },
      {
@@ -52,7 +58,9 @@
         "response_type": "INTEGER",
         "sequence": 3,
         "meta": {
-            "violence_type": "SEXUAL"
+            "helper_text": "Sexual violence",
+            "violence_type": "SEXUAL",
+            "violence_code": "GBV-IPV"
         }
      },
      {

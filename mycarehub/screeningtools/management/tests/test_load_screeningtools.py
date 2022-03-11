@@ -13,3 +13,6 @@ class CommandsTestCase(TestCase):
         assert not ScreeningToolsQuestion.objects.exists()
         call_command("load_screeningquestions", stdout=out)
         assert ScreeningToolsQuestion.objects.exists()
+        lenObjects = ScreeningToolsQuestion.objects.count()
+        call_command("load_screeningquestions", stdout=out)
+        assert ScreeningToolsQuestion.objects.count() == lenObjects
