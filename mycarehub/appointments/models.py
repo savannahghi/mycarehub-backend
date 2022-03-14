@@ -3,7 +3,7 @@ from django.db.models.enums import TextChoices
 from django.utils.translation import gettext_lazy as _
 
 from mycarehub.clients.models import Client
-from mycarehub.common.models import AbstractBase
+from mycarehub.common.models import AbstractBase, Facility
 from mycarehub.staff.models import Staff
 
 
@@ -17,15 +17,15 @@ class Appointment(AbstractBase):
     """
 
     class AppointmentStatus(TextChoices):
-        SCHEDULED = "SCHEDULED", _("Scheduled")
-        RESCHEDULED = "RESCHEDULED", _("Rescheduled")
-        WAITING = "WAITING", _("Waiting")
-        MISSED = "MISSED", _("Missed")
-        COMPLETED = "COMPLETED", _("Completed")
-        INCONSULTATION = "INCONSULTATION", _("In Consultation")
-        WALKIN = "WALKIN", _("Walk In")
-        CANCELLED = "CANCELLED", _("Cancelled")
-        NEEDSRESCHEDULE = "NEEDSRESCHEDULE", _("Needs Reschedule")
+        SCHEDULED = "SCHEDULED", _("SCHEDULED")
+        RESCHEDULED = "RESCHEDULED", _("RESCHEDULED")
+        WAITING = "WAITING", _("WAITING")
+        MISSED = "MISSED", _("MISSED")
+        COMPLETED = "COMPLETED", _("COMPLETED")
+        INCONSULTATION = "IN_CONSULTATION", _("IN_CONSULTATION")
+        WALKIN = "WALKIN", _("WALK IN")
+        CANCELLED = "CANCELLED", _("CANCELLED")
+        NEEDSRESCHEDULE = "NEEDS_RESCHEDULE", _("NEEDS_RESCHEDULE")
 
     appointment_uuid = models.UUIDField(
         editable=False,
@@ -38,10 +38,11 @@ class Appointment(AbstractBase):
     reason = models.TextField(max_length=1024, null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
     staff = models.ForeignKey(Staff, on_delete=models.PROTECT, null=True, blank=True)
+    facility = models.ForeignKey(Facility, on_delete=models.PROTECT, null=True, blank=True)
     provider = models.CharField(
         max_length=36,
         help_text=_(
-            "Name of individual conducting the appointment for when the staff is not in our system"
+            "Individual conducting the appointment for when the staff is not in our system"
         ),
         null=True,
         blank=True,
