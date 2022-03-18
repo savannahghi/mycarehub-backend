@@ -105,6 +105,7 @@ class User(AbstractUser):
     has_set_pin = BooleanField(default=False, blank=True, null=True)
     is_phone_verified = BooleanField(default=False, blank=True, null=True)
     has_set_security_questions = BooleanField(default=False, blank=True, null=True)
+    pin_update_required = BooleanField(default=False, blank=True, null=True)
 
     @property
     def permissions(self):
