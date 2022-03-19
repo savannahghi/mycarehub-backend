@@ -443,4 +443,4 @@ class ServiceRequest(AbstractBase):
     resolved_at = models.DateTimeField(null=True, blank=True)
 
     facility = models.ForeignKey(Facility, null=True, blank=True, on_delete=models.SET_NULL)
-    ccc_number = models.CharField(max_length=36, null=True, blank=True)
+    meta = models.JSONField(null=True, blank=True)
