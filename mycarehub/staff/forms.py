@@ -48,7 +48,7 @@ class StaffRegistrationForm(forms.Form):
         help_text="The Staff's phone number",
     )
 
-    id_number = forms.IntegerField(
+    id_number = forms.CharField(
         required=True,
         label="ID Number",
         help_text="ID, to be used as the primary identifier",
