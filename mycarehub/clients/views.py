@@ -97,20 +97,18 @@ class ClientRegistrationView(APIView):
                 )
 
                 # create a contact, already opted in
-                contact, _ = Contact.objects.get_or_create(
-                    contact_value=data["phone_number"],
-                    flavour=flavour,
-                    defaults={
-                        "contact_type": "PHONE",
-                        "contact_value": data["phone_number"],
-                        "opted_in": True,
-                        "flavour": flavour,
-                        "user": new_user,
-                        "organisation": org,
-                        "created_by": request_user.pk,
-                        "updated_by": request_user.pk,
-                    },
-                )
+                contact_data = {
+                    "contact_value": data["phone_number"],
+                    "flavour": flavour,
+                    "contact_type": "PHONE",
+                    "opted_in": True,
+                    "flavour": flavour,
+                    "user": new_user,
+                    "organisation": org,
+                    "created_by": request_user.pk,
+                    "updated_by": request_user.pk,
+                }
+                contact = Contact.objects.create(**contact_data)
 
                 # create an identifier (CCC)
                 identifier_data = {
