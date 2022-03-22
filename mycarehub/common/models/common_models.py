@@ -332,11 +332,32 @@ class Contact(AbstractBase):
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
+    model_validators = ["validate_if_contact_exists"]
+
     def __str__(self):
         return f"{self.contact_value} ({self.contact_type})"
 
     class Meta:
         unique_together = ["contact_value", "flavour"]
+
+    def validate_if_contact_exists(self):
+        if Contact.objects.filter(
+            contact_value=self.contact_value,
+            contact_type=self.contact_type,
+            flavour=self.flavour,
+        ).exists():
+            raise ValidationError(
+                _(
+                    "Contact value %(contact_value)s of "
+                    "type %(contact_type)s and flavour "
+                    "%(flavour)s already exists"
+                ),
+                params={
+                    "contact_value": self.contact_value,
+                    "contact_type": self.contact_type,
+                    "flavour": self.flavour,
+                },
+            )
 
 
 class AuditLog(AbstractBase):
