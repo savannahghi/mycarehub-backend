@@ -66,6 +66,7 @@ class ClientType(models.TextChoices):
     HIGH_RISK = "HIGH_RISK", _("High Risk Clients")
     SPOUSES = "SPOUSES", _("SPOUSES")
     YOUTH = "YOUTH", _("Youth")
+    KENYAEMR = "KenyaEMR", _("Kenya EMR")
 
 
 class Languages(TextChoices):
