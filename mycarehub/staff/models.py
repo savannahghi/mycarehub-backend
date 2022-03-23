@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from wagtail.snippets.models import register_snippet
 
 from mycarehub.common.models import AbstractBase
@@ -45,3 +46,37 @@ class Staff(AbstractBase):
 
     def __str__(self):
         return f"{self.user.name} {self.staff_number}" if self.user else f"{self.staff_number}"
+
+
+class ServiceRequest(AbstractBase):
+    """
+    ServiceRequest is used to consolidate service requests sent by staff.
+    """
+
+    class ServiceRequestType(models.TextChoices):
+        STAFF_PIN_RESET = "STAFF_PIN_RESET", _("STAFF_PIN_RESET")
+
+    class ServiceRequestStatus(models.TextChoices):
+        PENDING = "PENDING", _("PENDING")
+        RESOLVED = "RESOLVED", _("RESOLVED")
+
+    staff = models.ForeignKey(Staff, on_delete=models.PROTECT)
+    request_type = models.CharField(
+        choices=ServiceRequestType.choices,
+        max_length=36,
+    )
+    request = models.TextField()
+    status = models.CharField(
+        choices=ServiceRequestStatus.choices,
+        max_length=36,
+        default=ServiceRequestStatus.PENDING,
+    )
+    resolved_by = models.ForeignKey(
+        Staff,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="service_request_resolved_by_admin_staff",
+    )
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    meta = models.JSONField(null=True, blank=True)
