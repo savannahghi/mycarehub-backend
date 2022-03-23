@@ -37,6 +37,7 @@ class ClientRegistrationForm(forms.Form):
     """
     This form is used in a HTML UI and via a Django REST Framework serializer
     to register new clients.
+
     """
 
     facility = forms.ChoiceField(
@@ -91,14 +92,14 @@ class ClientRegistrationForm(forms.Form):
         ],
     )
 
-    ccc_number = forms.IntegerField(
+    ccc_number = forms.CharField(
         required=True,
         label="CCC Number",
         help_text="Comprehensive Care Clinic Number, to be used as the primary identifier",
     )
 
     counselled = forms.BooleanField(
-        required=True,
+        required=False,
         label="Client Counselled?",
         help_text="Whether the client has been counselled",
     )
