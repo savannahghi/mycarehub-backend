@@ -79,4 +79,11 @@ class ServiceRequest(AbstractBase):
         related_name="service_request_resolved_by_admin_staff",
     )
     resolved_at = models.DateTimeField(null=True, blank=True)
+    facility = models.ForeignKey(
+        Facility,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="default_facility",
+    )
     meta = models.JSONField(null=True, blank=True)
