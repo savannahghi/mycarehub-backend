@@ -62,6 +62,7 @@ class Facility(AbstractBase):
     mfl_code = models.IntegerField(unique=True, help_text="MFL Code")
     county = models.CharField(max_length=64, choices=get_counties())
     phone = models.CharField(max_length=15, null=True, blank=True)
+    fhir_organization_id = models.CharField(unique=True, max_length=64, blank=True, null=True)
 
     objects = FacilityManager()
 
