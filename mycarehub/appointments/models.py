@@ -50,6 +50,7 @@ class Appointment(AbstractBase):
     date = models.DateField(null=True, blank=True)
     start_time = models.TimeField(null=True, blank=True)
     end_time = models.TimeField(null=True, blank=True)
+    has_rescheduled_appointment = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f"{self.client} - {self.appointment_type} - {self.status}"
