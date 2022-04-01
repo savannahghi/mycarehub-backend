@@ -32,6 +32,7 @@ class UserTypes(TextChoices):
 class GenderChoices(TextChoices):
     MALE = "MALE", _("Male")
     FEMALE = "FEMALE", _("Female")
+    OTHER = "OTHER", _("Other")
 
 
 class FlavourChoices(TextChoices):
