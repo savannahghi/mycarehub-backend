@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models.enums import TextChoices
 from django.utils.translation import gettext_lazy as _
 
 from mycarehub.clients.models import Client
@@ -16,25 +15,14 @@ class Appointment(AbstractBase):
     It is referenced from the Open MRS appointment data model
     """
 
-    class AppointmentStatus(TextChoices):
-        SCHEDULED = "SCHEDULED", _("SCHEDULED")
-        RESCHEDULED = "RESCHEDULED", _("RESCHEDULED")
-        WAITING = "WAITING", _("WAITING")
-        MISSED = "MISSED", _("MISSED")
-        COMPLETED = "COMPLETED", _("COMPLETED")
-        INCONSULTATION = "IN_CONSULTATION", _("IN_CONSULTATION")
-        WALKIN = "WALKIN", _("WALK IN")
-        CANCELLED = "CANCELLED", _("CANCELLED")
-        NEEDSRESCHEDULE = "NEEDS_RESCHEDULE", _("NEEDS_RESCHEDULE")
-
-    appointment_uuid = models.UUIDField(
+    external_id = models.CharField(
+        max_length=128,
         editable=False,
         null=True,
         blank=True,
+        unique=True,
         help_text=_("Identifier that is shared between KenyaEMR and MyCareHub"),
     )
-    appointment_type = models.CharField(max_length=36)
-    status = models.CharField(max_length=36, choices=AppointmentStatus.choices)
     reason = models.TextField(max_length=1024, null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
     staff = models.ForeignKey(Staff, on_delete=models.PROTECT, null=True, blank=True)
@@ -48,9 +36,7 @@ class Appointment(AbstractBase):
         blank=True,
     )
     date = models.DateField(null=True, blank=True)
-    start_time = models.TimeField(null=True, blank=True)
-    end_time = models.TimeField(null=True, blank=True)
     has_rescheduled_appointment = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return f"{self.client} - {self.appointment_type} - {self.status}"
+        return f"{self.client} - {self.reason}"
