@@ -11,9 +11,8 @@ def test_appointments_str(user):
     client = baker.make(Client, user=user)
     appointment = baker.make(
         Appointment,
-        appointment_type="consultation",
-        status="COMPLETED",
+        reason="consultation",
         client=client,
     )
 
-    assert str(appointment) == f"{client} - consultation - COMPLETED"
+    assert str(appointment) == f"{client} - consultation"
