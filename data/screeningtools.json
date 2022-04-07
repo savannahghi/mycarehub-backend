@@ -1,6 +1,6 @@
 [
     {
-        "question": "In the past, has anyone made you feel threatened, fearful or in danger?",
+        "question": "In the past, has anyone made you feel threatened, fearful, or in danger?",
         "tool_type": "VIOLENCE_ASSESSMENT",
         "response_choices": {
             "0": "Yes",
@@ -16,7 +16,7 @@
         }
     },
     {
-        "question": "In the past, have you been slapped, punched, hit or physically hurt by someone in a way?",
+        "question": "In the past, have you been slapped, punched, hit, or physically hurt by someone in a way?",
         "tool_type": "VIOLENCE_ASSESSMENT",
         "response_choices": {
             "0": "Yes",
@@ -48,7 +48,7 @@
         }
      },
      {
-        "question": "Are you in a relationship with a person who threatens, frightens, insults you, treats you badly or physically hurts you?",
+        "question": "Are you in a relationship with a person who threatens, frightens, insults you, treats you badly, or physically hurts you?",
         "tool_type": "VIOLENCE_ASSESSMENT",
         "response_choices": {
             "0": "Yes",
@@ -101,7 +101,7 @@
         "meta":null
     },
     {
-        "question": "If no to Q3, would you like to use a family planning planning?",
+        "question": "If no to Q3, would you like to use a family planning?",
         "tool_type": "CONTRACEPTIVE_ASSESSMENT",
         "response_choices": {
             "0": "Yes",
@@ -113,7 +113,7 @@
         "meta":null
     },
     {
-        "question": "Have you experienced a chough for any duration?",
+        "question": "Have you experienced a cough for any duration?",
         "tool_type": "TB_ASSESSMENT",
         "response_choices": {
             "0": "Yes",
