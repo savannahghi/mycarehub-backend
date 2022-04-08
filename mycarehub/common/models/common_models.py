@@ -393,3 +393,17 @@ class FAQ(AbstractBase):
     flavour = models.CharField(
         choices=FlavourChoices.choices, max_length=32, null=True, blank=True
     )
+
+
+class Notification(AbstractBase):
+    class FlavourChoices(models.TextChoices):
+        PRO = "PRO", _("PRO")
+        CONSUMER = "CONSUMER", _("CONSUMER")
+
+    title = models.CharField(max_length=32)
+    body = models.TextField()
+    notification_type = models.CharField(max_length=32)
+    flavour = models.CharField(choices=FlavourChoices.choices, max_length=32)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+    facility = models.ForeignKey(Facility, null=True, blank=True, on_delete=models.CASCADE)
+    is_read = models.BooleanField(default=False)
