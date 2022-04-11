@@ -407,3 +407,6 @@ class Notification(AbstractBase):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     facility = models.ForeignKey(Facility, null=True, blank=True, on_delete=models.CASCADE)
     is_read = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return f"{self.notification_type} - {self.title}"

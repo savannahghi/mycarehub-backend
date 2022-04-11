@@ -24,7 +24,7 @@ from mycarehub.common.models import (
     is_image_type,
     unique_list,
 )
-from mycarehub.common.models.common_models import Address, Contact
+from mycarehub.common.models.common_models import Address, Contact, Notification
 
 fake = Faker()
 
@@ -432,7 +432,9 @@ class UserFacilityAllotmentTest(TestCase):
             user=self.user,
         )
 
-    def test_constituency_must_be_provided_if_region_type_is_constituency(self):
+    def test_constituency_must_be_provided_if_region_type_is_constituency(
+        self,
+    ):
         """Test that at least 1 constituency must be provided when region type is constituency."""
 
         constituency = UserFacilityAllotment.RegionType.CONSTITUENCY
@@ -465,7 +467,9 @@ class UserFacilityAllotmentTest(TestCase):
         county = UserFacilityAllotment.RegionType.COUNTY
         with pytest.raises(ValidationError) as e1:
             baker.make(
-                UserFacilityAllotment, allotment_type=self.by_both.value, region_type=county.value
+                UserFacilityAllotment,
+                allotment_type=self.by_both.value,
+                region_type=county.value,
             )
 
         with pytest.raises(ValidationError) as e2:
@@ -517,7 +521,9 @@ class UserFacilityAllotmentTest(TestCase):
         ward = UserFacilityAllotment.RegionType.WARD
         with pytest.raises(ValidationError) as e1:
             baker.make(
-                UserFacilityAllotment, allotment_type=self.by_both.value, region_type=ward.value
+                UserFacilityAllotment,
+                allotment_type=self.by_both.value,
+                region_type=ward.value,
             )
 
         with pytest.raises(ValidationError) as e2:
@@ -559,7 +565,11 @@ class UserFacilityAllotmentTest(TestCase):
         """Test that a region type must be provided when allotment type is by region or both."""
 
         with pytest.raises(ValidationError) as e1:
-            baker.make(UserFacilityAllotment, allotment_type=self.by_both.value, region_type=None)
+            baker.make(
+                UserFacilityAllotment,
+                allotment_type=self.by_both.value,
+                region_type=None,
+            )
 
         with pytest.raises(ValidationError) as e2:
             baker.make(
@@ -701,3 +711,12 @@ def test_validate_if_contact_exists():
     )
     with pytest.raises(Exception):
         duplicate_contact.save()
+
+
+def test_notification_str():
+    notification = baker.make(
+        Notification,
+        notification_type="TELECONSULT",
+        title="Test Notification",
+    )
+    assert str(notification) == "TELECONSULT - Test Notification"
