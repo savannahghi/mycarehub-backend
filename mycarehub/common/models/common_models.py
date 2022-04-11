@@ -400,7 +400,7 @@ class Notification(AbstractBase):
         PRO = "PRO", _("PRO")
         CONSUMER = "CONSUMER", _("CONSUMER")
 
-    title = models.CharField(max_length=32)
+    title = models.CharField(max_length=64)
     body = models.TextField()
     notification_type = models.CharField(max_length=32)
     flavour = models.CharField(choices=FlavourChoices.choices, max_length=32)
