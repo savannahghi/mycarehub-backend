@@ -8,7 +8,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_appointments_str(user):
-    client = baker.make(Client, user=user)
+    client = baker.make(Client, client_types=["PMTCT"], user=user)
     appointment = baker.make(
         Appointment,
         reason="consultation",

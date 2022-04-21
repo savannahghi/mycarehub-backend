@@ -13,6 +13,7 @@ from mycarehub.clients.models import (
     Caregiver,
     Client,
     ClientFacility,
+    ClientType,
     Identifier,
     RelatedPerson,
     SecurityQuestion,
@@ -177,7 +178,7 @@ class ClientViewsetTest(CRUDTestMixin):
 
         self.instance = baker.make(
             Client,
-            client_type="PMTCT",
+            client_types=["PMTCT"],
             user=self.user,
             current_facility=facility,
             fhir_patient_id=str(uuid.uuid4()),
@@ -192,7 +193,7 @@ class ClientViewsetTest(CRUDTestMixin):
             username=str(uuid.uuid4()),
         )
         self.data = {
-            "client_type": "PMTCT",
+            "client_types": ["PMTCT"],
             "user": str(another_user.pk),
             "current_facility": str(facility.pk),
             "fhir_patient_id": str(uuid.uuid4()),
@@ -225,7 +226,7 @@ class ClientFacilityViewsetTest(CRUDTestMixin):
 
         client = baker.make(
             Client,
-            client_type="PMTCT",
+            client_types=["PMTCT"],
             user=self.user,
             current_facility=facility,
             fhir_patient_id=str(uuid.uuid4()),
@@ -248,7 +249,7 @@ class ClientFacilityViewsetTest(CRUDTestMixin):
         )
         another_client = baker.make(
             Client,
-            client_type="PMTCT",
+            client_types=["PMTCT"],
             user=another_user,
             current_facility=facility,
             fhir_patient_id=str(uuid.uuid4()),
@@ -276,7 +277,7 @@ def test_client_registration_view_valid(user_with_all_permissions, client):
         url,
         data={
             "facility": facility.name,
-            "client_type": "PMTCT",
+            "client_types": [ClientType.PMTCT.value],
             "name": fake.name(),
             "gender": "MALE",
             "date_of_birth": fake.date_of_birth(minimum_age=5),

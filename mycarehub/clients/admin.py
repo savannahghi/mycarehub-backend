@@ -47,7 +47,7 @@ class CaregiverAdmin(BaseAdmin):
 class ClientAdmin(BaseAdmin):
     list_display = (
         "get_user_name",
-        "client_type",
+        "client_types",
         "enrollment_date",
     )
     date_hierarchy = "enrollment_date"

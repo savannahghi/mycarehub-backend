@@ -4,7 +4,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-from mycarehub.clients.forms import validate_date_past
+from mycarehub.clients.helpers import validate_date_past
 
 
 def test_validate_date_wrong_format():
