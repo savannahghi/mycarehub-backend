@@ -9,51 +9,31 @@
 {% block body_class %}template-contentitemindexpage{% endblock %}
 
 {% block inner %}
-    <h1>{{ page.title }}</h1>
-    <p class="meta">{{ page.date }}</p>
-
+   <div class="content">
     {% if page.hero_image %}
-    <div style="float: left; margin: 10px">
-        {% image page.hero_image fill-320x240 %}
-        <p>{{ page.hero_image.caption }}</p>
+    <div class="img-fluid">
+        {% image page.hero_image min-500x200 class="img-fluid" %}
+
+    <img class="img-logo" src="https://mycarehub-test.savannahghi.org/images/UXjAsEtHbOckCNra9hrIg4Chq-k=/10056/original/"/>
     </div>
-    {% endif %}
 
-    {% with categories=page.categories.all %}
-    {% if categories %}
-        <h3>Posted in:</h3>
-        <ul>
-            {% for category in categories %}
-                <li style="display: inline">
-                    {% if category.icon %}
-                        {% image category.icon fill-32x32 style="vertical-align: middle" %}
-                    {% endif %}
-                    {{ category.name }}
-                </li>
-            {% endfor %}
-        </ul>
+    <p>{{ page.hero_image.caption }}</p>
     {% endif %}
-    {% endwith %}
+    <div class="content-body">
+        <h1>{{ page.title }}</h1>
 
-    {% if page.tags.all.count %}
-    <div class="tags">
-        <h3>Tags</h3>
-        {% for tag in page.tags.all %}
-            <a href="{% slugurl 'tags' %}?tag={{ tag }}"><button type="button">{{ tag }}</button></a>
+        {% with categories=page.categories.all %}
+        {% if categories %}
+            <p class="publish">Published on {{ page.date }}</p>
+        {% endif %}
+        {% endwith %}
+        {{ page.body|richtext }}
+        {% for item in page.gallery_images.all %}
+            <div style="float: left; margin: 10px">
+                {% image item.image fill-320x240 %}
+                <p>{{ item.caption }}</p>
+            </div>
         {% endfor %}
     </div>
-    {% endif %}
-
-    <div class="intro">{{ page.intro }}</div>
-
-    {{ page.body|richtext }}
-
-    {% for item in page.gallery_images.all %}
-        <div style="float: left; margin: 10px">
-            {% image item.image fill-320x240 %}
-            <p>{{ item.caption }}</p>
-        </div>
-    {% endfor %}
-
-    <p><a href="{{ page.get_parent.url }}">Return to article list</a></p>
+ </div>
 {% endblock inner %}
