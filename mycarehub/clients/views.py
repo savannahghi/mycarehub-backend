@@ -73,7 +73,6 @@ class ClientRegistrationView(APIView):
     queryset = Client.objects.all()  # to enable model permissions
     serializer_class = ClientRegistrationSerializer
 
-    @transaction.atomic
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
@@ -82,84 +81,84 @@ class ClientRegistrationView(APIView):
                 request_user = request.user
                 org = request_user.organisation
                 flavour = "CONSUMER"
+                with transaction.atomic():
+                    new_user, _ = User.objects.get_or_create(
+                        username=data["name"],
+                        defaults={
+                            "name": data["name"],
+                            "gender": data["gender"],
+                            "date_of_birth": data["date_of_birth"],
+                            "user_type": "CLIENT",
+                            "phone": data["phone_number"],
+                            "flavour": flavour,
+                            "organisation": org,
+                        },
+                    )
 
-                new_user, _ = User.objects.get_or_create(
-                    username=data["name"],
-                    defaults={
-                        "name": data["name"],
-                        "gender": data["gender"],
-                        "date_of_birth": data["date_of_birth"],
-                        "user_type": "CLIENT",
-                        "phone": data["phone_number"],
+                    # create a contact, already opted in
+                    contact_data = {
+                        "contact_value": data["phone_number"],
                         "flavour": flavour,
-                        "organisation": org,
-                    },
-                )
-
-                # create a contact, already opted in
-                contact_data = {
-                    "contact_value": data["phone_number"],
-                    "flavour": flavour,
-                    "contact_type": "PHONE",
-                    "opted_in": True,
-                    "flavour": flavour,
-                    "user": new_user,
-                    "organisation": org,
-                    "created_by": request_user.pk,
-                    "updated_by": request_user.pk,
-                }
-                contact = Contact.objects.create(**contact_data)
-
-                # create an identifier (CCC)
-                identifier_data = {
-                    "identifier_type": "CCC",
-                    "identifier_value": data["ccc_number"],
-                    "identifier_use": "OFFICIAL",
-                    "description": "CCC Number, Primary Identifier",
-                    "is_primary_identifier": True,
-                    "organisation": org,
-                    "created_by": request_user.pk,
-                    "updated_by": request_user.pk,
-                }
-                identifier = Identifier.objects.create(**identifier_data)
-
-                # retrieve the facility by the unique name
-                facility_name = data["facility"]
-                facility = Facility.objects.get(name=facility_name)
-
-                # create a client
-                client, _ = Client.objects.get_or_create(
-                    user=new_user,
-                    defaults={
-                        "client_type": data["client_type"],
+                        "contact_type": "PHONE",
+                        "opted_in": True,
+                        "flavour": flavour,
                         "user": new_user,
-                        "enrollment_date": data["enrollment_date"],
-                        "current_facility": facility,
-                        "counselled": data["counselled"],
                         "organisation": org,
                         "created_by": request_user.pk,
                         "updated_by": request_user.pk,
-                    },
-                )
+                    }
+                    contact = Contact.objects.create(**contact_data)
 
-                # add the contact to the client
-                client.contacts.add(contact)
-
-                # add the identifier to the client
-                client.identifiers.add(identifier)
-
-                ClientFacility.objects.get_or_create(
-                    client=client,
-                    facility=facility,
-                    defaults={
+                    # create an identifier (CCC)
+                    identifier_data = {
+                        "identifier_type": "CCC",
+                        "identifier_value": data["ccc_number"],
+                        "identifier_use": "OFFICIAL",
+                        "description": "CCC Number, Primary Identifier",
+                        "is_primary_identifier": True,
                         "organisation": org,
                         "created_by": request_user.pk,
                         "updated_by": request_user.pk,
-                    },
-                )
+                    }
+                    identifier = Identifier.objects.create(**identifier_data)
 
-                # return the newly created client
-                serialized_client = ClientSerializer(client)
+                    # retrieve the facility by the unique name
+                    facility_name = data["facility"]
+                    facility = Facility.objects.get(name=facility_name)
+
+                    # create a client
+                    client, _ = Client.objects.get_or_create(
+                        user=new_user,
+                        defaults={
+                            "client_types": list(data["client_types"]),
+                            "user": new_user,
+                            "enrollment_date": data["enrollment_date"],
+                            "current_facility": facility,
+                            "counselled": data["counselled"],
+                            "organisation": org,
+                            "created_by": request_user.pk,
+                            "updated_by": request_user.pk,
+                        },
+                    )
+
+                    # add the contact to the client
+                    client.contacts.add(contact)
+
+                    # add the identifier to the client
+                    client.identifiers.add(identifier)
+
+                    ClientFacility.objects.get_or_create(
+                        client=client,
+                        facility=facility,
+                        defaults={
+                            "organisation": org,
+                            "created_by": request_user.pk,
+                            "updated_by": request_user.pk,
+                        },
+                    )
+
+                    # return the newly created client
+                    serialized_client = ClientSerializer(client)
                 return Response(serialized_client.data, status=status.HTTP_201_CREATED)
             except Exception as e:  # noqa # pragma: nocover
                 return Response(

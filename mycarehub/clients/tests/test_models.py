@@ -58,7 +58,7 @@ def test_related_person_str():
 
 
 def test_client_str(user_with_all_permissions):
-    client = baker.make(Client, user=user_with_all_permissions, client_type="PMTCT")
+    client = baker.make(Client, user=user_with_all_permissions, client_types=["PMTCT"])
     assert str(client) == f"{user_with_all_permissions.name} (PMTCT)"
 
 
@@ -77,7 +77,7 @@ def test_security_question_response_str():
 def test_health_diary_str():
     org_pk = default_organisation()
     org = Organisation.objects.get(pk=org_pk)
-    client = baker.make(Client, client_type="PMTCT", user=None, organisation=org)
+    client = baker.make(Client, client_types=["PMTCT"], user=None, organisation=org)
     health_diary_entry = baker.make(
         HealthDiaryEntry,
         client=client,
