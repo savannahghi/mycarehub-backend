@@ -223,11 +223,14 @@ class Client(AbstractBase):
     A client is a patient or non-professional end user.
     """
 
-    client_type = models.CharField(
-        max_length=64,
-        choices=ClientType.choices,
+    client_types = ArrayField(
+        models.CharField(
+            max_length=64,
+            choices=ClientType.choices,
+        ),
         null=False,
-        blank=False,
+        blank=True,
+        default=list,
     )
 
     # a client is a user, hence the one-to-one mapping
@@ -312,7 +315,9 @@ class Client(AbstractBase):
 
     def __str__(self):
         return (
-            f"{self.user.name} ({self.client_type})" if self.user else f"{self.client_type} client"
+            f"{self.user.name} ({self.client_types})"
+            if self.user
+            else f"{self.client_types} client"
         )
 
 

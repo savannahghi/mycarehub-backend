@@ -26,18 +26,13 @@ def validate_date_past(value):
 
 
 def get_facility_choices():
-    choices = []
-    for facility in Facility.objects.all():
-        choices.append((facility.name, facility.name))
-
-    return choices
+    return [(facility.name, facility.name) for facility in Facility.objects.all()]
 
 
 class ClientRegistrationForm(forms.Form):
     """
     This form is used in a HTML UI and via a Django REST Framework serializer
     to register new clients.
-
     """
 
     facility = forms.ChoiceField(
@@ -47,8 +42,8 @@ class ClientRegistrationForm(forms.Form):
         help_text="The client's currently assigned facility/clinic",
     )
 
-    client_type = forms.ChoiceField(
-        required=True,
+    client_types = forms.MultipleChoiceField(
+        required=False,
         choices=ClientType.choices,
         label="Client Type e.g PMTCT",
         help_text="The client's current care classification",
