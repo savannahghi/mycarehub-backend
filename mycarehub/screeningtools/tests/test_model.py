@@ -30,7 +30,7 @@ def test_screeningtools_response(user_with_all_permissions):
             response_type="INTEGER",
             response_category="SINGLE_CHOICE",
         ),
-        client=baker.make(Client, user=user_with_all_permissions, client_type="PMTCT"),
+        client=baker.make(Client, user=user_with_all_permissions, client_types=["PMTCT"]),
         response="0",
     )
     assert str(response) == "0"
