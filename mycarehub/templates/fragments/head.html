@@ -42,5 +42,14 @@
       {% endcompress %}
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-XRMT75P1B3"></script>
       <script src="https://kit.fontawesome.com/e1c9d8c99d.js" crossorigin="anonymous"></script>
+      <script type="module">
+        import PhotoSwipeLightbox from 'photoswipe/dist/photoswipe-lightbox.esm.js';
+        const lightbox = new PhotoSwipeLightbox({
+          gallery: '#my-gallery',
+          children: 'a',
+          pswpModule: () => import('photoswipe/dist/photoswipe.esm.js')
+        });
+        lightbox.init();
+        </script>
     {% endblock javascript %}
 </head>

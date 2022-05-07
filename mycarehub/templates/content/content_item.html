@@ -9,31 +9,180 @@
 {% block body_class %}template-contentitemindexpage{% endblock %}
 
 {% block inner %}
-   <div class="content">
+<body>
+
     {% if page.hero_image %}
     <div class="img-fluid">
         {% image page.hero_image min-500x200 class="img-fluid" %}
-
-    <img class="img-logo" src="https://mycarehub-test.savannahghi.org/images/UXjAsEtHbOckCNra9hrIg4Chq-k=/10056/original/"/>
+        <img class="img-logo" src="https://mycarehub-test.savannahghi.org/images/UXjAsEtHbOckCNra9hrIg4Chq-k=/10056/original/"/>
     </div>
 
     <p>{{ page.hero_image.caption }}</p>
     {% endif %}
-    <div class="content-body">
-        <h1>{{ page.title }}</h1>
 
-        {% with categories=page.categories.all %}
-        {% if categories %}
-            <p class="publish">Published on {{ page.date }}</p>
+    <main>
+        {% comment %}
+        <!-- photo gallery -->
+        {% if page.gallery_images %}
+        {% with images=page.gallery_images.all %}
+        <section class="card photo-gallery">
+            <!-- gallery -->
+            <div class="gallery" id="photo-gallery">
+                <a class="main" href="{{ images.0.image.file.url }}" data-pswp-width="1080" data-pswp-height="720" target="_blank">
+                    <img src="{{ images.0.image.file.url }}">
+                </a>
+
+                <div class="extra">
+                    {% for image in images %}
+                    <a href="{{ image.image.file.url }}" data-pswp-width="1080" data-pswp-height="720" target="_blank">
+                        <img src="{{ image.image.file.url }}">
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- end gallery -->
+        </section>
+        {% endwith %}
+        {% endif %}
+        <!-- end photo gallery -->
+        {% endcomment %}
+
+        <!-- video -->
+        {% for item in page.featured_media.all %}
+        {% with media=item.featured_media %}
+        {% if media.type == "video" %}
+        <section class="card video">
+            <video id="main-video" controls src="{{ media.url }}"></video>
+            <!-- details -->
+            <div class="details">
+                <div class="meta">
+                    <div>
+                        <h4>{{ media.title }}</h4>
+                    </div>
+                    <div class="timestamp">{{ media.created_at|date:"d F o" }}</div>
+                </div>
+            </div>
+            <!-- end details -->
+        </section>
+        {% elif media.type == "audio" %}
+        <!-- audio -->
+        <section class="card audio">
+            <div class="player">
+                <audio src="{{ media.url }}"></audio>
+                <div class="actions">
+                    <div id="audio-length" class="content-length">{{ media.duration }}</div>
+                        <div class="control">
+                            <div class="wrapper">
+                                <button class="play-btn"></button>
+                            </div>
+                        </div>
+                        <div class="info">
+                            <h4>{{ media.title }}</h4>
+                            <div class="content">
+                                <span class="timestamp">{{ media.created_at|date:"d F o" }}</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress"></div>
+                            </div>
+
+                        </div>
+                </div>
+            </div>
+        </section>
+        <!-- end audio -->
         {% endif %}
         {% endwith %}
-        {{ page.body|richtext }}
-        {% for item in page.gallery_images.all %}
-            <div style="float: left; margin: 10px">
-                {% image item.image fill-320x240 %}
-                <p>{{ item.caption }}</p>
-            </div>
         {% endfor %}
-    </div>
- </div>
+        <!-- end video -->
+
+        <div class="content">
+            <div class="content-body">
+                <h1>{{ page.title }}</h1>
+
+                {% with categories=page.categories.all %}
+                {% if categories %}
+                    <p class="publish">Published on {{ page.date }}</p>
+                {% endif %}
+                {% endwith %}
+                {{ page.body|richtext }}
+
+            </div>
+        </div>
+    </main>
+
+</body>
+<script>
+    const audio = document.querySelector("audio");
+    let audioProgress = document.querySelector(".progress");
+    let progressBar = document.querySelector(".progress-bar");
+    const playButton = document.querySelector(".play-btn");
+    let audioLength = document.getElementById("audio-length");
+
+    const playAudio = () => {
+        audio.play();
+    };
+
+    const pauseAudio = () => {
+        audio.pause();
+    };
+
+    const togglePlayPauseSong = () => {
+        playButton.classList.toggle("paused");
+
+        if (audio.duration > 0 && !audio.paused) {
+            pauseAudio();
+        } else {
+            playAudio();
+        }
+    };
+
+    const updateProgressBar = () => {
+        const { duration, currentTime } = audio;
+        const percentDuration = (currentTime / duration) * 100;
+        audioProgress.style.width = `${percentDuration}%`;
+    };
+
+    const setAudioLength = () => {
+        let duration = audio.duration;
+        let hours = Math.floor(duration / 3600);
+        duration %= 3600;
+        let minutes = Math.floor(duration / 60);
+        let seconds = Math.floor(duration % 60);
+
+        let time = null;
+        if (hours === 0) {
+            time = `${minutes}:${seconds}`;
+        } else {
+            time = `${hours}:${minutes}:${seconds}`;
+        }
+
+        audioLength.innerHTML = time;
+    };
+
+    const setProgress = (e) => {
+        const width = progressBar.clientWidth;
+        const clickX = e.offsetX;
+        const { duration } = audio;
+        audio.currentTime = (clickX / width) * duration;
+    };
+
+    const reset = () => {
+        playButton.classList.remove("paused");
+        audioProgress.style.width = `0%`;
+    };
+
+    // listen for clicks on the play button
+    playButton.addEventListener("click", togglePlayPauseSong);
+
+    // listen for the audio playing
+    audio.addEventListener("timeupdate", updateProgressBar);
+    audio.addEventListener("ended", reset);
+
+    // listen for when the audio has loaded
+    audio.addEventListener("loadedmetadata", setAudioLength);
+
+    // listen for clicks on the progress bar
+    progressBar.addEventListener("click", setProgress);
+
+</script>
 {% endblock inner %}
