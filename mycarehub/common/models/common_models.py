@@ -410,3 +410,21 @@ class Notification(AbstractBase):
 
     def __str__(self) -> str:
         return f"{self.notification_type} - {self.title}"
+
+
+class UserSurveys(AbstractBase):
+    """
+    UserSurveys Model defines the surveys that are provided to the client or
+    staff based on flavour.
+    If the user has filled in the survey, has_submitted is set to True
+    The link should be only be used once for every submission
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    survey_link = models.TextField()
+    survey_title = models.TextField()
+    survey_description = models.TextField(null=True, blank=True)
+    has_submitted = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return f"{self.survey_title}"
