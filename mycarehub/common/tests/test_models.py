@@ -24,7 +24,7 @@ from mycarehub.common.models import (
     is_image_type,
     unique_list,
 )
-from mycarehub.common.models.common_models import Address, Contact, Notification
+from mycarehub.common.models.common_models import Address, Contact, Notification, UserSurveys
 
 fake = Faker()
 
@@ -720,3 +720,17 @@ def test_notification_str():
         title="Test Notification",
     )
     assert str(notification) == "TELECONSULT - Test Notification"
+
+
+def test_user_surveys():
+    response = baker.make(
+        UserSurveys,
+        survey_link="https://mycarehub.org/survey",
+        survey_title="survey_title",
+        survey_description="survey_description",
+        has_submitted=False,
+        user=baker.make(
+            get_user_model(), name=fake.name(), organisation=baker.make("common.Organisation")
+        ),
+    )
+    assert str(response) == "survey_title"
