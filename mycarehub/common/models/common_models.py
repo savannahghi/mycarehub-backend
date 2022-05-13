@@ -421,10 +421,14 @@ class UserSurveys(AbstractBase):
     """
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    survey_link = models.TextField()
-    survey_title = models.TextField()
-    survey_description = models.TextField(null=True, blank=True)
+    link = models.TextField()
+    title = models.TextField()
+    description = models.TextField(null=True, blank=True)
     has_submitted = models.BooleanField(default=False)
+    token = models.TextField(null=True, blank=True)
+    project_id = models.IntegerField(null=True, blank=True)
+    form_id = models.TextField(null=True, blank=True)
+    link_id = models.IntegerField(null=True, blank=True)
 
     def __str__(self) -> str:
-        return f"{self.survey_title}"
+        return f"{self.title}"

@@ -725,10 +725,11 @@ def test_notification_str():
 def test_user_surveys():
     response = baker.make(
         UserSurveys,
-        survey_link="https://mycarehub.org/survey",
-        survey_title="survey_title",
-        survey_description="survey_description",
+        link="https://mycarehub.org/survey",
+        title="survey_title",
+        description="survey_description",
         has_submitted=False,
+        token="survey_token",
         user=baker.make(
             get_user_model(), name=fake.name(), organisation=baker.make("common.Organisation")
         ),
