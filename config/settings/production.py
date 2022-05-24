@@ -69,6 +69,11 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # ------------------------------------------------------------------------------
 DEFAULT_FILE_STORAGE = "mycarehub.utils.storages.MediaRootGoogleCloudStorage"
 MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
+GCS_BUCKET_ALLOWED_ORIGINS = [
+    "https://mycarehub.savannahghi.org",
+    "https://mycarehub-test.savannahghi.org",
+    "https://mycarehub-stage.savannahghi.org",
+]
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
