@@ -135,6 +135,7 @@ class SecurityQuestion(AbstractBase):
         DATE = "DATE", _("Date Response")
         NUMBER = "NUMBER", _("Number Response")
         BOOLEAN = "BOOLEAN", _("Boolean Response")
+        NUMBER_STRING = "NUMBER_STRING", _("Number String Response")
 
     stem = models.TextField()
     description = models.TextField()
