@@ -60,7 +60,8 @@ class Facility(AbstractBase):
     name = models.TextField(unique=True)
     description = models.TextField(blank=True, default="")
     mfl_code = models.IntegerField(unique=True, help_text="MFL Code")
-    county = models.CharField(max_length=64, choices=get_counties())
+    county = models.CharField(max_length=64, choices=get_counties(), blank=True, null=True)
+    sub_county = models.CharField(max_length=64, blank=True, null=True)
     phone = models.CharField(max_length=15, null=True, blank=True)
     fhir_organization_id = models.CharField(unique=True, max_length=64, blank=True, null=True)
 
