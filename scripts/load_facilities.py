@@ -29,36 +29,16 @@ def load_facilities(source_path):
     records = pyexcel.get_records(file_name=source_path)
     count = len(records)
     for pos, r in enumerate(records):
-        if r["Code"] is not None and r["Code"] != "None":
+        if r["MFL Code"] is not None and r["MFL Code"] != "None":
             try:
                 facility, created = Facility.objects.get_or_create(
-                    mfl_code=r["Code"],
+                    mfl_code=r["MFL Code"],
                     defaults={
-                        "name": r["Name"],
+                        "name": r["Facility"],
                         "created_by": created_by,
                         "updated_by": created_by,
                         "organisation": org,
-                        "registration_number": r["Registration_number"],
-                        "keph_level": r["Keph level"],
-                        "facility_type": r["Facility type"],
-                        "facility_type_category": r["Facility_type_category"],
-                        "facility_owner": r["Owner"],
-                        "owner_type": r["Owner type"],
-                        "regulatory_body": r["Regulatory body"],
-                        "beds": int(r["Beds"]),
-                        "cots": int(r["Cots"]),
-                        "county": r["County"],
-                        "constituency": r["Constituency"],
-                        "sub_county": r["Sub county"],
-                        "ward": r["Ward"],
-                        "operation_status": r["Operation status"],
-                        "open_whole_day": r["Open_whole_day"] == "Yes",
-                        "open_public_holidays": r["Open_public_holidays"] == "Yes",
-                        "open_weekends": r["Open_weekends"] == "Yes",
-                        "open_late_night": r["Open_late_night"] == "Yes",
-                        "approved": r["Approved"] == "Yes",
-                        "public_visible": r["Public visible"] == "Yes",
-                        "closed": r["Closed"] == "Yes",
+                        "sub_county": r["Sub-county"],
                     },
                 )
                 print(f"Facility: {facility}; Created: {created}; Pos {pos + 1}/{count}")
@@ -76,5 +56,5 @@ if __name__ == "__main__":
     django.setup()
 
     data_dir = os.path.join(base_path, "data")
-    source_file = os.path.join(data_dir, "all_mfl_facilities.xlsx")
+    source_file = os.path.join(data_dir, "List_of_PHP_study facilities.xlsx")
     load_facilities(source_file)
