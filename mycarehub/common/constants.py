@@ -129,6 +129,46 @@ ADMINISTRATIVE_UNITS = {
             ),
         },
     },
+    "Kirinyaga": {
+        _CONSTITUENCIES: (
+            "Kirinyaga Central",
+            "Kirinyaga East",
+            "Kirinyaga West",
+        ),
+        _SUB_COUNTIES: {
+            "Kirinyaga Central": (),
+            "Kirinyaga East": (),
+            "Kirinyaga West": (),
+        },
+    },
+    "Kiambu": {
+        _CONSTITUENCIES: (
+            "Kiambu Township",
+            "Githunguri",
+            "Kiambaa",
+            "Lari",
+            "Limuru",
+            "Kabete",
+            "Thika Town",
+            "Juja",
+            "Gatundu South",
+            "Gatundu North",
+            "Ruiru",
+        ),
+        _SUB_COUNTIES: {
+            "Kiambu Township": (),
+            "Githunguri": (),
+            "Kiambaa": (),
+            "Lari": (),
+            "Limuru": (),
+            "Kabete": (),
+            "Thika Town": (),
+            "Juja": (),
+            "Gatundu South": (),
+            "Gatundu North": (),
+            "Ruiru": (),
+        },
+    },
 }
 
 COUNTRY_CODES = (
