@@ -348,7 +348,7 @@ class ContentItem(Page):
         APIField(
             "hero_image_rendition",
             serializer=ImageRenditionField(
-                "fill-1200x800|jpegquality-60",
+                "fill-1920x1080|jpegquality-60",
                 source="hero_image",
             ),
         ),

@@ -66,6 +66,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_FILE_STORAGE = "mycarehub.utils.storages.MediaRootGoogleCloudStorage"
 MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
 WHITENOISE_MANIFEST_STRICT = False
+GCS_BUCKET_ALLOWED_ORIGINS = env.list("GCS_BUCKET_ALLOWED_ORIGINS")
 
 
 def require_env(name: str) -> str:
@@ -84,3 +85,4 @@ require_env("POSTGRES_USER")
 require_env("POSTGRES_PASSWORD")
 require_env("POSTGRES_HOST")
 require_env("POSTGRES_PORT")
+require_env("GCS_BUCKET_ALLOWED_ORIGINS")
