@@ -20,6 +20,8 @@ ALLOWED_HOSTS = env.list(
     ],
 )
 
+GCS_BUCKET_ALLOWED_ORIGINS = env.list("GCS_BUCKET_ALLOWED_ORIGINS")
+
 # DATABASES
 # ------------------------------------------------------------------------------
 DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405

@@ -16,6 +16,7 @@ env:
   DJANGO_GCP_STORAGE_BUCKET_NAME: ${{ secrets.DJANGO_GCP_STORAGE_BUCKET_NAME }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   DJANGO_EMAIL_BACKEND: ${{secrets.DJANGO_EMAIL_BACKEND}}
+  GCS_BUCKET_ALLOWED_ORIGINS: ${{ secrets.GCS_BUCKET_ALLOWED_ORIGINS }}
 
 jobs:
   linter:
@@ -54,16 +55,14 @@ jobs:
 
       - name: Install requirements
         run: |
-          sudo apt-get update && sudo apt-get upgrade
+          sudo apt-get update
           sudo apt-get install postgis gdal-bin libgdal-dev
           pip install -r requirements/local.txt && pip install -r requirements/production.txt
           npm ci
           npm install -g mjml
-
       - name: mypy
         run: |
           mypy .
-
   pytest:
     needs: linter
     runs-on: ubuntu-latest
@@ -94,39 +93,23 @@ jobs:
         run: ./.github/scripts/decrypt_secret.sh
         env:
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
-      
-      - name: Purge postgres 
-        run: |
-          sudo apt-get --purge remove postgresql postgresql-*
 
       - name: Install requirements
         run: |
-          sudo apt-get update && sudo apt-get upgrade
+          sudo apt-get update 
           sudo apt-get install postgis gdal-bin libgdal-dev
           pip install -r requirements/local.txt && pip install -r requirements/production.txt
           npm ci
           npm install -g mjml
-      
-      - name: Install Postgresql/PostGIS 12
-        run: |
-          sudo apt-get install postgresql-12 postgresql-12-postgis-3
-      
-      - name: Setup and start postgres service
-        run: |
-          sudo pg_ctlcluster 12 main start
-          sudo -u ${POSTGRES_USER} psql -p ${POSTGRES_PORT} -c "ALTER USER ${POSTGRES_USER} WITH PASSWORD '${POSTGRES_PASSWORD}';"
-
       - name: Set up Django
         run: |
           python manage.py migrate
           python manage.py createcachetable
           python manage.py collectstatic --noinput
-
       - name: Run tests and collect coverage
         run: |
           pytest
           coveralls   --service=github
-
       - name: Coveralls Finished
         uses: coverallsapp/github-action@master
         with:

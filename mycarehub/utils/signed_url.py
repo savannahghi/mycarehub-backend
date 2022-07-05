@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from google.auth import compute_engine
 from google.auth.exceptions import TransportError
 from google.auth.transport import requests
@@ -15,6 +16,16 @@ def generate_signed_upload_url(bucket_name, blob_name, content_type):
     storage_client = storage.Client()
 
     bucket = storage_client.bucket(bucket_name)
+
+    bucket.cors = [
+        {
+            "origin": settings.GCS_BUCKET_ALLOWED_ORIGINS,
+            "responseHeader": ["Content-Type", "x-goog-resumable"],
+            "method": ["PUT"],
+            "maxAgeSeconds": 3600,
+        }
+    ]
+    bucket.patch()
     blob = bucket.blob(blob_name)
 
     url = ""
