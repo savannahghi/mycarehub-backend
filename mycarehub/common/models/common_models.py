@@ -432,3 +432,21 @@ class UserSurveys(AbstractBase):
 
     def __str__(self) -> str:
         return f"{self.title}"
+
+
+class Feedback(AbstractBase):
+    """
+    Feedback Model defines the feedback that is provided to the client or
+    staff based on flavour.
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    feedback_type = models.CharField(max_length=32)
+    satisfaction_level = models.IntegerField(null=True, blank=True)
+    service_name = models.CharField(max_length=32, null=True, blank=True)
+    feedback = models.TextField(null=True, blank=True)
+    requires_followup = models.BooleanField(default=False)
+    phone_number = models.CharField(max_length=32, null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.feedback}"

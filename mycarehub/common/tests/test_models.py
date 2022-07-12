@@ -24,7 +24,13 @@ from mycarehub.common.models import (
     is_image_type,
     unique_list,
 )
-from mycarehub.common.models.common_models import Address, Contact, Notification, UserSurveys
+from mycarehub.common.models.common_models import (
+    Address,
+    Contact,
+    Feedback,
+    Notification,
+    UserSurveys,
+)
 
 fake = Faker()
 
@@ -735,3 +741,19 @@ def test_user_surveys():
         ),
     )
     assert str(response) == "survey_title"
+
+
+def test_feedback_str():
+    feedback = baker.make(
+        Feedback,
+        feedback_type="GENERAL_FEEDBACK",
+        satisfaction_level=1,
+        feedback="Test feedback",
+        user=baker.make(
+            get_user_model(), name=fake.name(), organisation=baker.make("common.Organisation")
+        ),
+        service_name="Test service",
+        requires_followup=False,
+        phone_number="+1111111111",
+    )
+    assert str(feedback) == "Test feedback"
