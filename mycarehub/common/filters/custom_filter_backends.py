@@ -1,5 +1,7 @@
 from rest_framework import filters
 
+from mycarehub.content.models import ContentItemCategory
+
 from ..models import UserFacilityAllotment
 
 
@@ -27,4 +29,7 @@ class OrganisationFilterBackend(filters.BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         """Filter all records that have an organisation field by user org."""
+        # Exclude models without an organisation
+        if queryset.model in [ContentItemCategory]:
+            return queryset
         return queryset.filter(organisation=request.user.organisation)

@@ -11,6 +11,13 @@ from mycarehub.clients.views import (
     SecurityQuestionViewSet,
 )
 from mycarehub.common.views import FacilityViewSet, UserFacilityViewSet
+from mycarehub.content.views import (
+    ContentBookmarkViewSet,
+    ContentItemCategoryViewSet,
+    ContentLikeViewSet,
+    ContentShareViewSet,
+    ContentViewViewSet,
+)
 from mycarehub.users.api.views import UserViewSet
 
 if settings.DEBUG:
@@ -28,6 +35,11 @@ router.register("related_persons", RelatedPersonViewSet)
 router.register("clients", ClientViewSet)
 router.register("client_facilities", ClientFacilityViewSet)
 router.register("caregivers", CaregiverViewSet)
+router.register("content_item_category", ContentItemCategoryViewSet)
+router.register("content_view", ContentViewViewSet)
+router.register("content_bookmark", ContentBookmarkViewSet)
+router.register("content_like", ContentLikeViewSet)
+router.register("content_share", ContentShareViewSet)
 
 app_name = "api"
 urlpatterns = router.urls

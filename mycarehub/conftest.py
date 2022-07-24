@@ -110,7 +110,7 @@ def content_item_with_tag_and_category(request_with_user):
 
     # add a category
     icon = baker.make("wagtailimages.Image", _create_files=True)
-    cat = baker.make(ContentItemCategory, id=999_999, name="a valid category", icon=icon)
+    cat = baker.make(ContentItemCategory, id=999_999, name="a-valid-category", icon=icon)
     content_item.categories.add(cat)
     content_item.save()
     assert ContentItem.objects.filter(categories__id=cat.pk).count() == 1

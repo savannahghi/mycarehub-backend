@@ -103,3 +103,40 @@ def test_category_get_all_categories(
     assert response.status_code == status.HTTP_200_OK
     response_data = response.json()
     assert response_data["meta"]["total_count"] == 1
+
+
+def test_category_name_filter_found_categories(
+    content_item_with_tag_and_category,
+    request_with_user,
+    client,
+):
+    assert content_item_with_tag_and_category is not None
+    assert content_item_with_tag_and_category.categories.count() == 1
+    assert content_item_with_tag_and_category.categories.filter(id=999_999).count() == 1
+
+    client.force_login(request_with_user.user)
+    url = (
+        reverse("wagtailapi:pages:listing")
+        + "?type=content.ContentItem&fields=*&category_name=a-valid-category"
+    )
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    response_data = response.json()
+    assert response_data["meta"]["total_count"] == 1
+
+
+def test_category_with_content_filter(
+    content_item_with_tag_and_category,
+    request_with_user,
+    client,
+):
+    assert content_item_with_tag_and_category is not None
+    assert content_item_with_tag_and_category.categories.count() == 1
+    assert content_item_with_tag_and_category.categories.filter(id=999_999).count() == 1
+
+    client.force_login(request_with_user.user)
+    url = reverse("api:contentitemcategory-list") + "?has_content=True"
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    response_data = response.json()
+    assert response_data["count"] == 1
