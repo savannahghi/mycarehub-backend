@@ -8,8 +8,8 @@ from mycarehub.content.models import (
     ContentItem,
     ContentItemIndexPage,
     ContentItemMediaLink,
+    MediaSerializedField,
 )
-from mycarehub.content.serializers import MediaSerializedField
 from mycarehub.home.models import HomePage
 
 pytestmark = pytest.mark.django_db

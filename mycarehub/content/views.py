@@ -16,9 +16,26 @@ from wagtail.api.v2.filters import (
 )
 from wagtail.api.v2.views import PagesAPIViewSet
 
+from mycarehub.common.views.base_views import BaseView
 from mycarehub.utils.signed_url import generate_media_blob_name, generate_signed_upload_url
 
-from .filters import CategoryFilter, TagFilter
+from .filters import (
+    CategoryFilter,
+    ContentBookmarkFilter,
+    ContentItemCategoryFilter,
+    ContentLikeFilter,
+    ContentShareFilter,
+    ContentViewFilter,
+    TagFilter,
+)
+from .models import ContentBookmark, ContentItemCategory, ContentLike, ContentShare, ContentView
+from .serializers import (
+    ContentBookmarkSerializer,
+    ContentItemCategorySerializer,
+    ContentLikeSerializer,
+    ContentShareSerializer,
+    ContentViewSerializer,
+)
 
 
 class CustomPageAPIViewset(PagesAPIViewSet):
@@ -35,7 +52,9 @@ class CustomPageAPIViewset(PagesAPIViewSet):
         LocaleFilter,
         SearchFilter,  # must be last
     ]
-    known_query_parameters = PagesAPIViewSet.known_query_parameters.union(["tag", "category"])
+    known_query_parameters = PagesAPIViewSet.known_query_parameters.union(
+        ["tag", "category", "category_name"]
+    )
 
 
 class SignedURLView(generic.View):
@@ -64,3 +83,33 @@ class SignedURLView(generic.View):
         )
 
         return JsonResponse({"url": url})
+
+
+class ContentItemCategoryViewSet(BaseView):
+    queryset = ContentItemCategory.objects.all()
+    serializer_class = ContentItemCategorySerializer
+    filterset_class = ContentItemCategoryFilter
+
+
+class ContentViewViewSet(BaseView):
+    queryset = ContentView.objects.all()
+    serializer_class = ContentViewSerializer
+    filterset_class = ContentViewFilter
+
+
+class ContentShareViewSet(BaseView):
+    queryset = ContentShare.objects.all()
+    serializer_class = ContentShareSerializer
+    filterset_class = ContentShareFilter
+
+
+class ContentLikeViewSet(BaseView):
+    queryset = ContentLike.objects.all()
+    serializer_class = ContentLikeSerializer
+    filterset_class = ContentLikeFilter
+
+
+class ContentBookmarkViewSet(BaseView):
+    queryset = ContentBookmark.objects.all()
+    serializer_class = ContentBookmarkSerializer
+    filterset_class = ContentBookmarkFilter

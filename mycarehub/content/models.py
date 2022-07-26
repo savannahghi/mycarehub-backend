@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
-from rest_framework.fields import ReadOnlyField
+from rest_framework.fields import Field, ReadOnlyField
 from taggit.models import TaggedItemBase
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.api import APIField
@@ -18,7 +18,6 @@ from wagtail.snippets.models import register_snippet
 from wagtailmedia.edit_handlers import MediaChooserPanel
 
 from mycarehub.common.models import AbstractBase
-from mycarehub.content.serializers import MediaSerializedField
 
 RICH_TEXT_FIELD_FEATURES = [
     "h1",
@@ -41,6 +40,31 @@ RICH_TEXT_FIELD_FEATURES = [
     "subscript",
     "strikethrough",
 ]
+
+
+class MediaSerializedField(Field):
+    """A custom serializer used to serialize media in Wagtails v2 API."""
+
+    def to_representation(self, val):
+        """Return the media URL, title and dimensions."""
+        media = []
+        for value in val.all():
+            media.append(
+                {
+                    "id": value.featured_media.id,
+                    "url": value.featured_media.file.url,
+                    "title": value.featured_media.title,
+                    "type": value.featured_media.type,
+                    "duration": value.featured_media.duration,
+                    "width": value.featured_media.width,
+                    "height": value.featured_media.height,
+                    "thumbnail": value.featured_media.thumbnail.url
+                    if value.featured_media.thumbnail
+                    else "",
+                }
+            )
+
+        return media
 
 
 @register_snippet
@@ -76,7 +100,7 @@ class Author(AbstractBase):
 
 
 @register_snippet
-class ContentItemCategory(models.Model):
+class ContentItemCategory(index.Indexed, models.Model):
     """
     ContentItemCategory defines fixed (admin rather than author/editor defined)
     categories for content.
@@ -106,6 +130,8 @@ class ContentItemCategory(models.Model):
         FieldPanel("name"),
         ImageChooserPanel("icon"),
     ]
+
+    search_fields = [index.SearchField("name")]
 
     def __str__(self):
         return self.name
@@ -485,7 +511,7 @@ class ContentLike(ContentInteraction):
     count on the content item is updated.
 
     These updates should be performed in a transaction - with special care
-    taken to ensure that the incremeting and decrementing of the cached counts
+    taken to ensure that the incrementing and decrementing of the cached counts
     is not prone to race conditions.
     """
 
@@ -505,7 +531,7 @@ class ContentBookmark(ContentInteraction):
     count on the content item is updated.
 
     These updates should be performed in a transaction - with special care
-    taken to ensure that the incremeting and decrementing of the cached counts
+    taken to ensure that the incrementing and decrementing of the cached counts
     is not prone to race conditions.
     """
 
@@ -524,7 +550,7 @@ class ContentShare(ContentInteraction):
     There is no notion of "unsharing".
 
     These updates should be performed in a transaction - with special care
-    taken to ensure that the incremeting and decrementing of the cached counts
+    taken to ensure that the incrementing and decrementing of the cached counts
     is not prone to race conditions.
     """
 
@@ -543,7 +569,7 @@ class ContentView(ContentInteraction):
     There is no notion of "unviewing".
 
     These updates should be performed in a transaction - with special care
-    taken to ensure that the incremeting and decrementing of the cached counts
+    taken to ensure that the incrementing and decrementing of the cached counts
     is not prone to race conditions.
     """
 
