@@ -109,6 +109,7 @@ THIRD_PARTY_APPS = [
     "wagtailfontawesome",
     "wagtailquickcreate",
     "django_extensions",
+    "nested_admin",
 ]
 
 LOCAL_APPS = [
@@ -122,6 +123,7 @@ LOCAL_APPS = [
     "mycarehub.communities.apps.CommunityConfig",
     "mycarehub.screeningtools.apps.ScreeningtoolsConfig",
     "mycarehub.appointments.apps.AppointmentsConfig",
+    "mycarehub.questionnaires.apps.QuestionnairesConfig",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 

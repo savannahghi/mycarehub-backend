@@ -49,3 +49,4 @@ wagtail-readinglevel~=3.5.0
 wagtailfontawesome~=1.2.1
 wagtail-quick-create~=1.0.7
 wagtail-automatic-redirects~=1.1.5
+django-nested-admin==3.4.0
