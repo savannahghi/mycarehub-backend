@@ -48,6 +48,7 @@ class Questionnaire(AbstractBase):
     frequency_weeks = models.IntegerField(default=0)
     frequency_months = models.IntegerField(default=0)
     next_survey_date = models.DateField(null=True, blank=True)
+    has_expiry = models.BooleanField(default=False)
 
     def __str__(self):
         return "{}".format(self.name)
