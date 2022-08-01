@@ -37,7 +37,7 @@ class Questionnaire(AbstractBase):
     all surveys share response value type, which is a string, number, boolean, date, time, datetime
     """
 
-    name = models.CharField(max_length=60)
+    name = models.CharField(max_length=60, unique=True)
     description = models.TextField(max_length=1000)
     valid_from = models.DateField(default=datetime.date.today)
     valid_days = models.IntegerField(default=0)
@@ -88,7 +88,7 @@ class ScreeningTool(AbstractBase):
         return "{}".format(self.questionnaire)
 
 
-class Question(models.Model):
+class Question(AbstractBase):
     """
     Question Model defines the questions that are asked to a user
     A question belongs to a questionnaire, a questionnaire  can have more than one.
@@ -98,7 +98,7 @@ class Question(models.Model):
     Closed Ended questions can have multiple responses.
     """
 
-    text = models.TextField(max_length=5000)
+    text = models.TextField(max_length=5000, unique=True)
     questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)
     question_type = models.CharField(
         max_length=20, choices=QuestionTypeChoices.choices, null=False
@@ -108,13 +108,13 @@ class Question(models.Model):
     )
     select_multiple = models.BooleanField(default=False)
     required = models.BooleanField(default=False)
-    sequence = models.IntegerField()
+    sequence = models.IntegerField(unique=True)
 
     def __str__(self):
         return "{}".format(self.text)
 
 
-class QuestionInputChoice(models.Model):
+class QuestionInputChoice(AbstractBase):
     """
     Question Input Choice Model defines the choices that belong to a closed ended question
     A question can have more than one choice.
@@ -153,7 +153,7 @@ class QuestionnaireResponse(AbstractBase):
         return "{} response for {}".format(self.questionnaire, self.user)
 
 
-class ResponseInstance(models.Model):
+class ResponseInstance(AbstractBase):
     """
     Response Instance Model defines the instances of a question that a user gives a response to.
     The answer given is validated against the question settings.
