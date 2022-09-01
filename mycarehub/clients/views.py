@@ -25,7 +25,7 @@ from mycarehub.clients.serializers import (
     SecurityQuestionResponseSerializer,
     SecurityQuestionSerializer,
 )
-from mycarehub.common.models.common_models import Contact, Facility
+from mycarehub.common.models.common_models import Facility
 from mycarehub.users.models import User
 
 
@@ -82,8 +82,11 @@ class ClientRegistrationView(APIView):
                 org = request_user.organisation
                 flavour = "CONSUMER"
                 with transaction.atomic():
+                    # TODO: use organisation unique identifier when workflow is set up
+                    # org = Organisation.objects.get(id=data["organisation_id"])
+
                     new_user, _ = User.objects.get_or_create(
-                        username=data["name"],
+                        id=data["user_id"],
                         defaults={
                             "name": data["name"],
                             "gender": data["gender"],
@@ -95,57 +98,25 @@ class ClientRegistrationView(APIView):
                         },
                     )
 
-                    # create a contact, already opted in
-                    contact_data = {
-                        "contact_value": data["phone_number"],
-                        "flavour": flavour,
-                        "contact_type": "PHONE",
-                        "opted_in": True,
-                        "flavour": flavour,
-                        "user": new_user,
-                        "organisation": org,
-                        "created_by": request_user.pk,
-                        "updated_by": request_user.pk,
-                    }
-                    contact = Contact.objects.create(**contact_data)
-
-                    # create an identifier (CCC)
-                    identifier_data = {
-                        "identifier_type": "CCC",
-                        "identifier_value": data["ccc_number"],
-                        "identifier_use": "OFFICIAL",
-                        "description": "CCC Number, Primary Identifier",
-                        "is_primary_identifier": True,
-                        "organisation": org,
-                        "created_by": request_user.pk,
-                        "updated_by": request_user.pk,
-                    }
-                    identifier = Identifier.objects.create(**identifier_data)
-
                     # retrieve the facility by the unique name
-                    facility_name = data["facility"]
+                    # TODO: use facility unique identifier when workflow is set up
+                    facility_name = data["facility_name"]
                     facility = Facility.objects.get(name=facility_name)
 
                     # create a client
                     client, _ = Client.objects.get_or_create(
                         user=new_user,
                         defaults={
+                            "id": data["client_id"],
                             "client_types": list(data["client_types"]),
                             "user": new_user,
                             "enrollment_date": data["enrollment_date"],
                             "current_facility": facility,
-                            "counselled": data["counselled"],
                             "organisation": org,
                             "created_by": request_user.pk,
                             "updated_by": request_user.pk,
                         },
                     )
-
-                    # add the contact to the client
-                    client.contacts.add(contact)
-
-                    # add the identifier to the client
-                    client.identifiers.add(identifier)
 
                     ClientFacility.objects.get_or_create(
                         client=client,

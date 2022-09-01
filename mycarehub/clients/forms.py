@@ -35,18 +35,8 @@ class ClientRegistrationForm(forms.Form):
     to register new clients.
     """
 
-    facility = forms.ChoiceField(
-        required=True,
-        choices=get_facility_choices,
-        label="Client's Facility/Clinic",
-        help_text="The client's currently assigned facility/clinic",
-    )
-
-    client_types = forms.MultipleChoiceField(
-        required=False,
-        choices=ClientType.choices,
-        label="Client Type e.g PMTCT",
-        help_text="The client's current care classification",
+    user_id = forms.UUIDField(
+        required=True, label="User ID", help_text="The client's unique user identifier"
     )
 
     name = forms.CharField(
@@ -61,6 +51,36 @@ class ClientRegistrationForm(forms.Form):
         choices=GenderChoices.choices,
         label="Gender",
         help_text="Pick the client's gender from the drop-down list",
+    )
+
+    organisation_id = forms.UUIDField(
+        required=True,
+        label="Organisation ID",
+        help_text="The client's currently assigned facility/clinic",
+    )
+
+    facility_id = forms.UUIDField(
+        required=True,
+        label="Client's Facility/Clinic ID",
+        help_text="The client's currently assigned facility/clinic",
+    )
+
+    facility_name = forms.ChoiceField(
+        required=True,
+        choices=get_facility_choices,
+        label="Client's Facility/Clinic",
+        help_text="The client's currently assigned facility/clinic",
+    )
+
+    client_id = forms.UUIDField(
+        required=True, label="Client ID", help_text="The client's unique user identifier"
+    )
+
+    client_types = forms.MultipleChoiceField(
+        required=False,
+        choices=ClientType.choices,
+        label="Client Type e.g PMTCT",
+        help_text="The client's current care classification",
     )
 
     date_of_birth = forms.DateField(
@@ -79,22 +99,10 @@ class ClientRegistrationForm(forms.Form):
     )
 
     enrollment_date = forms.DateField(
-        required=True,
+        required=False,
         label="Enrollment date",
         help_text="When the client was first enrolled in care",
         validators=[
             validate_date_past,
         ],
-    )
-
-    ccc_number = forms.CharField(
-        required=True,
-        label="CCC Number",
-        help_text="Comprehensive Care Clinic Number, to be used as the primary identifier",
-    )
-
-    counselled = forms.BooleanField(
-        required=False,
-        label="Client Counselled?",
-        help_text="Whether the client has been counselled",
     )
