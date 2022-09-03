@@ -46,6 +46,13 @@ class ClientRegistrationForm(forms.Form):
         help_text="The client's full name i.e family, given and other names, on one row",
     )
 
+    handle = forms.CharField(
+        required=True,
+        max_length=255,
+        label="Username",
+        help_text="The client's unique username",
+    )
+
     gender = forms.ChoiceField(
         required=True,
         choices=GenderChoices.choices,

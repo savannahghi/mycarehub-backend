@@ -276,6 +276,7 @@ def test_client_registration_view_valid(user_with_all_permissions, client):
         url,
         data={
             "user_id": fake.uuid4(),
+            "handle": fake.name(),
             "facility_id": facility.id,
             "organisation_id": org.id,
             "facility_name": facility.name,

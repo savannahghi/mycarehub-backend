@@ -89,6 +89,7 @@ class ClientRegistrationView(APIView):
                         id=data["user_id"],
                         defaults={
                             "name": data["name"],
+                            "username": data["handle"],
                             "gender": data["gender"],
                             "date_of_birth": data["date_of_birth"],
                             "user_type": "CLIENT",
