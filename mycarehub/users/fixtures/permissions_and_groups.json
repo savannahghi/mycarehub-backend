@@ -706,50 +706,6 @@
     {
         "model": "auth.permission",
         "fields": {
-            "name": "Can add facility attachment",
-            "content_type": [
-                "common",
-                "facilityattachment"
-            ],
-            "codename": "add_facilityattachment"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can change facility attachment",
-            "content_type": [
-                "common",
-                "facilityattachment"
-            ],
-            "codename": "change_facilityattachment"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can delete facility attachment",
-            "content_type": [
-                "common",
-                "facilityattachment"
-            ],
-            "codename": "delete_facilityattachment"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
-            "name": "Can view facility attachment",
-            "content_type": [
-                "common",
-                "facilityattachment"
-            ],
-            "codename": "view_facilityattachment"
-        }
-    },
-    {
-        "model": "auth.permission",
-        "fields": {
             "name": "Can add user",
             "content_type": [
                 "users",

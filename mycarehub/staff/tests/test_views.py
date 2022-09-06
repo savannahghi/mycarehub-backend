@@ -4,7 +4,6 @@ from faker import Faker
 from model_bakery import baker
 from rest_framework import status
 
-from mycarehub.authority.models import AuthorityRole
 from mycarehub.common.models.common_models import Facility
 
 fake = Faker()
@@ -16,7 +15,6 @@ def test_staff_registration_view_valid(user_with_all_permissions, client):
     url = reverse("staff_registration")
     org = user_with_all_permissions.organisation
     facility = baker.make(Facility, organisation=org)
-    role = baker.make(AuthorityRole, organisation=org)
     response = client.post(
         url,
         data={
@@ -27,7 +25,6 @@ def test_staff_registration_view_valid(user_with_all_permissions, client):
             "phone_number": "+254722000000",
             "id_number": fake.random_int(),
             "staff_number": fake.random_int(),
-            "role": role.name,
         },
         content_type="application/json",
         accept="application/json",
