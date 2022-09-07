@@ -4,49 +4,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from mycarehub.clients.models import (
-    Caregiver,
-    Client,
-    ClientFacility,
-    HealthDiaryAttachment,
-    Identifier,
-    RelatedPerson,
-    SecurityQuestion,
-    SecurityQuestionResponse,
-)
+from mycarehub.clients.models import Caregiver, Client, ClientFacility
 from mycarehub.clients.serializers import (
     CaregiverSerializer,
     ClientFacilitySerializer,
     ClientRegistrationSerializer,
     ClientSerializer,
-    HealthDiaryAttachmentSerializer,
-    IdentifierSerializer,
-    RelatedPersonSerializer,
-    SecurityQuestionResponseSerializer,
-    SecurityQuestionSerializer,
 )
 from mycarehub.common.models.common_models import Facility
 from mycarehub.users.models import User
-
-
-class IdentifierViewSet(ModelViewSet):
-    queryset = Identifier.objects.order_by("pk")
-    serializer_class = IdentifierSerializer
-
-
-class SecurityQuestionViewSet(ModelViewSet):
-    queryset = SecurityQuestion.objects.order_by("pk")
-    serializer_class = SecurityQuestionSerializer
-
-
-class SecurityQuestionResponseViewSet(ModelViewSet):
-    queryset = SecurityQuestionResponse.objects.order_by("pk")
-    serializer_class = SecurityQuestionResponseSerializer
-
-
-class RelatedPersonViewSet(ModelViewSet):
-    queryset = RelatedPerson.objects.order_by("pk")
-    serializer_class = RelatedPersonSerializer
 
 
 class CaregiverViewSet(ModelViewSet):
@@ -62,11 +28,6 @@ class ClientViewSet(ModelViewSet):
 class ClientFacilityViewSet(ModelViewSet):
     queryset = ClientFacility.objects.order_by("pk")
     serializer_class = ClientFacilitySerializer
-
-
-class HealthDiaryAttachmentViewSet(ModelViewSet):
-    queryset = HealthDiaryAttachment.objects.order_by("pk")
-    serializer_class = HealthDiaryAttachmentSerializer
 
 
 class ClientRegistrationView(APIView):

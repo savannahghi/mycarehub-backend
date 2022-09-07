@@ -1,22 +1,18 @@
 import logging
 import uuid
 from collections import defaultdict
-from fractions import Fraction
 from typing import List, Tuple, TypeVar
 
-from django.conf import settings
 from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
 from django.db.models.base import ModelBase
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from PIL import Image
 
 from mycarehub.utils.general_utils import default_organisation
 
-from ..constants import CONTENT_TYPES
 from .organisation_models import Organisation
-from .utils import get_directory, is_image_type, unique_list
+from .utils import unique_list
 
 LOGGER = logging.getLogger(__file__)
 T_OA = TypeVar("T_OA", bound="OwnerlessAbstractBase", covariant=True)
@@ -224,7 +220,7 @@ class AbstractBase(OwnerlessAbstractBase):
             "related resources"
         )
         if self.organisation_verify:
-            for field in self.organisation_verify:
+            for field in self.organisation_verify:  # pragma: nocover
                 value = getattr(self, field)
                 if value and str(self.organisation.id) != str(value.organisation.id):
                     LOGGER.error(f"{field} has an inconsistent org")
@@ -233,74 +229,4 @@ class AbstractBase(OwnerlessAbstractBase):
     class Meta(OwnerlessAbstractBase.Meta):
         """Define a sensible default ordering."""
 
-        abstract = True
-
-
-class Attachment(AbstractBase):
-    """Shared model for all attachments."""
-
-    content_type = models.CharField(max_length=100, choices=CONTENT_TYPES)
-    data = models.FileField(upload_to=get_directory, max_length=65535)
-    title = models.CharField(max_length=255)
-    creation_date = models.DateTimeField(default=timezone.now)
-    size = models.IntegerField(
-        help_text="The size of the attachment in bytes", null=True, blank=True
-    )
-    description = models.TextField(null=True, blank=True)
-    aspect_ratio = models.CharField(max_length=50, blank=True, null=True)
-
-    model_validators = ["validate_image_size"]
-
-    def validate_image_size(self):
-        """Ensure that the supplied image size matches the actual file."""
-        if not is_image_type(self.content_type):
-            return
-
-        image = Image.open(self.data)
-        self.size = len(image.fp.read())
-
-        width, height = image.size
-        msg_template = (
-            "Your image has a {axis} of {actual_size} {extra_text} "
-            "pixels which is larger than allowable dimension of "
-            "{expected_size} pixels."
-        )
-        msg = None
-        if height > settings.MAX_IMAGE_HEIGHT:
-            msg = msg_template.format(
-                axis="height",
-                actual_size=height,
-                expected_size=settings.MAX_IMAGE_HEIGHT,
-                extra_text="{extra_text}",
-            )
-
-        if width > settings.MAX_IMAGE_WIDTH:
-            msg = (
-                msg.format(extra_text="and width of {}".format(width))
-                if msg
-                else msg_template.format(
-                    axis="width",
-                    actual_size=width,
-                    expected_size=settings.MAX_IMAGE_WIDTH,
-                    extra_text="",
-                )
-            )
-
-        if msg:
-            msg = msg.format(extra_text="")
-            raise ValidationError(msg)
-
-        # Set the image aspect ratio
-        float_ratio = float(width / height)
-        fraction_ratio = str(Fraction(float_ratio).limit_denominator())
-        self.aspect_ratio = fraction_ratio.replace("/", ":")
-
-    def __str__(self):
-        """Represent an attachment by its title."""
-        return self.title
-
-    class Meta:
-        """Declare Attachment as an abstract model."""
-
-        ordering = ("-updated", "-created")
         abstract = True

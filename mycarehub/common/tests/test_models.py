@@ -1,6 +1,5 @@
 import datetime
 import os
-import tempfile
 import uuid
 from random import randint
 from unittest.mock import patch
@@ -9,7 +8,6 @@ import pytest
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.core.files import File
 from django.test import TestCase
 from django.utils import timezone
 from faker import Faker
@@ -24,13 +22,7 @@ from mycarehub.common.models import (
     is_image_type,
     unique_list,
 )
-from mycarehub.common.models.common_models import (
-    Address,
-    Contact,
-    Feedback,
-    Notification,
-    UserSurveys,
-)
+from mycarehub.common.models.common_models import Address, Contact
 
 fake = Faker()
 
@@ -80,136 +72,12 @@ def test_google_application_credentials():
     assert os.path.isfile(cred_path)
 
 
-def test_facility_attachment_string_representation():
-    """Test common behavior of the abstract base model."""
-    org = baker.make(Organisation)
-    facility = baker.make("common.Facility", name="Test Facility", organisation=org)
-    notes = "Notes"
-    facility_attachment = baker.make(
-        "common.FacilityAttachment",
-        facility=facility,
-        notes=notes,
-        title="Title",
-        organisation=org,
-        content_type="text/plain",
-        _create_files=True,
-    )
-    assert str(facility_attachment) == "Title"
-
-
 def get_temporary_image(temp_file):
     size = (200, 200)
     color = (255, 0, 0, 0)
     image = Image.new("RGB", size, color)
     image.save(temp_file, "jpeg")
     return temp_file
-
-
-def test_facility_attachment_inconsistent_organisation():
-    org1 = baker.make(Organisation)
-    org2 = baker.make(Organisation)
-    facility = baker.make("common.Facility", name="Test Facility", organisation=org1)
-    notes = "Notes"
-    temp_file = tempfile.NamedTemporaryFile()
-    test_image = get_temporary_image(temp_file)
-    facility_attachment = baker.prepare(
-        "common.FacilityAttachment",
-        facility=facility,
-        notes=notes,
-        title="Title",
-        organisation=org2,
-        data=test_image.file,
-        content_type="image/jpeg",
-    )
-    with pytest.raises(ValidationError) as e:
-        facility_attachment.save()
-
-    assert (
-        "'The organisation provided is not consistent with that of "
-        "organisation fields in related resources" in str(e.value.messages)
-    )
-
-
-def test_facility_attachment_blank_organisation():
-    org1 = baker.make(Organisation)
-    facility = baker.make("common.Facility", name="Test Facility", organisation=org1)
-    notes = "Notes"
-    temp_file = tempfile.NamedTemporaryFile()
-    test_image = get_temporary_image(temp_file)
-    facility_attachment = baker.prepare(
-        "common.FacilityAttachment",
-        facility=facility,
-        notes=notes,
-        title="Title",
-        organisation=None,
-        data=test_image.name,
-    )
-    with pytest.raises(Organisation.DoesNotExist):
-        facility_attachment.save()
-
-
-def test_facility_attachment_non_image_type():
-    org = baker.make(Organisation)
-    facility = baker.make("common.Facility", name="Test Facility", organisation=org)
-    notes = "Notes"
-    temp_file = tempfile.NamedTemporaryFile()
-    test_image = get_temporary_image(temp_file)
-    facility_attachment = baker.prepare(
-        "common.FacilityAttachment",
-        facility=facility,
-        notes=notes,
-        title="Title",
-        organisation=org,
-        data=File(test_image.file),
-        content_type="application/pdf",  # will not trigger validation
-    )
-    facility_attachment.save()
-
-
-def test_facility_attachment_excessively_tall_image():
-    org = baker.make(Organisation)
-    facility = baker.make("common.Facility", name="Test Facility", organisation=org)
-    notes = "Notes"
-
-    overly_tall = os.path.join(CURRENT_FOLDER, "overly_tall_image.png")
-    with open(overly_tall, "rb") as test_image:
-        fieldfile = File(test_image)
-        facility_attachment = baker.prepare(
-            "common.FacilityAttachment",
-            facility=facility,
-            notes=notes,
-            title="Title",
-            organisation=org,
-            data=fieldfile,
-            content_type="image/png",
-        )
-        with pytest.raises(ValidationError) as e:
-            facility_attachment.save()
-
-        assert "larger than allowable dimension" in str(e.value.messages)
-
-
-def test_facility_attachment_excessively_wide_image():
-    org = baker.make(Organisation)
-    facility = baker.make("common.Facility", name="Test Facility", organisation=org)
-    notes = "Notes"
-
-    overly_wide = os.path.join(CURRENT_FOLDER, "overly_wide_image.png")
-    with open(overly_wide, "rb") as test_image:
-        fieldfile = File(test_image)
-        facility_attachment = baker.prepare(
-            "common.FacilityAttachment",
-            facility=facility,
-            notes=notes,
-            title="Title",
-            organisation=org,
-            data=fieldfile,
-            content_type="image/png",
-        )
-        with pytest.raises(ValidationError) as e:
-            facility_attachment.save()
-
-        assert "larger than allowable dimension" in str(e.value.messages)
 
 
 def test_facility_error_saving():
@@ -717,43 +585,3 @@ def test_validate_if_contact_exists():
     )
     with pytest.raises(Exception):
         duplicate_contact.save()
-
-
-def test_notification_str():
-    notification = baker.make(
-        Notification,
-        notification_type="TELECONSULT",
-        title="Test Notification",
-    )
-    assert str(notification) == "TELECONSULT - Test Notification"
-
-
-def test_user_surveys():
-    response = baker.make(
-        UserSurveys,
-        link="https://mycarehub.org/survey",
-        title="survey_title",
-        description="survey_description",
-        has_submitted=False,
-        token="survey_token",
-        user=baker.make(
-            get_user_model(), name=fake.name(), organisation=baker.make("common.Organisation")
-        ),
-    )
-    assert str(response) == "survey_title"
-
-
-def test_feedback_str():
-    feedback = baker.make(
-        Feedback,
-        feedback_type="GENERAL_FEEDBACK",
-        satisfaction_level=1,
-        feedback="Test feedback",
-        user=baker.make(
-            get_user_model(), name=fake.name(), organisation=baker.make("common.Organisation")
-        ),
-        service_name="Test service",
-        requires_followup=False,
-        phone_number="+1111111111",
-    )
-    assert str(feedback) == "Test feedback"

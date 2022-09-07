@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import ArrayField
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.enums import TextChoices
 from django.utils import timezone
@@ -8,15 +7,17 @@ from django.utils.translation import gettext_lazy as _
 from wagtail.snippets.models import register_snippet
 
 from mycarehub.common.models import AbstractBase
-from mycarehub.common.models.base_models import Attachment
 from mycarehub.common.models.common_models import Address, Contact, Facility
-from mycarehub.staff.models import Staff
-from mycarehub.users.models import GenderChoices
 
 
 class FlavourChoices(TextChoices):
     PRO = "PRO", _("PRO")
     CONSUMER = "CONSUMER", _("CONSUMER")
+
+
+class Languages(TextChoices):
+    en = "en", "English"
+    sw = "sw", "Swahili"
 
 
 class ClientType(models.TextChoices):
@@ -69,134 +70,6 @@ class ClientType(models.TextChoices):
     KENYAEMR = "KenyaEMR", _("Kenya EMR")
 
 
-class Languages(TextChoices):
-    en = "en", "English"
-    sw = "sw", "Swahili"
-
-
-@register_snippet
-class Identifier(AbstractBase):
-    class IdentifierType(models.TextChoices):
-        CCC = "CCC", _("Comprehensive Care Clinic Number")
-        NATIONAL_ID = "NATIONAL_ID", _("National ID Document")
-        BIRTH_CERTIFICATE = "BIRTH_CERTIFICATE", _("Birth Certificate")
-        PASSPORT = "PASSPORT", _("Passport")
-        UNIQUE = "UNIQUE", _("Unique Identifier")
-
-    class IdentifierUse(models.TextChoices):
-        OFFICIAL = "OFFICIAL", _("Official Identifier")
-        TEMPORARY = "TEMPORARY", _("Temporary Identifier")
-        OLD = "OLD", _("Old (retired) Identifier")
-
-    identifier_type = models.CharField(
-        choices=IdentifierType.choices, max_length=64, null=False, blank=False
-    )
-    identifier_value = models.TextField()
-    identifier_use = models.CharField(
-        choices=IdentifierUse.choices, max_length=64, null=False, blank=False
-    )
-    description = models.TextField()
-    valid_from = models.DateTimeField(default=timezone.now)
-    valid_to = models.DateTimeField(null=True, blank=True)
-    is_primary_identifier = models.BooleanField(default=False)
-
-    model_validators = ["validate_if_identifier_value_exists"]
-
-    def __str__(self):
-        return f"{self.identifier_value} ({self.identifier_type}, {self.identifier_use})"
-
-    class Meta(AbstractBase.Meta):
-        unique_together = (
-            "identifier_type",
-            "identifier_value",
-        )
-
-    def validate_if_identifier_value_exists(self):
-        if Identifier.objects.filter(
-            identifier_value=self.identifier_value,
-            identifier_type=self.identifier_type,
-        ).exists():
-            raise ValidationError(
-                _(
-                    "Identifier value %(identifier_value)s of "
-                    "type %(identifier_type)s already exists"
-                ),
-                params={
-                    "identifier_value": self.identifier_value,
-                    "identifier_type": self.identifier_type,
-                },
-            )
-
-
-@register_snippet
-class SecurityQuestion(AbstractBase):
-    class ResponseType(models.TextChoices):
-        TEXT = "TEXT", _("Text Response")
-        DATE = "DATE", _("Date Response")
-        NUMBER = "NUMBER", _("Number Response")
-        BOOLEAN = "BOOLEAN", _("Boolean Response")
-
-    stem = models.TextField()
-    description = models.TextField()
-    sequence = models.IntegerField(default=0)
-    response_type = models.CharField(max_length=32, choices=ResponseType.choices)
-    flavour = models.CharField(
-        choices=FlavourChoices.choices, max_length=32, null=True, blank=True
-    )
-
-    def __str__(self) -> str:
-        return self.stem
-
-
-@register_snippet
-class SecurityQuestionResponse(AbstractBase):
-
-    user = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
-    question = models.ForeignKey(SecurityQuestion, on_delete=models.PROTECT)
-    timestamp = models.DateTimeField(default=timezone.now)
-    response = models.TextField()  # should be hashed
-    is_correct = models.BooleanField(default=True)
-
-    class Meta:
-        unique_together = (
-            "user",
-            "question",
-        )
-
-    def __str__(self) -> str:
-        return f"Response to '{self.question}' by '{self.user.name}'"
-
-
-@register_snippet
-class RelatedPerson(AbstractBase):
-    class RelationshipType(TextChoices):
-        SPOUSE = "SPOUSE", _("Spouse")
-        NEXT_OF_KIN = "NEXT_OF_KIN", _("Next of kin")
-        CHILD = "CHILD", _("Child")
-        PARENT = "PARENT", _("Parent")
-        SIBLING = "SIBLING", _("Sibling")
-        NEIGHBOUR = "NEIGHBOUR", _("Neighbour")
-        OTHER = "OTHER", _("Other")
-
-    first_name = models.TextField()
-    last_name = models.TextField()
-    other_name = models.TextField()
-    date_of_birth = models.DateField(null=True, blank=True)
-    gender = models.CharField(max_length=16, choices=GenderChoices.choices)
-    relationship_type = models.CharField(max_length=64, choices=RelationshipType.choices)
-    addresses = models.ManyToManyField(
-        Address,
-        related_name="related_person_addresses",
-    )
-    contacts = models.ManyToManyField(
-        Contact,
-        related_name="related_person_contacts",
-    )
-
-    def __str__(self):
-        return f"{self.first_name} {self.other_name} {self.last_name} ({self.relationship_type})"
-
-
 class Caregiver(AbstractBase):
     """
     A caregiver is a person who is assigned to a client.
@@ -226,7 +99,6 @@ class Client(AbstractBase):
     client_types = ArrayField(
         models.CharField(
             max_length=64,
-            choices=ClientType.choices,
         ),
         null=False,
         blank=True,
@@ -279,9 +151,6 @@ class Client(AbstractBase):
     # counselled
     counselled = models.BooleanField(default=False)
 
-    # a client can have multiple unique identifiers
-    identifiers = models.ManyToManyField(Identifier, related_name="client_identifiers")
-
     addresses = models.ManyToManyField(
         Address,
         related_name="client_addresses",
@@ -292,11 +161,7 @@ class Client(AbstractBase):
         related_name="client_contacts",
         blank=True,
     )
-    related_persons = models.ManyToManyField(
-        RelatedPerson,
-        related_name="client_related_persons",
-        blank=True,
-    )
+
     languages = ArrayField(
         models.CharField(
             max_length=150,
@@ -338,115 +203,3 @@ class ClientFacility(AbstractBase):
             "client",
             "facility",
         )
-
-
-@register_snippet
-class HealthDiaryEntry(AbstractBase):
-    class HealthDiaryEntryType(models.TextChoices):
-        HOME_PAGE_HEALTH_DIARY_ENTRY = (
-            "HOME_PAGE_HEALTH_DIARY_ENTRY",
-            "Home page health diary entry",
-        )
-        OTHER_NOTE = (
-            "OTHER_NOTE",
-            "Other note e.g a note taken after a conversation",
-        )
-
-    class MoodScale(models.TextChoices):
-        VERY_HAPPY = "VERY_HAPPY", _("Very happy")
-        HAPPY = "HAPPY", _("Happy")
-        NEUTRAL = "NEUTRAL", _("Neutral")
-        SAD = "SAD", _("Sad")
-        VERY_SAD = "VERY_SAD", _("Very sad")
-
-    client = models.ForeignKey(Client, on_delete=models.PROTECT)
-    mood = models.CharField(choices=MoodScale.choices, max_length=16)
-    note = models.TextField(null=True, blank=True)
-    entry_type = models.CharField(
-        choices=HealthDiaryEntryType.choices,
-        max_length=36,
-        default=HealthDiaryEntryType.HOME_PAGE_HEALTH_DIARY_ENTRY,
-    )
-    share_with_health_worker = models.BooleanField(default=False)
-    shared_at = models.DateTimeField(null=True, blank=True)
-
-    organisation_verify = ["client"]
-
-    def __str__(self) -> str:
-        return f"{self.client}'s {self.entry_type} ({self.mood})"
-
-    class Meta(AbstractBase.Meta):
-        verbose_name_plural = "health diary entries"
-
-
-class HealthDiaryAttachment(Attachment):
-    """
-    A client can attach videos and pictures to their health diary.
-    """
-
-    health_diary_entry = models.ForeignKey(HealthDiaryEntry, on_delete=models.PROTECT)
-
-    organisation_verify = ["health_diary_entry"]
-
-
-@register_snippet
-class HealthDiaryQuote(AbstractBase):
-    """
-    Clients will only be allowed to make health diary entries once every
-    e.g 24 hours.
-
-    In between, a random quote should be displayed each time the health diary
-    is rendered.
-    """
-
-    quote = models.TextField(unique=True)
-    by = models.TextField()  # quote author
-
-
-class ServiceRequest(AbstractBase):
-    """
-    ServiceRequest is used to consolidate service requests sent by clients.
-    """
-
-    class ServiceRequestType(models.TextChoices):
-        RED_FLAG = "RED_FLAG", _("RED FLAG")
-        PIN_RESET = "PIN_RESET", _("PIN_RESET")
-        PROFILE_UPDATE = "PROFILE_UPDATE", _("PROFILE_UPDATE")
-
-    class ServiceRequestStatus(models.TextChoices):
-        PENDING = "PENDING", _("PENDING")
-        IN_PROGRESS = "IN PROGRESS", _("IN PROGRESS")
-        RESOLVED = "RESOLVED", _("RESOLVED")
-
-    client = models.ForeignKey(Client, on_delete=models.PROTECT)
-    request_type = models.CharField(
-        choices=ServiceRequestType.choices,
-        max_length=36,
-    )
-    request = models.TextField()
-    status = models.CharField(
-        choices=ServiceRequestStatus.choices,
-        max_length=36,
-        default=ServiceRequestStatus.PENDING,
-    )
-
-    in_progress_by = models.ForeignKey(
-        Staff,
-        null=True,
-        blank=True,
-        on_delete=models.PROTECT,
-        related_name="service_request_in_progress_by_staff",
-    )
-    in_progress_at = models.DateTimeField(null=True, blank=True)
-
-    resolved_by = models.ForeignKey(
-        Staff,
-        null=True,
-        blank=True,
-        on_delete=models.PROTECT,
-        related_name="service_request_resolved_by_staff",
-    )
-    resolved_at = models.DateTimeField(null=True, blank=True)
-
-    facility = models.ForeignKey(Facility, null=True, blank=True, on_delete=models.SET_NULL)
-    meta = models.JSONField(null=True, blank=True)

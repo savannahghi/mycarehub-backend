@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from ..constants import COUNTRY_CODES, WHITELIST_COUNTIES
 from ..utils import get_constituencies, get_counties, get_sub_counties, get_wards
-from .base_models import AbstractBase, AbstractBaseManager, AbstractBaseQuerySet, Attachment
+from .base_models import AbstractBase, AbstractBaseManager, AbstractBaseQuerySet
 
 User = get_user_model()
 
@@ -83,20 +83,6 @@ class Facility(AbstractBase):
 
     class Meta(AbstractBase.Meta):
         verbose_name_plural = "facilities"
-
-
-class FacilityAttachment(Attachment):
-    """Any document attached to a facility."""
-
-    facility = models.ForeignKey(Facility, on_delete=models.PROTECT)
-    notes = models.TextField()
-
-    organisation_verify = ["facility"]
-
-    class Meta(AbstractBase.Meta):
-        """Define ordering and other attributes for attachments."""
-
-        ordering = ("-updated", "-created")
 
 
 class UserFacilityAllotment(AbstractBase):
@@ -380,73 +366,3 @@ class AuditLog(AbstractBase):
     record_type = models.TextField()
     notes = models.TextField()
     payload = JSONField()
-
-
-class FAQ(AbstractBase):
-    class FlavourChoices(models.TextChoices):
-        PRO = "PRO", _("PRO")
-        CONSUMER = "CONSUMER", _("CONSUMER")
-
-    title = models.TextField(unique=True)
-    description = models.TextField(unique=True, null=True, blank=True)
-    body = models.TextField(unique=True)
-    flavour = models.CharField(
-        choices=FlavourChoices.choices, max_length=32, null=True, blank=True
-    )
-
-
-class Notification(AbstractBase):
-    class FlavourChoices(models.TextChoices):
-        PRO = "PRO", _("PRO")
-        CONSUMER = "CONSUMER", _("CONSUMER")
-
-    title = models.CharField(max_length=64)
-    body = models.TextField()
-    notification_type = models.CharField(max_length=32)
-    flavour = models.CharField(choices=FlavourChoices.choices, max_length=32)
-    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
-    facility = models.ForeignKey(Facility, null=True, blank=True, on_delete=models.CASCADE)
-    is_read = models.BooleanField(default=False)
-
-    def __str__(self) -> str:
-        return f"{self.notification_type} - {self.title}"
-
-
-class UserSurveys(AbstractBase):
-    """
-    UserSurveys Model defines the surveys that are provided to the client or
-    staff based on flavour.
-    If the user has filled in the survey, has_submitted is set to True
-    The link should be only be used once for every submission
-    """
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    link = models.TextField()
-    title = models.TextField()
-    description = models.TextField(null=True, blank=True)
-    has_submitted = models.BooleanField(default=False)
-    token = models.TextField(null=True, blank=True)
-    project_id = models.IntegerField(null=True, blank=True)
-    form_id = models.TextField(null=True, blank=True)
-    link_id = models.IntegerField(null=True, blank=True)
-
-    def __str__(self) -> str:
-        return f"{self.title}"
-
-
-class Feedback(AbstractBase):
-    """
-    Feedback Model defines the feedback that is provided to the client or
-    staff based on flavour.
-    """
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    feedback_type = models.CharField(max_length=32)
-    satisfaction_level = models.IntegerField(null=True, blank=True)
-    service_name = models.CharField(max_length=32, null=True, blank=True)
-    feedback = models.TextField(null=True, blank=True)
-    requires_followup = models.BooleanField(default=False)
-    phone_number = models.CharField(max_length=32, null=True, blank=True)
-
-    def __str__(self) -> str:
-        return f"{self.feedback}"

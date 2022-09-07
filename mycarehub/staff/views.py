@@ -3,8 +3,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from mycarehub.authority.models import AuthorityRole
-from mycarehub.clients.models import Identifier
 from mycarehub.common.models.common_models import Contact, Facility
 from mycarehub.users.models import User
 
@@ -53,20 +51,6 @@ class StaffRegistrationView(APIView):
                 }
                 contact = Contact.objects.create(**contact_data)
 
-                # create an identifier (ID)
-                identifier, _ = Identifier.objects.get_or_create(
-                    identifier_value=data["id_number"],
-                    identifier_type="NATIONAL_ID",
-                    defaults={
-                        "identifier_use": "OFFICIAL",
-                        "description": "ID Number, Primary Identifier",
-                        "is_primary_identifier": True,
-                        "organisation": org,
-                        "created_by": request_user.pk,
-                        "updated_by": request_user.pk,
-                    },
-                )
-
                 # retrieve the facility by the unique name
                 facility_name = data["facility"]
                 facility = Facility.objects.get(name=facility_name)
@@ -90,12 +74,6 @@ class StaffRegistrationView(APIView):
                 # add facility to the staff
                 staff.facilities.add(facility)
 
-                # add the identifier to the staff
-                staff.identifiers.add(identifier)
-
-                # add user to roles
-                for role in AuthorityRole.objects.filter(name=data["role"]):
-                    role.users.add(new_user)
                 # return the newly created staff
                 serialized_staff = StaffSerializer(staff)
                 return Response(serialized_staff.data, status=status.HTTP_201_CREATED)

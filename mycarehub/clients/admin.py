@@ -3,39 +3,7 @@ from django.contrib.admin.decorators import display
 
 from mycarehub.common.admin import BaseAdmin
 
-from .models import (
-    Caregiver,
-    Client,
-    ClientFacility,
-    HealthDiaryAttachment,
-    HealthDiaryEntry,
-    HealthDiaryQuote,
-    Identifier,
-    RelatedPerson,
-    SecurityQuestion,
-    SecurityQuestionResponse,
-    ServiceRequest,
-)
-
-
-@admin.register(Identifier)
-class IdentifierAdmin(BaseAdmin):
-    pass
-
-
-@admin.register(SecurityQuestion)
-class SecurityQuestionAdmin(BaseAdmin):
-    pass
-
-
-@admin.register(SecurityQuestionResponse)
-class SecurityQuestionResponseAdmin(BaseAdmin):
-    pass
-
-
-@admin.register(RelatedPerson)
-class RelatedPersonAdmin(BaseAdmin):
-    pass
+from .models import Caregiver, Client, ClientFacility
 
 
 @admin.register(Caregiver)
@@ -64,39 +32,3 @@ class ClientAdmin(BaseAdmin):
 @admin.register(ClientFacility)
 class ClientFacilityAdmin(BaseAdmin):
     pass
-
-
-@admin.register(HealthDiaryEntry)
-class HealthDiaryEntryAdmin(BaseAdmin):
-    list_display = (
-        "client",
-        "entry_type",
-        "mood",
-        "note",
-        "share_with_health_worker",
-        "shared_at",
-    )
-    date_hierarchy = "created"
-
-
-@admin.register(HealthDiaryAttachment)
-class HealthDiaryAttachmentAdmin(BaseAdmin):
-    list_display = (
-        "title",
-        "content_type",
-        "description",
-        "health_diary_entry",
-        "size",
-        "aspect_ratio",
-    )
-    date_hierarchy = "creation_date"
-
-
-@admin.register(HealthDiaryQuote)
-class HealthDiaryQuoteAdmin(BaseAdmin):
-    list_display = ("quote",)
-
-
-@admin.register(ServiceRequest)
-class ServiceRequestAdmin(BaseAdmin):
-    list_display = ("client", "request_type", "status")

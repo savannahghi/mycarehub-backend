@@ -13,13 +13,11 @@ from django.db.models import (
     UUIDField,
 )
 from django.db.models.base import Model
-from django.db.models.deletion import CASCADE
 from django.db.models.fields import DateField, DateTimeField, IntegerField
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
-from wagtail.snippets.models import register_snippet
 
 from mycarehub.utils.general_utils import default_organisation
 
@@ -40,20 +38,6 @@ class FlavourChoices(TextChoices):
     CONSUMER = "CONSUMER", _("CONSUMER")
 
 
-@register_snippet
-class TermsOfService(Model):
-    text = TextField()
-    valid_from = DateTimeField(default=timezone.now)
-    valid_to = DateTimeField(null=True, blank=True)
-    active = BooleanField(default=True)
-    flavour = CharField(choices=FlavourChoices.choices, max_length=32, null=True)
-    created = DateTimeField(default=timezone.now)
-    created_by = UUIDField(null=True, blank=True)
-    updated = DateTimeField(default=timezone.now)
-    updated_by = UUIDField(null=True, blank=True)
-    deleted_at = DateTimeField(null=True, blank=True)
-
-
 class User(AbstractUser):
     """Default user model."""
 
@@ -70,9 +54,6 @@ class User(AbstractUser):
     next_allowed_login = DateTimeField(default=timezone.now)
     failed_login_count = IntegerField(default=0)
     failed_security_count = IntegerField(default=0)
-    accepted_terms_of_service = ForeignKey(
-        TermsOfService, null=True, blank=True, on_delete=PROTECT
-    )
     push_tokens = ArrayField(
         CharField(max_length=256),
         null=True,
@@ -159,32 +140,6 @@ class User(AbstractUser):
         ]
 
 
-class UserPIN(Model):
-    """
-    UserPIN stores a user's PINs - including historical/invalid ones.
-    """
-
-    user = ForeignKey(User, on_delete=PROTECT)
-    hashed_pin = TextField()
-    salt = TextField(null=True)
-    valid_from = DateTimeField(default=timezone.now)
-    valid_to = DateTimeField(default=timezone.now)
-    user_type = CharField(choices=UserTypes.choices, max_length=32, null=True, blank=True)
-    active = BooleanField(default=True)
-    created = DateTimeField(default=timezone.now)
-    created_by = UUIDField(null=True, blank=True)
-    updated = DateTimeField(default=timezone.now)
-    updated_by = UUIDField(null=True, blank=True)
-    deleted_at = DateTimeField(null=True, blank=True)
-    flavour = CharField(choices=FlavourChoices.choices, max_length=32, null=True)
-
-    class Meta:
-        index_together = (
-            "user",
-            "user_type",
-        )
-
-
 class Metric(Model):
     class MetricType(TextChoices):
         ENGAGEMENT = "ENGAGEMENT", _("Engagement Metrics")
@@ -196,26 +151,6 @@ class Metric(Model):
     user = ForeignKey(User, on_delete=PROTECT)
     metric_type = CharField(choices=MetricType.choices, max_length=32)
     active = BooleanField(default=True)
-    created = DateTimeField(default=timezone.now)
-    created_by = UUIDField(null=True, blank=True)
-    updated = DateTimeField(default=timezone.now)
-    updated_by = UUIDField(null=True, blank=True)
-    deleted_at = DateTimeField(null=True, blank=True)
-
-
-class UserOTP(Model):
-    """
-    UserOTP stores a user's OTP
-    """
-
-    user = ForeignKey(User, on_delete=CASCADE)
-    is_valid = BooleanField()
-    generated_at = DateTimeField(default=timezone.now)
-    valid_until = DateTimeField(null=True, blank=True)
-    channel = CharField(max_length=10)
-    flavour = CharField(choices=FlavourChoices.choices, max_length=32, null=True)
-    phonenumber = TextField()
-    otp = CharField(max_length=8)
     created = DateTimeField(default=timezone.now)
     created_by = UUIDField(null=True, blank=True)
     updated = DateTimeField(default=timezone.now)

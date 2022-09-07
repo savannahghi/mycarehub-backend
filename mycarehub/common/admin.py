@@ -1,15 +1,8 @@
 from django.contrib import admin
 
-from mycarehub.common.models.common_models import (
-    FAQ,
-    Address,
-    AuditLog,
-    Contact,
-    Notification,
-    UserSurveys,
-)
+from mycarehub.common.models.common_models import Address, AuditLog, Contact
 
-from .models import Facility, FacilityAttachment, Organisation
+from .models import Facility, Organisation
 
 
 class BaseAdmin(admin.ModelAdmin):
@@ -37,24 +30,14 @@ class BaseAdmin(admin.ModelAdmin):
         obj.save()
 
 
-class FacilityAttachmentInline(admin.TabularInline):
-    model = FacilityAttachment
-
-
 @admin.register(Facility)
 class FacilityAdmin(BaseAdmin):
-    inlines = [FacilityAttachmentInline]
     list_display = (
         "name",
         "mfl_code",
         "county",
     )
     list_filter = ("county",)
-
-
-@admin.register(FacilityAttachment)
-class FacilityAttachmentAdmin(BaseAdmin):
-    pass
 
 
 @admin.register(Organisation)
@@ -74,19 +57,4 @@ class ContactAdmin(BaseAdmin):
 
 @admin.register(AuditLog)
 class AuditLogAdmin(BaseAdmin):
-    pass
-
-
-@admin.register(FAQ)
-class FAQAdmin(BaseAdmin):
-    pass
-
-
-@admin.register(Notification)
-class NotificationAdmin(BaseAdmin):
-    pass
-
-
-@admin.register(UserSurveys)
-class UserSurveysAdmin(BaseAdmin):
     pass

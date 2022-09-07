@@ -3,42 +3,9 @@ from drf_braces.serializers.form_serializer import FormSerializer, make_form_ser
 from phonenumber_field.formfields import PhoneNumberField
 from rest_framework.serializers import CharField, ListField, ModelSerializer, UUIDField
 
-from mycarehub.clients.models import (
-    Caregiver,
-    Client,
-    ClientFacility,
-    HealthDiaryAttachment,
-    Identifier,
-    RelatedPerson,
-    SecurityQuestion,
-    SecurityQuestionResponse,
-)
+from mycarehub.clients.models import Caregiver, Client, ClientFacility
 
 from .forms import ClientRegistrationForm
-
-
-class IdentifierSerializer(ModelSerializer):
-    class Meta:
-        model = Identifier
-        fields = "__all__"
-
-
-class SecurityQuestionSerializer(ModelSerializer):
-    class Meta:
-        model = SecurityQuestion
-        fields = "__all__"
-
-
-class SecurityQuestionResponseSerializer(ModelSerializer):
-    class Meta:
-        model = SecurityQuestionResponse
-        fields = "__all__"
-
-
-class RelatedPersonSerializer(ModelSerializer):
-    class Meta:
-        model = RelatedPerson
-        fields = "__all__"
 
 
 class CaregiverSerializer(ModelSerializer):
@@ -68,9 +35,3 @@ class ClientRegistrationSerializer(FormSerializer):
             forms.MultipleChoiceField: make_form_serializer_field(ListField),
             forms.UUIDField: make_form_serializer_field(UUIDField),
         }
-
-
-class HealthDiaryAttachmentSerializer(ModelSerializer):
-    class Meta:
-        model = HealthDiaryAttachment
-        fields = "__all__"

@@ -2,14 +2,9 @@ from django.contrib import admin
 
 from mycarehub.common.admin import BaseAdmin
 
-from .models import ServiceRequest, Staff
+from .models import Staff
 
 
 @admin.register(Staff)
 class StaffAdmin(BaseAdmin):
-    pass
-
-
-@admin.register(ServiceRequest)
-class ServiceRequestAdmin(BaseAdmin):
     pass

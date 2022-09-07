@@ -5,7 +5,6 @@ from django.utils.translation import gettext_lazy as _
 
 from mycarehub.common.admin import BaseAdmin
 from mycarehub.users.forms import UserChangeForm, UserCreationForm
-from mycarehub.users.models import TermsOfService, UserPIN
 
 from .models import Metric
 
@@ -39,30 +38,10 @@ class UserAdmin(auth_admin.UserAdmin):
     search_fields = ["name"]
 
 
-@admin.register(UserPIN)
-class UserPINAdmin(BaseAdmin):
-    list_display = [
-        "user",
-        "valid_from",
-        "valid_to",
-        "user_type",
-    ]
-
-
 @admin.register(Metric)
 class MetricAdmin(BaseAdmin):
     list_display = [
         "user",
         "timestamp",
         "metric_type",
-    ]
-
-
-@admin.register(TermsOfService)
-class TermsOfServiceAdmin(BaseAdmin):
-    list_display = [
-        "text",
-        "flavour",
-        "valid_from",
-        "valid_to",
     ]
