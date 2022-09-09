@@ -6,9 +6,8 @@ from django.db.models import Q
 from django.db.models.fields.json import JSONField
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
 
-from ..constants import COUNTRY_CODES, WHITELIST_COUNTIES
+from ..constants import WHITELIST_COUNTIES
 from ..utils import get_constituencies, get_counties, get_sub_counties, get_wards
 from .base_models import AbstractBase, AbstractBaseManager, AbstractBaseQuerySet
 
@@ -285,66 +284,6 @@ class UserFacilityAllotment(AbstractBase):
         """Define ordering and other attributes for attachments."""
 
         ordering = ("-updated", "-created")
-
-
-class Address(AbstractBase):
-    class AddressType(models.TextChoices):
-        POSTAL = "POSTAL", _("Postal Address")
-        PHYSICAL = "PHYSICAL", _("Physical Address")
-        BOTH = "BOTH", _("Both physical and postal")
-
-    address_type = models.CharField(choices=AddressType.choices, max_length=16)
-    text = models.TextField()
-    postal_code = models.TextField()
-    country = models.CharField(max_length=255, choices=COUNTRY_CODES, default="KEN")
-
-    def __str__(self):
-        return f"{self.text} ({self.address_type})"
-
-
-class Contact(AbstractBase):
-    class ContactType(models.TextChoices):
-        PHONE = "PHONE", _("PHONE")
-        EMAIL = "EMAIL", _("EMAIL")
-
-    class FlavourChoices(models.TextChoices):
-        PRO = "PRO", _("PRO")
-        CONSUMER = "CONSUMER", _("CONSUMER")
-
-    contact_type = models.CharField(choices=ContactType.choices, max_length=16)
-    contact_value = models.TextField()
-    opted_in = models.BooleanField(default=False)
-    flavour = models.CharField(
-        choices=FlavourChoices.choices, max_length=32, null=True, blank=True
-    )
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-
-    model_validators = ["validate_if_contact_exists"]
-
-    def __str__(self):
-        return f"{self.contact_value} ({self.contact_type})"
-
-    class Meta:
-        unique_together = ["contact_value", "flavour"]
-
-    def validate_if_contact_exists(self):
-        if Contact.objects.filter(
-            contact_value=self.contact_value,
-            contact_type=self.contact_type,
-            flavour=self.flavour,
-        ).exists():
-            raise ValidationError(
-                _(
-                    "Contact value %(contact_value)s of "
-                    "type %(contact_type)s and flavour "
-                    "%(flavour)s already exists"
-                ),
-                params={
-                    "contact_value": self.contact_value,
-                    "contact_type": self.contact_type,
-                    "flavour": self.flavour,
-                },
-            )
 
 
 class AuditLog(AbstractBase):

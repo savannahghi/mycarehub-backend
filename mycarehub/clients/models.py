@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from wagtail.snippets.models import register_snippet
 
 from mycarehub.common.models import AbstractBase
-from mycarehub.common.models.common_models import Address, Contact, Facility
+from mycarehub.common.models.common_models import Facility
 
 
 class FlavourChoices(TextChoices):
@@ -150,17 +150,6 @@ class Client(AbstractBase):
     # a client should only be invited to the platform after they have been
     # counselled
     counselled = models.BooleanField(default=False)
-
-    addresses = models.ManyToManyField(
-        Address,
-        related_name="client_addresses",
-        blank=True,
-    )
-    contacts = models.ManyToManyField(
-        Contact,
-        related_name="client_contacts",
-        blank=True,
-    )
 
     languages = ArrayField(
         models.CharField(

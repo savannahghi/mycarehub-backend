@@ -22,7 +22,6 @@ from mycarehub.common.models import (
     is_image_type,
     unique_list,
 )
-from mycarehub.common.models.common_models import Address, Contact
 
 fake = Faker()
 
@@ -554,34 +553,3 @@ class UserFacilityAllotmentTest(TestCase):
         allotment.save()
 
         assert UserFacilityAllotment.get_facilities_for_allotment(allotment).count() == 5
-
-
-def test_address_str():
-    addr = baker.make(Address, text="Wapi", address_type="BOTH")
-    assert str(addr) == "Wapi (BOTH)"
-
-
-def test_contact_str():
-    contact = baker.make(Contact, contact_value="0722000000", contact_type="PHONE")
-    assert str(contact) == "0722000000 (PHONE)"
-
-
-def test_validate_if_contact_exists():
-    contact_value = "+1111111111"
-    contact_type = "PHONE"
-    flavour = "CONSUMER"
-    baker.make(
-        Contact,
-        contact_value=contact_value,
-        contact_type=contact_type,
-        flavour=flavour,
-    )
-
-    duplicate_contact = baker.prepare(
-        Contact,
-        contact_value=contact_value,
-        contact_type=contact_type,
-        flavour=flavour,
-    )
-    with pytest.raises(Exception):
-        duplicate_contact.save()

@@ -45,9 +45,19 @@ urlpatterns = [
         name="graphql",
     ),
     path(
+        "client_remove/<pk>",
+        ClientRegistrationView.as_view(),
+        name="client_removal",
+    ),
+    path(
         "client_registration",
         ClientRegistrationView.as_view(),
         name="client_registration",
+    ),
+    path(
+        "staff_remove/<pk>",
+        StaffRegistrationView.as_view(),
+        name="staff_removal",
     ),
     path(
         "staff_registration",

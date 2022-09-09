@@ -3,7 +3,7 @@ from django.db import models
 from wagtail.snippets.models import register_snippet
 
 from mycarehub.common.models import AbstractBase
-from mycarehub.common.models.common_models import Address, Contact, Facility
+from mycarehub.common.models.common_models import Facility
 
 
 @register_snippet
@@ -28,17 +28,6 @@ class Staff(AbstractBase):
         related_name="assigned_staff",
         null=False,
         blank=False,
-    )
-
-    addresses = models.ManyToManyField(
-        Address,
-        related_name="staff_addresses",
-        blank=True,
-    )
-    contacts = models.ManyToManyField(
-        Contact,
-        related_name="staff_contacts",
-        blank=True,
     )
 
     def __str__(self):

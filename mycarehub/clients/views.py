@@ -99,3 +99,22 @@ class ClientRegistrationView(APIView):
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )  # pragma: nocover
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        try:
+            user = User.objects.get(pk=pk)
+            client = Client.objects.get(user=user)
+            allocation = ClientFacility.objects.get(client=client)
+
+            with transaction.atomic():
+                allocation.delete()
+                client.delete()
+                user.delete()
+
+        except Exception as e:
+            return Response(
+                {"exception": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response(status=status.HTTP_200_OK)
