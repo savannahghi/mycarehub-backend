@@ -169,3 +169,56 @@ def test_client_registration_view_invalid(user_with_all_permissions, client):
         accept="application/json",
     )
     assert response.status_code == 400
+
+
+def test_client_deletion_view_valid(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+    org = user_with_all_permissions.organisation
+
+    facility = baker.make(Facility, organisation=org)
+    user = get_user_model().objects.create_superuser(
+        email=fake.email(),
+        password="pass123",
+        username=str(uuid.uuid4()),
+    )
+
+    user_client = baker.make(
+        Client,
+        client_types=["PMTCT"],
+        user=user,
+        current_facility=facility,
+        fhir_patient_id=str(uuid.uuid4()),
+        organisation=org,
+    )
+
+    baker.make(ClientFacility, client=user_client, facility=facility)
+
+    url = reverse("client_removal", kwargs={"pk": user.id})
+
+    response = client.delete(
+        url,
+        content_type="application/json",
+        accept="application/json",
+    )
+
+    assert response.status_code == 200
+
+
+def test_client_deletion_view_invalid(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+
+    user = get_user_model().objects.create_superuser(
+        email=fake.email(),
+        password="pass123",
+        username=str(uuid.uuid4()),
+    )
+
+    url = reverse("client_removal", kwargs={"pk": user.id})
+
+    response = client.delete(
+        url,
+        content_type="application/json",
+        accept="application/json",
+    )
+
+    assert response.status_code == 400

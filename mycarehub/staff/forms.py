@@ -11,11 +11,8 @@ class StaffRegistrationForm(forms.Form):
     to register new Staffs.
     """
 
-    facility = forms.ChoiceField(
-        required=True,
-        choices=get_facility_choices,
-        label="Staff's Facility/Clinic",
-        help_text="The Staff's currently assigned facility/clinic",
+    user_id = forms.UUIDField(
+        required=True, label="User ID", help_text="The staff's unique user identifier"
     )
 
     name = forms.CharField(
@@ -23,6 +20,13 @@ class StaffRegistrationForm(forms.Form):
         max_length=255,
         label="Name",
         help_text="The Staff's full name i.e family, given and other names, on one row",
+    )
+
+    handle = forms.CharField(
+        required=True,
+        max_length=255,
+        label="Username",
+        help_text="The staff's unique username",
     )
 
     gender = forms.ChoiceField(
@@ -47,10 +51,27 @@ class StaffRegistrationForm(forms.Form):
         help_text="The Staff's phone number",
     )
 
-    id_number = forms.IntegerField(
+    organisation_id = forms.UUIDField(
         required=True,
-        label="ID Number",
-        help_text="ID, to be used as the primary identifier",
+        label="Organisation ID",
+        help_text="The staff's currently assigned facility/clinic",
+    )
+
+    facility_id = forms.UUIDField(
+        required=True,
+        label="Staff's Facility/Clinic ID",
+        help_text="The staff's currently assigned facility/clinic",
+    )
+
+    facility_name = forms.ChoiceField(
+        required=True,
+        choices=get_facility_choices,
+        label="Staff's Facility/Clinic",
+        help_text="The staff's currently assigned facility/clinic",
+    )
+
+    staff_id = forms.UUIDField(
+        required=True, label="Staff ID", help_text="The staff's unique user identifier"
     )
 
     staff_number = forms.CharField(
