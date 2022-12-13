@@ -1,3 +1,4 @@
+from .chooser import author_chooser_viewset
 from .interaction import (
     ContentBookmarkViewSet,
     ContentLikeViewSet,
@@ -18,4 +19,5 @@ __all__ = [
     ContentBookmarkViewSet,
     AuthorSnippetViewSet,
     ContentItemCategorySnippetViewSet,
+    author_chooser_viewset,
 ]

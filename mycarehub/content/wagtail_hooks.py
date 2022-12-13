@@ -4,7 +4,7 @@ from wagtail.core import hooks
 from wagtail.snippets.models import register_snippet
 
 from .models import Author, ContentItem, ContentItemCategory
-from .views import AuthorSnippetViewSet, ContentItemCategorySnippetViewSet
+from .views import AuthorSnippetViewSet, ContentItemCategorySnippetViewSet, author_chooser_viewset
 
 
 @hooks.register("insert_global_admin_js")
@@ -89,3 +89,8 @@ def show_organisation_media_only(media, request):
     media = media.filter(organisation=request.user.organisation)
 
     return media
+
+
+@hooks.register("register_admin_viewset")
+def register_author_chooser_viewset():
+    return author_chooser_viewset

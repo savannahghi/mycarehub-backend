@@ -6,6 +6,7 @@ from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from rest_framework.fields import Field, ReadOnlyField
 from taggit.models import TaggedItemBase
+from wagtail.admin.forms import WagtailAdminPageForm
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.api import APIField
 from wagtail.fields import RichTextField
@@ -142,6 +143,17 @@ class ContentItemIndexPage(Page):
         return context
 
 
+class ContentItemPageForm(WagtailAdminPageForm):
+    def __init__(
+        self, data=None, files=None, parent_page=None, subscription=None, *args, **kwargs
+    ):
+        super().__init__(data, files, parent_page, subscription, *args, **kwargs)
+
+        self.fields["categories"].queryset = self.fields["categories"].queryset.filter(
+            organisation=self.for_user.organisation
+        )
+
+
 class ContentItem(Page):
     """
     A `ContentItem` is an article, video, document etc. These are managed using
@@ -271,6 +283,8 @@ class ContentItem(Page):
     def clean(self):
         if self.item_type == "ARTICLE" and self.hero_image is None:
             raise ValidationError("an article must have a hero image")
+
+    base_form_class = ContentItemPageForm
 
     content_panels = Page.content_panels + [
         MultiFieldPanel(
