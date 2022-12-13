@@ -85,7 +85,6 @@ THIRD_PARTY_APPS = [
     "django.contrib.admin",
     "graphene_django",
     "wagtail.contrib.forms",
-    "wagtail_automatic_redirects",
     "wagtail.contrib.redirects",
     "wagtail.embeds",
     "wagtail.sites",
@@ -97,7 +96,6 @@ THIRD_PARTY_APPS = [
     "wagtail.admin",
     "wagtail.core",
     "wagtail.contrib.modeladmin",
-    "wagtailvideos",
     "wagtailmedia",
     "taggit",
     "modelcluster",
@@ -170,7 +168,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 ]
 
 # STATIC
@@ -380,6 +377,7 @@ REFRESH_TOKEN_GRACE_PERIOD_SECONDS = env.int("REFRESH_TOKEN_GRACE_PERIOD_SECONDS
 CORS_URLS_REGEX = r"^/api/.*$"
 
 # wagtail CMS
+WAGTAILADMIN_BASE_URL = ""  # TODO: Add env
 SITE_NAME = "myCareHub"
 WAGTAIL_SITE_NAME = SITE_NAME
 WAGTAIL_APPEND_SLASH = True
@@ -402,7 +400,7 @@ WAGTAILSEARCH_BACKENDS = {
 WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = True
 TAGGIT_CASE_INSENSITIVE = True
 WAGTAILMEDIA = {
-    "MEDIA_MODEL": "wagtailmedia.Media",
+    "MEDIA_MODEL": "content.CustomMedia",
     "MEDIA_FORM_BASE": "mycarehub.content.forms.CustomBaseMediaForm",
     "AUDIO_EXTENSIONS": ["aac", "wav"],
     "VIDEO_EXTENSIONS": ["mp4"],

@@ -1,6 +1,6 @@
 import pytest
 from django.core.exceptions import ValidationError
-from wagtail.core.models import Site
+from wagtail.models import Site
 
 from mycarehub.content.wagtail_hooks import before_publish_page, get_global_admin_js
 

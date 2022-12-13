@@ -1,11 +1,19 @@
 import django_filters
 from django.db.models import Count, Q
 from rest_framework.filters import BaseFilterBackend
+from wagtail.admin.filters import WagtailFilterSet
 
 from mycarehub.common.filters.base_filters import CommonFieldsFilterset
 from mycarehub.content.models import ContentItem
 
-from .models import ContentBookmark, ContentItemCategory, ContentLike, ContentShare, ContentView
+from .models import (
+    Author,
+    ContentBookmark,
+    ContentItemCategory,
+    ContentLike,
+    ContentShare,
+    ContentView,
+)
 
 
 class TagFilter(BaseFilterBackend):
@@ -86,3 +94,15 @@ class ContentBookmarkFilter(CommonFieldsFilterset):
     class Meta:
         model = ContentBookmark
         fields = "__all__"
+
+
+class ContentItemCategoryFilterSet(WagtailFilterSet):
+    class Meta:
+        model = ContentItemCategory
+        fields = ["name"]
+
+
+class AuthorFilterSet(WagtailFilterSet):
+    class Meta:
+        model = Author
+        fields = ["name"]

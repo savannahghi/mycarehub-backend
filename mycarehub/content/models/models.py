@@ -6,18 +6,17 @@ from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from rest_framework.fields import Field, ReadOnlyField
 from taggit.models import TaggedItemBase
-from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, MultiFieldPanel
+from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.api import APIField
-from wagtail.core.fields import RichTextField
-from wagtail.core.models import Orderable, Page
-from wagtail.documents.edit_handlers import DocumentChooserPanel
+from wagtail.fields import RichTextField
 from wagtail.images.api.fields import ImageRenditionField
-from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.models import Orderable, Page
 from wagtail.search import index
-from wagtail.snippets.models import register_snippet
 from wagtailmedia.edit_handlers import MediaChooserPanel
 
-from mycarehub.common.models import AbstractBase
+from mycarehub.common.models import Organisation
+
+from .snippets import Author, ContentItemCategory
 
 RICH_TEXT_FIELD_FEATURES = [
     "h1",
@@ -67,79 +66,6 @@ class MediaSerializedField(Field):
         return media
 
 
-@register_snippet
-class Author(AbstractBase):
-    """
-    Author holds an author and their avatar (image).
-
-        - the `title` field is used for the author's display name.
-        - the `data` field contains the avatar (author's image).
-    """
-
-    name = models.CharField(max_length=128, help_text="Author's name (will be displayed publicly)")
-    avatar = models.ForeignKey(
-        "wagtailimages.Image",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name="author_image",
-        help_text="An optional author picture (will be displayed publicly)",
-    )
-
-    panels = [
-        FieldPanel("name"),
-        ImageChooserPanel("avatar"),
-    ]
-
-    def __str__(self):
-        """Represent an author by their name."""
-        return self.name
-
-    class Meta(AbstractBase.Meta):
-        verbose_name_plural = "authors"
-
-
-@register_snippet
-class ContentItemCategory(index.Indexed, models.Model):
-    """
-    ContentItemCategory defines fixed (admin rather than author/editor defined)
-    categories for content.
-
-    It should be used to set up "predictable" categories e.g welcome content,
-    diet, fitness, onboarding etc.
-    """
-
-    name = models.CharField(
-        max_length=255,
-        help_text="A standard name for a type of content e.g fitness, diet etc. "
-        "These will be used in the user interface to group content so they "
-        "should be chosen carefully.",
-    )
-    icon = models.ForeignKey(
-        "wagtailimages.Image",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        related_name="content_item_category_icons",
-        help_text="An optional icon for the content item category. "
-        "This will be shown in the user interface so it should be chosen "
-        "with care.",
-    )
-
-    panels = [
-        FieldPanel("name"),
-        ImageChooserPanel("icon"),
-    ]
-
-    search_fields = [index.SearchField("name")]
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = "content item categories"
-
-
 class ContentItemTag(TaggedItemBase):
     """
     ContentItemTag is used to associate content items with tags.
@@ -186,6 +112,13 @@ class ContentItemIndexPage(Page):
     """
 
     intro = RichTextField(default=f"{settings.SITE_NAME}", help_text="The content site's tagline")
+    organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="%(app_label)s_%(class)s_related",
+    )
 
     content_panels = Page.content_panels + [
         FieldPanel("intro", classname="full"),
@@ -224,6 +157,14 @@ class ContentItem(Page):
         PDF_DOCUMENT = "PDF_DOCUMENT"
 
     # basic properties that each post has
+    organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="%(app_label)s_%(class)s_related",
+    )
+
     date = models.DateField(
         "Post date",
         help_text="This will be shown to readers as the publication date",
@@ -343,7 +284,7 @@ class ContentItem(Page):
         FieldPanel("author"),
         FieldPanel("item_type"),
         FieldPanel("intro"),
-        ImageChooserPanel("hero_image"),
+        FieldPanel("hero_image"),
         FieldPanel("body", classname="full"),
         FieldPanel("time_estimate_seconds"),
         # documents, images and media attached to content item pages
@@ -419,7 +360,7 @@ class ContentItemDocumentLink(Orderable):
     )
 
     panels = [
-        DocumentChooserPanel("document"),
+        FieldPanel("document"),
     ]
     api_fields = [
         APIField("document"),
@@ -481,103 +422,12 @@ class ContentItemGalleryImage(Orderable):
     caption = models.CharField(blank=True, max_length=250)
 
     panels = [
-        ImageChooserPanel("image"),
+        FieldPanel("image"),
         FieldPanel("caption"),
     ]
     api_fields = [
         APIField("image"),
     ]
-
-
-class ContentInteraction(AbstractBase):
-    """
-    This is an abstract base model that is used to hold common fields and
-    behaviours for content interactions e.g like, save, share etc.
-    """
-
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    content_item = models.ForeignKey(ContentItem, on_delete=models.PROTECT)
-
-    class Meta:
-        abstract = True
-
-
-class ContentLike(ContentInteraction):
-    """
-    When a user likes a content item, an entry is added here and the cached
-    count on the content item is updated.
-
-    When a user unlikes a content item, the entry here is removed and the cached
-    count on the content item is updated.
-
-    These updates should be performed in a transaction - with special care
-    taken to ensure that the incrementing and decrementing of the cached counts
-    is not prone to race conditions.
-    """
-
-    class Meta:
-        unique_together = (
-            "user",
-            "content_item",
-        )
-
-
-class ContentBookmark(ContentInteraction):
-    """
-    When a user bookmarks (saves or pins) a content item, an entry is added
-    here and the cached count on the content item is updated.
-
-    When a user removes a bookmark, the entry here is removed and the cached
-    count on the content item is updated.
-
-    These updates should be performed in a transaction - with special care
-    taken to ensure that the incrementing and decrementing of the cached counts
-    is not prone to race conditions.
-    """
-
-    class Meta:
-        unique_together = (
-            "user",
-            "content_item",
-        )
-
-
-class ContentShare(ContentInteraction):
-    """
-    When a user shares a content item, an entry is added
-    here and the cached count on the content item is updated.
-
-    There is no notion of "unsharing".
-
-    These updates should be performed in a transaction - with special care
-    taken to ensure that the incrementing and decrementing of the cached counts
-    is not prone to race conditions.
-    """
-
-    class Meta:
-        unique_together = (
-            "user",
-            "content_item",
-        )
-
-
-class ContentView(ContentInteraction):
-    """
-    When a user views a content item, an entry is added
-    here and the cached count on the content item is updated.
-
-    There is no notion of "unviewing".
-
-    These updates should be performed in a transaction - with special care
-    taken to ensure that the incrementing and decrementing of the cached counts
-    is not prone to race conditions.
-    """
-
-    class Meta:
-        unique_together = (
-            "user",
-            "content_item",
-        )
 
 
 class ContentItemQuestionnaire(Orderable):

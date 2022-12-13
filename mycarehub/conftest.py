@@ -5,7 +5,7 @@ from django.utils import timezone
 from faker import Faker
 from model_bakery import baker
 from taggit.models import Tag
-from wagtail.core.models import Page, Site
+from wagtail.models import Page, Site
 
 from mycarehub.content.models import Author, ContentItem, ContentItemCategory, ContentItemIndexPage
 from mycarehub.home.models import HomePage
@@ -136,4 +136,4 @@ def gen_rich_text_field():
     return fake.text()  # pragma: nocover
 
 
-baker.generators.add("wagtail.core.fields.RichTextField", gen_rich_text_field)
+baker.generators.add("wagtail.fields.RichTextField", gen_rich_text_field)
