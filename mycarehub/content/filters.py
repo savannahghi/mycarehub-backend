@@ -97,12 +97,16 @@ class ContentBookmarkFilter(CommonFieldsFilterset):
 
 
 class ContentItemCategoryFilterSet(WagtailFilterSet):
+    def filter_queryset(self, *args, **kwargs):
+        return self.queryset.filter(organisation=self.request.user.organisation)
     class Meta:
         model = ContentItemCategory
         fields = ["name"]
 
 
 class AuthorFilterSet(WagtailFilterSet):
+    def filter_queryset(self, *args, **kwargs):
+        return self.queryset.filter(organisation=self.request.user.organisation)
     class Meta:
         model = Author
         fields = ["name"]
