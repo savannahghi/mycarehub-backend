@@ -1,10 +1,18 @@
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from django.urls import reverse
 from model_bakery import baker
 from rest_framework import status
 
-from ..models import ContentBookmark, ContentLike, ContentShare, ContentView
+from ..models import (
+    Author,
+    ContentBookmark,
+    ContentItemCategory,
+    ContentLike,
+    ContentShare,
+    ContentView,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -252,3 +260,61 @@ def test_content_bookmark_create_view(
     response_data = response.json()
     print(response_data)
     assert response_data["id"] != ""
+
+
+def test_author_snippet_list(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+    url = reverse("wagtailsnippets_content_author:list")
+
+    baker.make(Author, organisation=user_with_all_permissions.organisation)
+
+    response = client.get(url)
+
+    print(response.content.decode())
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_content_item_category_snippet_list(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+    url = reverse("wagtailsnippets_content_contentitemcategory:list")
+
+    baker.make(ContentItemCategory, organisation=user_with_all_permissions.organisation)
+
+    response = client.get(url)
+
+    print(response.content)
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_author_chooser_list(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+    url = reverse("wagtailadmin_home")
+    url = url + "author_chooser/"
+
+    baker.make(Author, organisation=user_with_all_permissions.organisation)
+
+    response = client.get(url)
+
+    print(response.content)
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_add_media(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+    url = reverse("wagtailmedia:add", kwargs={"media_type": "video"})
+
+    video = SimpleUploadedFile("file.mp4", b"file_content", content_type="video/mp4")
+
+    response = client.post(
+        url,
+        data={
+            "title": "Test Video",
+        },
+        files={"file": video},
+        content_type="application/json",
+        accept="application/json",
+        follow=True,
+    )
+
+    print(response.content)
+    assert response.status_code == status.HTTP_200_OK

@@ -75,7 +75,7 @@ class ContentItemCategory(index.Indexed, models.Model):
         FieldPanel("icon"),
     ]
 
-    search_fields = [index.SearchField("name"), index.FilterField('organisation_id')]
+    search_fields = [index.SearchField("name"), index.FilterField("organisation_id")]
 
     def __str__(self):
         return self.name
