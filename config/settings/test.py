@@ -68,6 +68,9 @@ MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
 WHITENOISE_MANIFEST_STRICT = False
 GCS_BUCKET_ALLOWED_ORIGINS = env.list("GCS_BUCKET_ALLOWED_ORIGINS")
 
+# Admin
+ADMIN_URL = "test-admin/"
+
 
 def require_env(name: str) -> str:
     value = env(name)

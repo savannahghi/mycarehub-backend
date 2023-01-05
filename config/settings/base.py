@@ -253,7 +253,7 @@ EMAIL_TIMEOUT = 5
 
 # ADMIN
 # ------------------------------------------------------------------------------
-ADMIN_URL = "admin/"
+ADMIN_URL = env("DJANGO_ADMIN_URL", default="admin/")
 ADMINS = [
     (
         "Savannah Informatics Global Health Institute",
@@ -401,7 +401,7 @@ WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = True
 TAGGIT_CASE_INSENSITIVE = True
 WAGTAILMEDIA = {
     "MEDIA_MODEL": "content.CustomMedia",
-    "MEDIA_FORM_BASE": "mycarehub.content.forms.CustomBaseMediaForm",
+    "MEDIA_FORM_BASE": "mycarehub.content.filters.CustomBaseMediaForm",
     "AUDIO_EXTENSIONS": ["aac", "wav"],
     "VIDEO_EXTENSIONS": ["mp4"],
 }

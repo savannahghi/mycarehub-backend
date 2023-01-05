@@ -10,14 +10,14 @@ from .snippets import AuthorSnippetViewSet, ContentItemCategorySnippetViewSet
 from .views import ContentItemCategoryViewSet, CustomPageAPIViewset
 
 __all__ = [
-    CustomPageAPIViewset,
-    SignedURLView,
-    ContentItemCategoryViewSet,
-    ContentViewViewSet,
-    ContentShareViewSet,
-    ContentLikeViewSet,
-    ContentBookmarkViewSet,
-    AuthorSnippetViewSet,
-    ContentItemCategorySnippetViewSet,
-    author_chooser_viewset,
+    "CustomPageAPIViewset",
+    "SignedURLView",
+    "ContentItemCategoryViewSet",
+    "ContentViewViewSet",
+    "ContentShareViewSet",
+    "ContentLikeViewSet",
+    "ContentBookmarkViewSet",
+    "AuthorSnippetViewSet",
+    "ContentItemCategorySnippetViewSet",
+    "author_chooser_viewset",
 ]

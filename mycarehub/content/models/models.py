@@ -146,7 +146,7 @@ class ContentItemIndexPage(Page):
 class ContentItemPageForm(WagtailAdminPageForm):
     def __init__(
         self, data=None, files=None, parent_page=None, subscription=None, *args, **kwargs
-    ):
+    ):  # pragma: no cover
         super().__init__(data, files, parent_page, subscription, *args, **kwargs)
 
         self.fields["categories"].queryset = self.fields["categories"].queryset.filter(
