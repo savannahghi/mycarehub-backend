@@ -2,7 +2,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from model_bakery import baker
-from wagtail.core.models import Page
+from wagtail.models import Page
 
 from mycarehub.content.models import (
     Author,

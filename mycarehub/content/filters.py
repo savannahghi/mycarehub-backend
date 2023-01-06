@@ -1,11 +1,22 @@
 import django_filters
+from django.core.files.storage import get_storage_class
 from django.db.models import Count, Q
 from rest_framework.filters import BaseFilterBackend
+from wagtail.admin.filters import WagtailFilterSet
+from wagtailmedia.forms import BaseMediaForm
 
 from mycarehub.common.filters.base_filters import CommonFieldsFilterset
 from mycarehub.content.models import ContentItem
+from mycarehub.utils.signed_url import generate_media_name
 
-from .models import ContentBookmark, ContentItemCategory, ContentLike, ContentShare, ContentView
+from .models import (
+    Author,
+    ContentBookmark,
+    ContentItemCategory,
+    ContentLike,
+    ContentShare,
+    ContentView,
+)
 
 
 class TagFilter(BaseFilterBackend):
@@ -86,3 +97,38 @@ class ContentBookmarkFilter(CommonFieldsFilterset):
     class Meta:
         model = ContentBookmark
         fields = "__all__"
+
+
+class ContentItemCategoryFilterSet(WagtailFilterSet):
+    def filter_queryset(self, *args, **kwargs):
+        return self.queryset.filter(organisation=self.request.user.organisation)
+
+    class Meta:
+        model = ContentItemCategory
+        fields = ["name"]
+
+
+class AuthorFilterSet(WagtailFilterSet):
+    def filter_queryset(self, *args, **kwargs):
+        return self.queryset.filter(organisation=self.request.user.organisation)
+
+    class Meta:
+        model = Author
+        fields = ["name"]
+
+
+class CustomBaseMediaForm(BaseMediaForm):
+    def save(self, commit=True):  # pragma: no cover
+        instance = super().save(commit=False)
+
+        # Checks the storage class being used
+        # Google Cloud Storage should save only the file name
+        # because the upload is already done using a signed url
+        if get_storage_class().__name__ == "MediaRootGoogleCloudStorage":  # pragma: no cover
+            temp_file = instance.file
+            instance.file = generate_media_name(temp_file.name)
+
+        if commit:
+            instance.save()
+
+        return instance

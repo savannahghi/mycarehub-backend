@@ -1,8 +1,18 @@
 import pytest
 from django.core.exceptions import ValidationError
-from wagtail.core.models import Site
+from model_bakery import baker
+from wagtail.models import Site
 
-from mycarehub.content.wagtail_hooks import before_publish_page, get_global_admin_js
+from mycarehub.content.models import Author, ContentItem, CustomMedia
+from mycarehub.content.wagtail_hooks import (
+    before_publish_page,
+    chooser_show_organisation_pages_only,
+    explorer_show_organisation_pages_only,
+    get_global_admin_js,
+    set_organisation_after_page_create,
+    set_organisation_after_snippet_create,
+    show_organisation_media_only,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -67,3 +77,44 @@ def test_before_publish_content_item_article(
 ):
     # there should be no exception
     before_publish_page(request=request_with_user, page=content_item_with_tag_and_category)
+
+
+def test_set_organisation_after_page_create(
+    request_with_user,
+    content_item_with_tag_and_category,
+):
+    set_organisation_after_page_create(
+        request=request_with_user, page=content_item_with_tag_and_category
+    )
+
+
+def test_explorer_show_organisation_pages_only(
+    request_with_user,
+    content_item_with_tag_and_category,
+):
+    explorer_show_organisation_pages_only(
+        parent_page=None, pages=ContentItem.objects.all(), request=request_with_user
+    )
+
+
+def test_chooser_show_organisation_pages_only(
+    request_with_user,
+    content_item_with_tag_and_category,
+):
+    chooser_show_organisation_pages_only(
+        pages=ContentItem.objects.all(), request=request_with_user
+    )
+
+
+def test_set_organisation_after_snippet_create(request_with_user):
+    author = baker.make(Author)
+
+    set_organisation_after_snippet_create(request=request_with_user, instance=author)
+
+    assert author.organisation == request_with_user.user.organisation
+
+
+def test_show_organisation_media_only(request_with_user):
+    baker.make(CustomMedia, organisation=request_with_user.user.organisation)
+
+    show_organisation_media_only(media=CustomMedia.objects.all(), request=request_with_user)

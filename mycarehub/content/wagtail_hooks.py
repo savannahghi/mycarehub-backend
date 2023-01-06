@@ -1,8 +1,10 @@
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from wagtail.core import hooks
+from wagtail.snippets.models import register_snippet
 
-from .models import ContentItem
+from .models import Author, ContentItem, ContentItemCategory
+from .views import AuthorSnippetViewSet, ContentItemCategorySnippetViewSet, author_chooser_viewset
 
 
 @hooks.register("insert_global_admin_js")
@@ -50,3 +52,45 @@ def before_publish_page(request, page):
                 "attached before publication"
             )
             raise ValidationError(msg)
+
+
+@hooks.register("after_create_page")
+def set_organisation_after_page_create(request, page):
+    page.organisation = request.user.organisation
+    page.save()
+
+
+@hooks.register("construct_explorer_page_queryset")
+def explorer_show_organisation_pages_only(parent_page, pages, request):
+    pages = pages.exclude(owner__isnull=True).filter(owner__organisation=request.user.organisation)
+
+    return pages
+
+
+@hooks.register("construct_page_chooser_queryset")
+def chooser_show_organisation_pages_only(pages, request):
+    pages = pages.exclude(owner__isnull=True).filter(owner__organisation=request.user.organisation)
+
+    return pages
+
+
+register_snippet(Author, viewset=AuthorSnippetViewSet)
+register_snippet(ContentItemCategory, viewset=ContentItemCategorySnippetViewSet)
+
+
+@hooks.register("after_create_snippet")
+def set_organisation_after_snippet_create(request, instance):
+    instance.organisation = request.user.organisation
+    instance.save()
+
+
+@hooks.register("construct_media_chooser_queryset")
+def show_organisation_media_only(media, request):
+    media = media.filter(organisation=request.user.organisation)
+
+    return media
+
+
+@hooks.register("register_admin_viewset")
+def register_author_chooser_viewset():
+    return author_chooser_viewset

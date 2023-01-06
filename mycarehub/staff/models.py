@@ -1,12 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from wagtail.snippets.models import register_snippet
 
 from mycarehub.common.models import AbstractBase
 from mycarehub.common.models.common_models import Facility
 
 
-@register_snippet
 class Staff(AbstractBase):
     """ "
     Staff model is used to store staff details.

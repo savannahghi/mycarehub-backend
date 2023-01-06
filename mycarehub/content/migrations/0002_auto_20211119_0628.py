@@ -10,7 +10,7 @@ import mycarehub.common.models.base_models
 import mycarehub.content.models
 import mycarehub.users.models
 import uuid
-import wagtail.core.fields
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -76,7 +76,7 @@ class Migration(migrations.Migration):
                 ('intro', models.CharField(help_text="A teaser that will be shown when it's inappropriate to show the entire article", max_length=250)),
                 ('item_type', models.CharField(choices=[('ARTICLE', 'Article'), ('AUDIO_VIDEO', 'Audio Video'), ('PDF_DOCUMENT', 'Pdf Document')], help_text='Whether this item is an article, audio/video or document. This is used by the mobile app to determine how to render content. e.g with an article, the layout will be hero_image > body while for audio-visual content the media will come first and the body last. For documents, the document(s) will also be presented before the body text.', max_length=64)),
                 ('time_estimate_seconds', models.PositiveIntegerField(default=0, help_text='An estimate of how long it will take to read the article, in seconds. The mobile app(s) and website will render this in a more friendly form e.g minutes, hours etc.')),
-                ('body', wagtail.core.fields.RichTextField(help_text='The main article text, video description, audio file description or document description.')),
+                ('body', wagtail.fields.RichTextField(help_text='The main article text, video description, audio file description or document description.')),
                 ('like_count', models.PositiveIntegerField(default=0)),
                 ('bookmark_count', models.PositiveIntegerField(default=0)),
                 ('share_count', models.PositiveIntegerField(default=0)),
@@ -129,7 +129,7 @@ class Migration(migrations.Migration):
             name='ContentItemIndexPage',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
-                ('intro', wagtail.core.fields.RichTextField(default='myCareHub', help_text="The content site's tagline")),
+                ('intro', wagtail.fields.RichTextField(default='myCareHub', help_text="The content site's tagline")),
             ],
             options={
                 'abstract': False,

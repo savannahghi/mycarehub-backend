@@ -4,7 +4,6 @@ from django.db import models
 from django.db.models.enums import TextChoices
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from wagtail.snippets.models import register_snippet
 
 from mycarehub.common.models import AbstractBase
 from mycarehub.common.models.common_models import Facility
@@ -90,7 +89,6 @@ class Caregiver(AbstractBase):
     phone_number = models.TextField(null=True, blank=True, max_length=14)
 
 
-@register_snippet
 class Client(AbstractBase):
     """
     A client is a patient or non-professional end user.
@@ -175,7 +173,6 @@ class Client(AbstractBase):
         )
 
 
-@register_snippet
 class ClientFacility(AbstractBase):
     """
     ClientFacility tracks a client's assigned facilities and changes over time.

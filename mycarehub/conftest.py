@@ -5,7 +5,7 @@ from django.utils import timezone
 from faker import Faker
 from model_bakery import baker
 from taggit.models import Tag
-from wagtail.core.models import Page, Site
+from wagtail.models import Page, Site
 
 from mycarehub.content.models import Author, ContentItem, ContentItemCategory, ContentItemIndexPage
 from mycarehub.home.models import HomePage
@@ -66,7 +66,7 @@ def request_with_user(rf, django_user_model, user_with_all_permissions):
 
 
 @pytest.fixture
-def content_item_with_tag_and_category(request_with_user):
+def content_item_index(request_with_user):
     # get the root page
     site = Site.find_for_request(request_with_user)
     assert site is not None
@@ -90,6 +90,13 @@ def content_item_with_tag_and_category(request_with_user):
     home.add_child(instance=content_item_index)
     home.save_revision().publish()
 
+    content_item_index.save_revision().publish()
+
+    return content_item_index
+
+
+@pytest.fixture
+def content_item_with_tag_and_category(content_item_index):
     # get a hero image
     hero = baker.make("wagtailimages.Image", _create_files=True)
 
@@ -136,4 +143,4 @@ def gen_rich_text_field():
     return fake.text()  # pragma: nocover
 
 
-baker.generators.add("wagtail.core.fields.RichTextField", gen_rich_text_field)
+baker.generators.add("wagtail.fields.RichTextField", gen_rich_text_field)
