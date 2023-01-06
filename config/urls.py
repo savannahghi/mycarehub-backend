@@ -17,10 +17,8 @@ from wagtail.documents.api.v2.views import DocumentsAPIViewSet
 from wagtail.images.api.v2.views import ImagesAPIViewSet
 from wagtail.images.views.serve import ServeView
 
-from mycarehub.clients.views import ClientRegistrationView
 from mycarehub.common.views import AboutView, HomeView
 from mycarehub.content.views import CustomPageAPIViewset, SignedURLView
-from mycarehub.staff.views import StaffRegistrationView
 
 from .graphql_auth import DRFAuthenticatedGraphQLView
 
@@ -44,26 +42,26 @@ urlpatterns = [
         csrf_exempt(DRFAuthenticatedGraphQLView.as_view(graphiql=True)),
         name="graphql",
     ),
-    path(
-        "client_remove/<pk>",
-        ClientRegistrationView.as_view(),
-        name="client_removal",
-    ),
-    path(
-        "client_registration",
-        ClientRegistrationView.as_view(),
-        name="client_registration",
-    ),
-    path(
-        "staff_remove/<pk>",
-        StaffRegistrationView.as_view(),
-        name="staff_removal",
-    ),
-    path(
-        "staff_registration",
-        StaffRegistrationView.as_view(),
-        name="staff_registration",
-    ),
+    # path(
+    #     "client_remove/<pk>",
+    #     ClientRegistrationView.as_view(),
+    #     name="client_removal",
+    # ),
+    # path(
+    #     "client_registration",
+    #     ClientRegistrationView.as_view(),
+    #     name="client_registration",
+    # ),
+    # path(
+    #     "staff_remove/<pk>",
+    #     StaffRegistrationView.as_view(),
+    #     name="staff_removal",
+    # ),
+    # path(
+    #     "staff_registration",
+    #     StaffRegistrationView.as_view(),
+    #     name="staff_registration",
+    # ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     # Static file serving when using Gunicorn + Uvicorn for local web socket development

@@ -13,6 +13,7 @@ from .organisation_models import (
     OrganisationAbstractBase,
     OrganisationSequenceGenerator,
 )
+from .program_models import Program
 from .utils import is_image_type, unique_list
 
 __all__ = [
@@ -30,4 +31,5 @@ __all__ = [
     "ValidationMetaclass",
     "is_image_type",
     "unique_list",
+    "Program",
 ]

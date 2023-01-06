@@ -1,15 +1,10 @@
 import logging
 
-from allauth.account.signals import email_confirmed
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
-from django.core.mail import EmailMessage
-from django.db import transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.http import HttpRequest
-from django.template.loader import get_template
 from rest_framework.authtoken.models import Token
 
 LOGGER = logging.getLogger(__name__)
@@ -22,28 +17,6 @@ WHITELIST_PERMISSIONS = BASIC_PERMISSIONS + [
 ]
 
 User = get_user_model()
-
-
-@receiver(email_confirmed)
-def email_confirmed_hander(request, email_address, **kwargs):
-    """When an user's email is confirmed...
-
-    1. If their account is NOT confirmed, send them an email informing them that they
-    will be able to log in after the account is confirmed. Also send an email to admins.
-    2. If their account is confirmed, do nothing.
-    """
-    LOGGER.debug("handling email confirmed signal for email %s", email_address)
-    try:
-        user = User.objects.get(email=email_address)
-        if user.is_approved or user.approval_notified:
-            return False  # do nothing
-
-        send_admin_awaiting_approval_email(user, request)
-        send_user_awaiting_approval_email(user)
-        return True
-    except User.DoesNotExist as e:
-        LOGGER.debug("no user with email %s: %s", email_address, e)
-        return False
 
 
 def assign_basic_permissions(user):
@@ -83,72 +56,11 @@ def account_confirmed_handler(sender, instance, created, **kwargs):
         assign_basic_permissions(instance)
         if is_from_whitelist_domain(instance.email):
             assign_whitelist_permissions(instance)
-            instance.is_approved = True
             instance.save()
 
         return
 
-    if not instance.is_approved:
-        return  # ignore accounts that are not yet approved
-
-    if instance.approval_notified:
-        return  # do not re-send approval emails
-
-    send_user_account_approved_email(instance)
     return True
-
-
-def send_admin_awaiting_approval_email(user, request: HttpRequest) -> None:
-    context = {
-        "user": user,
-        "support_email": settings.SERVER_EMAIL,
-        "user_approval_url": request.build_absolute_uri(
-            "/admin/users/user/%s/change/" % str(user.pk)
-        ),
-    }
-    message = get_template("emails/account_pending_approval_admin.html").render(context)
-    mail = EmailMessage(
-        subject="myCareHub Admin System Account Pending Approval",
-        body=message,
-        from_email=settings.SERVER_EMAIL,
-        to=[admin.email for admin in User.objects.filter(is_staff=True)],
-        reply_to=[settings.SERVER_EMAIL],
-    )
-    mail.content_subtype = "html"
-    mail.send()
-
-
-def send_user_awaiting_approval_email(user):
-    context = {"user": user, "support_email": settings.SERVER_EMAIL}
-    message = get_template("emails/account_pending_approval_user.html").render(context)
-    mail = EmailMessage(
-        subject="myCareHub System Account Pending Approval",
-        body=message,
-        from_email=settings.SERVER_EMAIL,
-        to=[user.email],
-        reply_to=[settings.SERVER_EMAIL],
-    )
-    mail.content_subtype = "html"
-    mail.send()
-
-
-@transaction.atomic
-def send_user_account_approved_email(user):
-    context = {"user": user, "support_email": settings.SERVER_EMAIL}
-    message = get_template("emails/account_approved.html").render(context)
-    mail = EmailMessage(
-        subject="mycarehub System Account Approved",
-        body=message,
-        from_email=settings.SERVER_EMAIL,
-        to=[user.email],
-        reply_to=[settings.SERVER_EMAIL],
-    )
-    mail.content_subtype = "html"
-    mail.send()
-
-    # record the notification so that we do not re-send it
-    user.approval_notified = True
-    user.save()
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

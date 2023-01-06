@@ -15,7 +15,8 @@ from wagtail.models import Orderable, Page
 from wagtail.search import index
 from wagtailmedia.edit_handlers import MediaChooserPanel
 
-from mycarehub.common.models import Organisation
+from mycarehub.common.models import Organisation, Program
+from mycarehub.utils.general_utils import default_program
 
 from .snippets import Author, ContentItemCategory
 
@@ -120,6 +121,14 @@ class ContentItemIndexPage(Page):
         blank=True,
         related_name="%(app_label)s_%(class)s_related",
     )
+    program = models.ForeignKey(
+        Program,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="%(app_label)s_%(class)s_related",
+        default=default_program,
+    )
 
     content_panels = Page.content_panels + [
         FieldPanel("intro", classname="full"),
@@ -148,9 +157,9 @@ class ContentItemPageForm(WagtailAdminPageForm):
         self, data=None, files=None, parent_page=None, subscription=None, *args, **kwargs
     ):  # pragma: no cover
         super().__init__(data, files, parent_page, subscription, *args, **kwargs)
-
+        # breakpoint()
         self.fields["categories"].queryset = self.fields["categories"].queryset.filter(
-            organisation=self.for_user.organisation
+            organisation=self.for_user.organisation, programs=parent_page.program
         )
 
 
@@ -171,6 +180,14 @@ class ContentItem(Page):
     # basic properties that each post has
     organisation = models.ForeignKey(
         Organisation,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="%(app_label)s_%(class)s_related",
+    )
+
+    program = models.ForeignKey(
+        Program,
         on_delete=models.PROTECT,
         null=True,
         blank=True,

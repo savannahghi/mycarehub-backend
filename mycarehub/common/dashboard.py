@@ -25,7 +25,5 @@ def get_active_facility_count(user):
 
 def get_active_user_count(user):
     return User.objects.filter(
-        is_approved=True,
-        approval_notified=True,
         organisation=user.organisation,
     ).count()

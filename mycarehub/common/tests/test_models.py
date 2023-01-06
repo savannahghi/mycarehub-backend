@@ -18,6 +18,7 @@ from mycarehub.common.models import (
     Facility,
     Organisation,
     OwnerlessAbstractBase,
+    Program,
     UserFacilityAllotment,
     is_image_type,
     unique_list,
@@ -107,6 +108,11 @@ def test_organisation_string_representation():
     assert str(org) == "Test Organisation"
 
 
+def test_program_string_representation():
+    program = baker.make("common.Program", name="Test Program")
+    assert str(program) == "Test Program"
+
+
 class DictError(OwnerlessAbstractBase):
     """Raise validation errors with a dict."""
 
@@ -179,11 +185,16 @@ class AuditAbstractBaseModelTest(TestCase):
 
     def setUp(self):
         """Onset of testcase."""
+        self.program = baker.make(Program)
         self.leo = timezone.now()
         self.jana = timezone.now() - datetime.timedelta(days=1)
         self.juzi = timezone.now() - datetime.timedelta(days=2)
-        self.user_1 = baker.make(settings.AUTH_USER_MODEL, email=fake.email())
-        self.user_2 = baker.make(settings.AUTH_USER_MODEL, email=fake.email())
+        self.user_1 = baker.make(
+            settings.AUTH_USER_MODEL, email=fake.email(), program=self.program
+        )
+        self.user_2 = baker.make(
+            settings.AUTH_USER_MODEL, email=fake.email(), program=self.program
+        )
 
     def test_validate_updated_date_greater_than_created(self):
         """Test that updated date is greater than created."""
@@ -290,13 +301,19 @@ class UserFacilityAllotmentTest(TestCase):
         self.by_facility = UserFacilityAllotment.AllotmentType.BY_FACILITY
         self.by_region = UserFacilityAllotment.AllotmentType.BY_REGION
         self.organisation = baker.make(Organisation)
+        self.program = baker.make(Program)
         self.facilities = baker.make(
             Facility,
             5,
             county="Kajiado",
             organisation=self.organisation,
         )
-        self.user = baker.make(get_user_model(), name=fake.name(), organisation=self.organisation)
+        self.user = baker.make(
+            get_user_model(),
+            name=fake.name(),
+            organisation=self.organisation,
+            program=self.program,
+        )
         self.user_facility_allotment: UserFacilityAllotment = baker.make(
             UserFacilityAllotment,
             allotment_type=UserFacilityAllotment.AllotmentType.BY_FACILITY.value,
@@ -314,6 +331,7 @@ class UserFacilityAllotmentTest(TestCase):
         with pytest.raises(ValidationError) as e1:
             baker.make(
                 UserFacilityAllotment,
+                user=self.user,
                 allotment_type=self.by_both.value,
                 region_type=constituency.value,
             )
@@ -321,6 +339,7 @@ class UserFacilityAllotmentTest(TestCase):
         with pytest.raises(ValidationError) as e2:
             baker.make(
                 UserFacilityAllotment,
+                user=self.user,
                 allotment_type=self.by_region.value,
                 region_type=constituency.value,
             )
@@ -341,6 +360,7 @@ class UserFacilityAllotmentTest(TestCase):
         with pytest.raises(ValidationError) as e1:
             baker.make(
                 UserFacilityAllotment,
+                user=self.user,
                 allotment_type=self.by_both.value,
                 region_type=county.value,
             )
@@ -348,6 +368,7 @@ class UserFacilityAllotmentTest(TestCase):
         with pytest.raises(ValidationError) as e2:
             baker.make(
                 UserFacilityAllotment,
+                user=self.user,
                 allotment_type=self.by_region.value,
                 region_type=county.value,
             )
@@ -368,6 +389,7 @@ class UserFacilityAllotmentTest(TestCase):
         with pytest.raises(ValidationError) as e1:
             baker.make(
                 UserFacilityAllotment,
+                user=self.user,
                 allotment_type=self.by_both.value,
                 region_type=sub_county.value,
             )
@@ -375,6 +397,7 @@ class UserFacilityAllotmentTest(TestCase):
         with pytest.raises(ValidationError) as e2:
             baker.make(
                 UserFacilityAllotment,
+                user=self.user,
                 allotment_type=self.by_region.value,
                 region_type=sub_county.value,
             )
@@ -395,6 +418,7 @@ class UserFacilityAllotmentTest(TestCase):
         with pytest.raises(ValidationError) as e1:
             baker.make(
                 UserFacilityAllotment,
+                user=self.user,
                 allotment_type=self.by_both.value,
                 region_type=ward.value,
             )
@@ -402,6 +426,7 @@ class UserFacilityAllotmentTest(TestCase):
         with pytest.raises(ValidationError) as e2:
             baker.make(
                 UserFacilityAllotment,
+                user=self.user,
                 allotment_type=self.by_region.value,
                 region_type=ward.value,
             )
@@ -427,7 +452,12 @@ class UserFacilityAllotmentTest(TestCase):
     def test_get_facilities_for_user(self):
         """Tests for the `UserFacilityAllotment.get_facilities_for_user()` method."""
 
-        user = baker.make(get_user_model(), name=fake.name(), organisation=self.organisation)
+        user = baker.make(
+            get_user_model(),
+            name=fake.name(),
+            organisation=self.organisation,
+            program=self.program,
+        )
 
         assert UserFacilityAllotment.get_facilities_for_user(user).count() == 0
         assert UserFacilityAllotment.get_facilities_for_user(self.user).count() == len(
@@ -440,6 +470,7 @@ class UserFacilityAllotmentTest(TestCase):
         with pytest.raises(ValidationError) as e1:
             baker.make(
                 UserFacilityAllotment,
+                user=self.user,
                 allotment_type=self.by_both.value,
                 region_type=None,
             )
@@ -447,6 +478,7 @@ class UserFacilityAllotmentTest(TestCase):
         with pytest.raises(ValidationError) as e2:
             baker.make(
                 UserFacilityAllotment,
+                user=self.user,
                 allotment_type=self.by_region.value,
                 region_type=None,
             )
@@ -472,7 +504,12 @@ class UserFacilityAllotmentTest(TestCase):
         """Test that a user can be allotted individual facilities."""
 
         facilities = baker.make(Facility, 20, organisation=self.organisation)
-        user = baker.make(get_user_model(), name=fake.name(), organisation=self.organisation)
+        user = baker.make(
+            get_user_model(),
+            name=fake.name(),
+            organisation=self.organisation,
+            program=self.program,
+        )
         allotment: UserFacilityAllotment = baker.make(
             UserFacilityAllotment,
             allotment_type=UserFacilityAllotment.AllotmentType.BY_FACILITY.value,
@@ -496,7 +533,12 @@ class UserFacilityAllotmentTest(TestCase):
         """Test that a user can be allotted facilities by county."""
 
         baker.make(Facility, 25, county="Nairobi", organisation=self.organisation)
-        user = baker.make(get_user_model(), name=fake.name(), organisation=self.organisation)
+        user = baker.make(
+            get_user_model(),
+            name=fake.name(),
+            organisation=self.organisation,
+            program=self.program,
+        )
         allotment: UserFacilityAllotment = baker.make(
             UserFacilityAllotment,
             allotment_type=UserFacilityAllotment.AllotmentType.BY_REGION.value,
@@ -534,7 +576,12 @@ class UserFacilityAllotmentTest(TestCase):
             county="Nairobi",
             organisation=self.organisation,
         )
-        user = baker.make(get_user_model(), name=fake.name(), organisation=self.organisation)
+        user = baker.make(
+            get_user_model(),
+            name=fake.name(),
+            organisation=self.organisation,
+            program=self.program,
+        )
         allotment = baker.make(
             UserFacilityAllotment,
             allotment_type=self.by_both.value,

@@ -23,3 +23,19 @@ def default_organisation():
     except (ProgrammingError, Exception):  # pragma: nocover
         # this will occur during initial migrations on a clean db
         return uuid.UUID(settings.DEFAULT_ORG_ID)
+
+
+def default_program():
+    try:
+        from mycarehub.common.models import Program  # intentional late import
+
+        org, _ = Program.objects.get_or_create(
+            id=settings.DEFAULT_PROGRAM_ID,
+            defaults={
+                "name": f"{settings.ORGANISATION_NAME} Program",
+            },
+        )
+        return org.pk
+    except (ProgrammingError, Exception):  # pragma: nocover
+        # this will occur during initial migrations on a clean db
+        return uuid.UUID(settings.DEFAULT_PROGRAM_ID)

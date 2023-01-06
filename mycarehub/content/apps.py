@@ -7,6 +7,7 @@ class ContentConfig(AppConfig):
     name = "mycarehub.content"
 
     def ready(self):
+
         import rustface.willow  # noqa
 
         registry.register_plugin(rustface.willow)

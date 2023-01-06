@@ -117,11 +117,6 @@ LOCAL_APPS = [
     "mycarehub.content.apps.ContentConfig",
     "mycarehub.clients.apps.ClientsConfig",
     "mycarehub.staff.apps.StaffConfig",
-    "mycarehub.authority.apps.AuthorityConfig",
-    "mycarehub.communities.apps.CommunityConfig",
-    "mycarehub.screeningtools.apps.ScreeningtoolsConfig",
-    "mycarehub.appointments.apps.AppointmentsConfig",
-    "mycarehub.questionnaires.apps.QuestionnairesConfig",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -436,6 +431,9 @@ ORGANISATION_PHONE = env("ORGANISATION_PHONE", default="+254790360360")
 
 # used by the user model to assign a default organisation to a user during creation
 DEFAULT_ORG_ID = env("DEFAULT_ORG_ID", default="4181df12-ca96-4f28-b78b-8e8ad88b25df")
+
+# used by the user model to assign a default program to a user during creation
+DEFAULT_PROGRAM_ID = env("DEFAULT_PROGRAM_ID", default="f9274d93-35c2-450a-ae56-00c75e1f8a43")
 
 # BigAutoField needs migration of existing data and either changes to
 # dependencies or overriding dependencies

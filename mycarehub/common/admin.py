@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from mycarehub.common.models.common_models import AuditLog
 
-from .models import Facility, Organisation
+from .models import Facility, Organisation, Program
 
 
 class BaseAdmin(admin.ModelAdmin):
@@ -47,4 +47,9 @@ class OrganisationAdmin(BaseAdmin):
 
 @admin.register(AuditLog)
 class AuditLogAdmin(BaseAdmin):
+    pass
+
+
+@admin.register(Program)
+class ProgramAdmin(BaseAdmin):
     pass
