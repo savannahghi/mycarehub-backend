@@ -1,5 +1,6 @@
 import pytest
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 from model_bakery import baker
 from wagtail.models import Site
 
@@ -81,11 +82,38 @@ def test_before_publish_content_item_article(
 
 def test_set_organisation_after_page_create(
     request_with_user,
-    content_item_with_tag_and_category,
+    content_item_index,
 ):
-    set_organisation_after_page_create(
-        request=request_with_user, page=content_item_with_tag_and_category
+    set_organisation_after_page_create(request=request_with_user, page=content_item_index)
+
+
+def test_set_content_item_program_after_page_create(
+    request_with_user,
+    content_item_index,
+):
+
+    # get a hero image
+    hero = baker.make("wagtailimages.Image", _create_files=True)
+    # set up a content item
+    author = baker.make(Author)
+
+    content_item = ContentItem(
+        title="An article",
+        slug="article-1",
+        intro="intro",
+        body="body",
+        item_type="ARTICLE",
+        date=timezone.now().date(),
+        author=author,
+        hero_image=hero,
     )
+
+    content_item_index.add_child(instance=content_item)
+    content_item_index.save_revision().publish()
+
+    content_item.move(content_item_index, pos="last-child")
+
+    set_organisation_after_page_create(request=request_with_user, page=content_item)
 
 
 def test_explorer_show_organisation_pages_only(

@@ -1,7 +1,6 @@
 import uuid
 
 from django.contrib.auth.models import AbstractUser
-from django.contrib.postgres.fields import ArrayField
 from django.db.models import (
     PROTECT,
     BooleanField,
@@ -13,13 +12,12 @@ from django.db.models import (
     UUIDField,
 )
 from django.db.models.base import Model
-from django.db.models.fields import DateField, DateTimeField, IntegerField
+from django.db.models.fields import DateField, DateTimeField
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from phonenumber_field.modelfields import PhoneNumberField
 
-from mycarehub.utils.general_utils import default_organisation
+from mycarehub.utils.general_utils import default_organisation, default_program
 
 
 class UserTypes(TextChoices):
@@ -33,11 +31,6 @@ class GenderChoices(TextChoices):
     OTHER = "OTHER", _("Other")
 
 
-class FlavourChoices(TextChoices):
-    PRO = "PRO", _("PRO")
-    CONSUMER = "CONSUMER", _("CONSUMER")
-
-
 class User(AbstractUser):
     """Default user model."""
 
@@ -47,48 +40,17 @@ class User(AbstractUser):
     # this should be used as the display name
     name = CharField(_("Name of User"), blank=True, max_length=255)
     middle_name = TextField(blank=True)
-    handle = TextField(blank=True)  # @handle
-
-    last_successful_login = DateTimeField(null=True, blank=True)
-    last_failed_login = DateTimeField(null=True, blank=True)
-    next_allowed_login = DateTimeField(default=timezone.now)
-    failed_login_count = IntegerField(default=0)
-    failed_security_count = IntegerField(default=0)
-    push_tokens = ArrayField(
-        CharField(max_length=256),
-        null=True,
-        blank=True,
-    )
     gender = CharField(choices=GenderChoices.choices, max_length=16, null=True, blank=True)
     date_of_birth = DateField(null=True, blank=True)
     user_type = CharField(choices=UserTypes.choices, max_length=32, null=True, blank=True)
-
-    is_approved = BooleanField(
-        default=False,
-        help_text="When true, the user is able to log in to the main website (and vice versa)",
-    )
-    approval_notified = BooleanField(
-        default=False,
-        help_text="When true, the user has been notified that their account is approved",
-    )
-    phone = PhoneNumberField(null=True, blank=True)
     organisation = ForeignKey(
         "common.Organisation",
         on_delete=PROTECT,
         default=default_organisation,
     )
-    flavour = CharField(choices=FlavourChoices.choices, max_length=32, null=True)
-    terms_accepted = BooleanField(default=False, null=False)
-    avatar = TextField(blank=True, null=True)
-    is_suspended = BooleanField(
-        default=False,
+    program = ForeignKey(
+        "common.Program", on_delete=PROTECT, default=default_program, null=True, blank=True
     )
-    pin_change_required = BooleanField(default=True, blank=True, null=True)
-    has_set_pin = BooleanField(default=False, blank=True, null=True)
-    is_phone_verified = BooleanField(default=False, blank=True, null=True)
-    has_set_security_questions = BooleanField(default=False, blank=True, null=True)
-    pin_update_required = BooleanField(default=False, blank=True, null=True)
-    has_set_nickname = BooleanField(default=False, blank=True, null=True)
 
     @property
     def permissions(self):
@@ -134,7 +96,6 @@ class User(AbstractUser):
             ("can_export_data", "Can Export Data"),
             ("can_import_data", "Can Import Data"),
             ("system_administration", "System Administration"),
-            ("community_management", "Community Management"),
             ("content_management", "Content Management"),
             ("client_management", "Client Management"),
         ]

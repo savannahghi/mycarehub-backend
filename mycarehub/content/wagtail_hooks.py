@@ -57,6 +57,11 @@ def before_publish_page(request, page):
 @hooks.register("after_create_page")
 def set_organisation_after_page_create(request, page):
     page.organisation = request.user.organisation
+
+    if page.specific_class == ContentItem:
+        index = page.get_parent()
+        page.program = index.program
+
     page.save()
 
 

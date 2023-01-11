@@ -1,7 +1,5 @@
 import pytest
-from django.core.exceptions import PermissionDenied
 from django.urls import reverse
-from model_bakery import baker
 from rest_framework import status
 
 from mycarehub.common.models import Facility
@@ -20,19 +18,6 @@ def test_approved_mixin_approved_user(rf, user_with_all_permissions):
     view = HomeView()
     view.setup(request)
     view.dispatch(request)  # no error raised
-
-
-def test_approved_mixin_non_approved_authenticated_user(rf, django_user_model):
-    non_approved_user = baker.make(django_user_model, email="juha@kalulu.com", is_approved=False)
-    url = reverse("common:facilities")
-    request = rf.get(url)
-    request.user = non_approved_user
-    view = HomeView()
-    view.setup(request)
-    with pytest.raises(PermissionDenied) as e:
-        view.dispatch(request)  # no error raised
-
-    assert "PermissionDenied" in str(e)
 
 
 def test_home_view(user_with_all_permissions, client):

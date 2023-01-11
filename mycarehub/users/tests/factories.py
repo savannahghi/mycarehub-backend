@@ -10,8 +10,6 @@ class UserFactory(DjangoModelFactory):
     username = Faker("user_name")
     email = Faker("email")
     name = Faker("name")
-    is_approved = True
-    approval_notified = False
 
     @post_generation
     def password(self, create: bool, extracted: Sequence[Any], **kwargs):

@@ -11,7 +11,7 @@ class ApprovedMixin(UserPassesTestMixin, PermissionRequiredMixin, View):
     permission_denied_message = "Permission Denied"
 
     def test_func(self):
-        return self.request.user.is_authenticated and self.request.user.is_approved
+        return self.request.user.is_authenticated
 
 
 class BaseFormMixin(ModelFormMixin, View):

@@ -4,10 +4,10 @@ from mycarehub.content.filters import AuthorFilterSet, ContentItemCategoryFilter
 
 
 class AuthorSnippetViewSet(SnippetViewSet):
-    list_display = ["name", "avatar"]
+    list_display = ["name", "avatar", "get_programs"]
     filterset_class = AuthorFilterSet
 
 
 class ContentItemCategorySnippetViewSet(SnippetViewSet):
-    list_display = ["name", "icon"]
+    list_display = ["name", "icon", "get_programs"]
     filterset_class = ContentItemCategoryFilterSet

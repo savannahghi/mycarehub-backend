@@ -7,6 +7,7 @@ from model_bakery import baker
 from taggit.models import Tag
 from wagtail.models import Page, Site
 
+from mycarehub.common.models import Program
 from mycarehub.content.models import Author, ContentItem, ContentItemCategory, ContentItemIndexPage
 from mycarehub.home.models import HomePage
 from mycarehub.users.models import User
@@ -26,8 +27,13 @@ def test_email_backend(settings):
 
 
 @pytest.fixture
-def user() -> User:
-    return UserFactory()
+def program() -> Program:
+    return baker.make(Program)
+
+
+@pytest.fixture
+def user(program) -> User:
+    return UserFactory(program=program)
 
 
 @pytest.fixture

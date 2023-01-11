@@ -16,7 +16,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from mycarehub.common.constants import WHITELIST_COUNTIES
-from mycarehub.common.models import Facility, Organisation, UserFacilityAllotment
+from mycarehub.common.models import Facility, Organisation, Program, UserFacilityAllotment
 from mycarehub.common.serializers import FacilitySerializer
 
 from .test_utils import patch_baker
@@ -61,10 +61,9 @@ class LoggedInMixin(APITestCase):
         """Create a test user for the logged in session."""
         super(LoggedInMixin, self).setUp()
         username = str(uuid.uuid4())
+        self.program = baker.make(Program)
         self.user = get_user_model().objects.create_superuser(
-            email=fake.email(),
-            password="pass123",
-            username=username,
+            email=fake.email(), password="pass123", username=username, program=self.program
         )
         all_perms = Permission.objects.all()
         for perm in all_perms:
@@ -407,7 +406,9 @@ class UserFacilityViewSetTest(LoggedInMixin, APITestCase):
         )
 
     def test_create(self):
-        user = baker.make(get_user_model(), organisation=self.global_organisation)
+        user = baker.make(
+            get_user_model(), organisation=self.global_organisation, program=self.program
+        )
         data = {
             "allotment_type": self.by_facility.value,
             "facilities": map(lambda f: f.pk, self.facilities),
@@ -418,7 +419,9 @@ class UserFacilityViewSetTest(LoggedInMixin, APITestCase):
         assert response.status_code == 201
 
     def test_retrieve(self):
-        user = baker.make(get_user_model(), organisation=self.global_organisation)
+        user = baker.make(
+            get_user_model(), organisation=self.global_organisation, program=self.program
+        )
         instance: UserFacilityAllotment = baker.make(
             UserFacilityAllotment,
             allotment_type=self.by_facility.value,
@@ -435,7 +438,9 @@ class UserFacilityViewSetTest(LoggedInMixin, APITestCase):
         assert str(instance.pk) in allotments
 
     def test_patch(self):
-        user = baker.make(get_user_model(), organisation=self.global_organisation)
+        user = baker.make(
+            get_user_model(), organisation=self.global_organisation, program=self.program
+        )
         instance: UserFacilityAllotment = baker.make(
             UserFacilityAllotment,
             allotment_type=self.by_facility.value,
@@ -458,7 +463,9 @@ class UserFacilityViewSetTest(LoggedInMixin, APITestCase):
         assert response.data["counties"] == data["counties"]
 
     def test_put(self):
-        user = baker.make(get_user_model(), organisation=self.global_organisation)
+        user = baker.make(
+            get_user_model(), organisation=self.global_organisation, program=self.program
+        )
         instance: UserFacilityAllotment = baker.make(
             UserFacilityAllotment,
             allotment_type=self.by_facility.value,
@@ -499,7 +506,9 @@ class UserFacilityAllotmentFormTest(LoggedInMixin, TestCase):
         )
 
     def test_create(self):
-        user = baker.make(get_user_model(), organisation=self.global_organisation)
+        user = baker.make(
+            get_user_model(), organisation=self.global_organisation, program=self.program
+        )
         data = {
             "allotment_type": self.by_facility.value,
             "facilities": map(lambda f: f.pk, self.facilities),
@@ -531,7 +540,9 @@ class UserFacilityAllotmentFormTest(LoggedInMixin, TestCase):
         )
 
     def test_delete(self):
-        user = baker.make(get_user_model(), organisation=self.global_organisation)
+        user = baker.make(
+            get_user_model(), organisation=self.global_organisation, program=self.program
+        )
         instance: UserFacilityAllotment = baker.make(
             UserFacilityAllotment,
             allotment_type=self.by_facility.value,

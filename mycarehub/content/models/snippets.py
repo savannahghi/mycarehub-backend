@@ -1,11 +1,14 @@
+from django import forms
 from django.db import models
+from modelcluster.fields import ParentalManyToManyField
+from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel
 from wagtail.search import index
 
-from mycarehub.common.models import AbstractBase, Organisation
+from mycarehub.common.models import AbstractBase, Organisation, Program
 
 
-class Author(AbstractBase):
+class Author(AbstractBase, ClusterableModel):
     """
     Author holds an author and their avatar (image).
 
@@ -22,21 +25,26 @@ class Author(AbstractBase):
         related_name="author_image",
         help_text="An optional author picture (will be displayed publicly)",
     )
+    programs = ParentalManyToManyField(Program)
 
     panels = [
         FieldPanel("name"),
         FieldPanel("avatar"),
+        FieldPanel("programs", widget=forms.CheckboxSelectMultiple),
     ]
 
     def __str__(self):
         """Represent an author by their name."""
         return self.name
 
+    def get_programs(self):
+        return "\n".join([p.name for p in self.programs.all()])
+
     class Meta(AbstractBase.Meta):
         verbose_name_plural = "authors"
 
 
-class ContentItemCategory(index.Indexed, models.Model):
+class ContentItemCategory(index.Indexed, ClusterableModel):
     """
     ContentItemCategory defines fixed (admin rather than author/editor defined)
     categories for content.
@@ -69,16 +77,21 @@ class ContentItemCategory(index.Indexed, models.Model):
         blank=True,
         related_name="%(app_label)s_%(class)s_related",
     )
+    programs = ParentalManyToManyField(Program)
 
     panels = [
         FieldPanel("name"),
         FieldPanel("icon"),
+        FieldPanel("programs", widget=forms.CheckboxSelectMultiple),
     ]
 
     search_fields = [index.SearchField("name"), index.FilterField("organisation_id")]
 
     def __str__(self):
         return self.name
+
+    def get_programs(self):
+        return "\n".join([p.name for p in self.programs.all()])
 
     class Meta:
         verbose_name_plural = "content item categories"

@@ -29,8 +29,6 @@ def test_get_active_facility_count(user):
 def test_get_active_user_count(user):
     baker.make(
         User,
-        is_approved=True,
-        approval_notified=True,
         organisation=user.organisation,
     )
     assert get_active_user_count(user) >= 1
