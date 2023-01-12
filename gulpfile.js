@@ -5,10 +5,6 @@ const pjson = require("./package.json");
 // Plugins
 const autoprefixer = require("autoprefixer");
 const browserSync = require("browser-sync").create();
-const cleanCSS = require("gulp-clean-css");
-const del = require("del");
-const gulp = require("gulp");
-const merge = require("merge-stream");
 const plumber = require("gulp-plumber");
 const rename = require("gulp-rename");
 const gulpSass = require("gulp-sass");
