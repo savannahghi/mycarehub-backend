@@ -1,13 +1,25 @@
 """
 Module for all Form Tests.
 """
+from datetime import date, timedelta
+
 import pytest
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from mycarehub.users.forms import UserCreationForm
+from mycarehub.users.forms import UserCreationForm, validate_date_past
 from mycarehub.users.models import User
 
 pytestmark = pytest.mark.django_db
+
+
+def test_validate_date_past():
+    with pytest.raises(ValidationError):
+        future_date = date.today() + timedelta(days=4)
+        validate_date_past(future_date)
+
+    with pytest.raises(ValidationError):
+        validate_date_past("not a date")
 
 
 class TestUserCreationForm:

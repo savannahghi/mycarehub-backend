@@ -42,26 +42,6 @@ urlpatterns = [
         csrf_exempt(DRFAuthenticatedGraphQLView.as_view(graphiql=True)),
         name="graphql",
     ),
-    # path(
-    #     "client_remove/<pk>",
-    #     ClientRegistrationView.as_view(),
-    #     name="client_removal",
-    # ),
-    # path(
-    #     "client_registration",
-    #     ClientRegistrationView.as_view(),
-    #     name="client_registration",
-    # ),
-    # path(
-    #     "staff_remove/<pk>",
-    #     StaffRegistrationView.as_view(),
-    #     name="staff_removal",
-    # ),
-    # path(
-    #     "staff_registration",
-    #     StaffRegistrationView.as_view(),
-    #     name="staff_registration",
-    # ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     # Static file serving when using Gunicorn + Uvicorn for local web socket development
