@@ -99,3 +99,10 @@ def show_organisation_media_only(media, request):
 @hooks.register("register_admin_viewset")
 def register_author_chooser_viewset():
     return author_chooser_viewset
+
+
+@hooks.register("construct_main_menu")
+def hide_explorer_menu_item_from_frank(request, menu_items):
+    menu_items[:] = [
+        item for item in menu_items if item.name not in ["documents", "settings", "reports"]
+    ]

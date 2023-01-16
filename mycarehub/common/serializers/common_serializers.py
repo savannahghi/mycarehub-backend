@@ -1,14 +1,26 @@
 """Common serializers."""
 import logging
 
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from mycarehub.users.api.serializers import SimpleUserSerializer
+from mycarehub.common.models import Organisation, Program
 
 from ..models import Facility, UserFacilityAllotment
 from .base_serializers import BaseSerializer
 
 LOGGER = logging.getLogger(__name__)
+
+User = get_user_model()
+
+
+class SimpleUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "name",
+        ]
 
 
 class FacilitySerializer(BaseSerializer):
@@ -26,3 +38,15 @@ class UserFacilityAllotmentSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = UserFacilityAllotment
         fields = "__all__"
+
+
+class OrganisationSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = Organisation
+        fields = ["id", "organisation_name", "code"]
+
+
+class ProgramSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = Program
+        fields = ["id", "name"]
