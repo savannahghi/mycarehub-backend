@@ -63,9 +63,8 @@ class UserAPIView(APIView):
                     },
                 )
 
-                # return the newly created client
-                serialized_client = UserSerializer(new_user)
-                return Response(serialized_client.data, status=status.HTTP_201_CREATED)
+                serialized_user = UserSerializer(new_user)
+                return Response(serialized_user.data, status=status.HTTP_201_CREATED)
             except Exception as e:  # noqa # pragma: nocover
                 return Response(
                     {"exception": str(e)},

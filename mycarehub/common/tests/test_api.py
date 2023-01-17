@@ -5,6 +5,7 @@ import uuid
 from functools import partial
 from os import path
 
+import pytest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.test import TestCase
@@ -23,6 +24,9 @@ from .test_utils import patch_baker
 
 DIR_PATH = path.join(path.dirname(path.abspath(__file__)))
 MEDIA_PATH = path.join(DIR_PATH, "media")
+
+pytestmark = pytest.mark.django_db
+
 
 http_origin_header = {"HTTP_ORIGIN": "http://sil.com"}
 fake = Faker()
@@ -597,3 +601,80 @@ class DRFSerializerExcelIOMixinTest(LoggedInMixin, APITestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert response["content-type"] == "text/html; charset=utf-8"
+
+
+def test_organisation_registration(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+    url = reverse("api:organisations-general")
+
+    response = client.post(
+        url,
+        data={
+            "organisation_id": fake.uuid4(),
+            "name": fake.name(),
+            "code": fake.random_int(min=100),
+            "phone_number": "+254722000000",
+            "email": fake.email(),
+        },
+        content_type="application/json",
+        accept="application/json",
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response_data = response.json()
+    assert response_data["id"] is not None
+
+
+def test_organisation_registration_invalid_input(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+    url = reverse("api:organisations-general")
+
+    response = client.post(
+        url,
+        data={
+            "organisation_id": fake.uuid4(),
+            "name": fake.name(),
+        },
+        content_type="application/json",
+        accept="application/json",
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_program_registration(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+    url = reverse("api:programs-general")
+
+    response = client.post(
+        url,
+        data={
+            "program_id": fake.uuid4(),
+            "name": fake.name(),
+            "organisation_id": user_with_all_permissions.organisation.id,
+        },
+        content_type="application/json",
+        accept="application/json",
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response_data = response.json()
+    assert response_data["id"] is not None
+
+
+def test_program_registration_invalid_input(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+    url = reverse("api:programs-general")
+
+    response = client.post(
+        url,
+        data={
+            "program_id": fake.uuid4(),
+        },
+        content_type="application/json",
+        accept="application/json",
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST

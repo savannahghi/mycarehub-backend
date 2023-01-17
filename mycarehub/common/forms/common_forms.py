@@ -1,5 +1,14 @@
 from crispy_forms.layout import Field, Fieldset, Layout
-from django.forms import MultipleChoiceField, TextInput
+from django.forms import (
+    CharField,
+    EmailField,
+    Form,
+    IntegerField,
+    MultipleChoiceField,
+    TextInput,
+    UUIDField,
+)
+from phonenumber_field.formfields import PhoneNumberField
 
 from ..dashboard import get_mycarehub_facilities_queryset
 from ..models import Facility, Organisation, UserFacilityAllotment
@@ -64,6 +73,62 @@ class OrganisationForm(BaseModelForm):
     class Meta:
         model = Organisation
         fields = "__all__"
+
+
+class OrganisationRegistrationForm(Form):
+    name = CharField(
+        required=True,
+        max_length=255,
+        label="Name",
+        help_text="The organisation's name",
+    )
+
+    organisation_id = UUIDField(
+        required=True,
+        label="Organisation ID",
+        help_text="The organisation identifier",
+    )
+
+    email = EmailField(
+        required=True,
+        max_length=255,
+        label="Email",
+        help_text="The organisation's name",
+    )
+
+    phone_number = PhoneNumberField(
+        required=True,
+        max_length=255,
+        label="Phone Number",
+        help_text="The organisation's phone number",
+    )
+
+    code = IntegerField(
+        required=True,
+        label="Code",
+        help_text="The organisation's code",
+    )
+
+
+class ProgramRegistrationForm(Form):
+    name = CharField(
+        required=True,
+        max_length=255,
+        label="Name",
+        help_text="The program's name",
+    )
+
+    organisation_id = UUIDField(
+        required=True,
+        label="Organisation ID",
+        help_text="The program the organisation belongs to",
+    )
+
+    program_id = UUIDField(
+        required=True,
+        label="Program ID",
+        help_text="The program identifier",
+    )
 
 
 class UserFacilityAllotmentForm(BaseModelForm):

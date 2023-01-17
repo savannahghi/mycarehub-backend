@@ -74,13 +74,13 @@ class UserRegistrationForm(forms.Form):
     organisation_id = forms.UUIDField(
         required=True,
         label="Organisation ID",
-        help_text="The user's currently assigned facility/clinic",
+        help_text="The user's currently assigned organisation",
     )
 
     program_id = forms.UUIDField(
         required=True,
         label="Program ID",
-        help_text="The user's currently assigned facility/clinic",
+        help_text="The user's currently assigned program",
     )
 
     date_of_birth = forms.DateField(
