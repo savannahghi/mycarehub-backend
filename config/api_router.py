@@ -2,7 +2,12 @@ from django.conf import settings
 from django.urls import path
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
-from mycarehub.common.views import FacilityViewSet, UserFacilityViewSet
+from mycarehub.common.views import (
+    FacilityViewSet,
+    OrganisationAPIView,
+    ProgramAPIView,
+    UserFacilityViewSet,
+)
 from mycarehub.content.views import (
     ContentBookmarkViewSet,
     ContentItemCategoryViewSet,
@@ -32,5 +37,17 @@ urlpatterns = router.urls + [
         "users/",
         UserAPIView.as_view(),
         name="users-general",
+    ),
+    path("organisations/<pk>", OrganisationAPIView.as_view(), name="organisations-detail"),
+    path(
+        "organisations/",
+        OrganisationAPIView.as_view(),
+        name="organisations-general",
+    ),
+    path("programs/<pk>", ProgramAPIView.as_view(), name="programs-detail"),
+    path(
+        "programs/",
+        ProgramAPIView.as_view(),
+        name="programs-general",
     ),
 ]

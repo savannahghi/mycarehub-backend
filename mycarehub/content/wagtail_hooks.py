@@ -67,14 +67,26 @@ def set_organisation_after_page_create(request, page):
 
 @hooks.register("construct_explorer_page_queryset")
 def explorer_show_organisation_pages_only(parent_page, pages, request):
-    pages = pages.exclude(owner__isnull=True).filter(owner__organisation=request.user.organisation)
+    for page in pages:
+        if not hasattr(page, "organisation"):
+            pages = pages & pages.not_page(page)
+            continue
+
+        if hasattr(page, "organisation") and page.organisation != request.user.organisation:
+            pages = pages & pages.not_page(page)
 
     return pages
 
 
 @hooks.register("construct_page_chooser_queryset")
 def chooser_show_organisation_pages_only(pages, request):
-    pages = pages.exclude(owner__isnull=True).filter(owner__organisation=request.user.organisation)
+    for page in pages:
+        if not hasattr(page, "organisation"):
+            pages = pages & pages.not_page(page)
+            continue
+
+        if hasattr(page, "organisation") and page.organisation != request.user.organisation:
+            pages = pages & pages.not_page(page)
 
     return pages
 

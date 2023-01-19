@@ -2,7 +2,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from model_bakery import baker
-from wagtail.models import Site
+from wagtail.models import Page, Site
 
 from mycarehub.content.models import Author, ContentItem, CustomMedia
 from mycarehub.content.wagtail_hooks import (
@@ -117,18 +117,62 @@ def test_set_content_item_program_after_page_create(
 
 
 def test_explorer_show_organisation_pages_only(
-    request_with_user,
-    content_item_with_tag_and_category,
+    request_with_user, content_item_with_tag_and_category, content_item_index
 ):
+    # get a hero image
+    hero = baker.make("wagtailimages.Image", _create_files=True)
+
+    # set up a content item
+    author = baker.make(Author)
+    content_item = ContentItem(
+        title="An article",
+        slug="article-1",
+        intro="intro",
+        body="body",
+        item_type="ARTICLE",
+        date=timezone.now().date(),
+        author=author,
+        hero_image=hero,
+        organisation=request_with_user.user.organisation,
+    )
+    content_item_index.add_child(instance=content_item)
+    content_item_index.save_revision().publish()
+
+    pages = Page.objects.all()
+
+    explorer_show_organisation_pages_only(parent_page=None, pages=pages, request=request_with_user)
+
     explorer_show_organisation_pages_only(
         parent_page=None, pages=ContentItem.objects.all(), request=request_with_user
     )
 
 
 def test_chooser_show_organisation_pages_only(
-    request_with_user,
-    content_item_with_tag_and_category,
+    request_with_user, content_item_with_tag_and_category, content_item_index
 ):
+    # get a hero image
+    hero = baker.make("wagtailimages.Image", _create_files=True)
+
+    # set up a content item
+    author = baker.make(Author)
+    content_item = ContentItem(
+        title="An article",
+        slug="article-1",
+        intro="intro",
+        body="body",
+        item_type="ARTICLE",
+        date=timezone.now().date(),
+        author=author,
+        hero_image=hero,
+        organisation=request_with_user.user.organisation,
+    )
+    content_item_index.add_child(instance=content_item)
+    content_item_index.save_revision().publish()
+
+    pages = Page.objects.all()
+
+    chooser_show_organisation_pages_only(pages=pages, request=request_with_user)
+
     chooser_show_organisation_pages_only(
         pages=ContentItem.objects.all(), request=request_with_user
     )

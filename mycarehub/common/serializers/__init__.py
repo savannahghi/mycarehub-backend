@@ -2,7 +2,9 @@
 from .base_serializers import BaseSerializer
 from .common_serializers import (
     FacilitySerializer,
+    OrganisationRegistrationSerializer,
     OrganisationSerializer,
+    ProgramRegistrationSerializer,
     ProgramSerializer,
     UserFacilityAllotmentSerializer,
 )
@@ -16,4 +18,6 @@ __all__ = [
     "UserFacilityAllotmentSerializer",
     "OrganisationSerializer",
     "ProgramSerializer",
+    "OrganisationRegistrationSerializer",
+    "ProgramRegistrationSerializer",
 ]

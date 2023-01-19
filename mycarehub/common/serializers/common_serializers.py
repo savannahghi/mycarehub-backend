@@ -1,9 +1,13 @@
 """Common serializers."""
 import logging
 
+from django import forms
 from django.contrib.auth import get_user_model
+from drf_braces.serializers.form_serializer import FormSerializer, make_form_serializer_field
+from phonenumber_field.formfields import PhoneNumberField
 from rest_framework import serializers
 
+from mycarehub.common.forms import OrganisationRegistrationForm, ProgramRegistrationForm
 from mycarehub.common.models import Organisation, Program
 
 from ..models import Facility, UserFacilityAllotment
@@ -50,3 +54,20 @@ class ProgramSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = Program
         fields = ["id", "name"]
+
+
+class OrganisationRegistrationSerializer(FormSerializer):
+    class Meta:
+        form = OrganisationRegistrationForm
+        field_mapping = {
+            forms.UUIDField: make_form_serializer_field(serializers.UUIDField),
+            PhoneNumberField: make_form_serializer_field(serializers.CharField),
+        }
+
+
+class ProgramRegistrationSerializer(FormSerializer):
+    class Meta:
+        form = ProgramRegistrationForm
+        field_mapping = {
+            forms.UUIDField: make_form_serializer_field(serializers.UUIDField),
+        }
