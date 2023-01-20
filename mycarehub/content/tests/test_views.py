@@ -5,6 +5,8 @@ from django.urls import reverse
 from model_bakery import baker
 from rest_framework import status
 
+from mycarehub.clients.models import Client
+
 from ..models import (
     Author,
     ContentBookmark,
@@ -76,9 +78,11 @@ def test_content_category_list_view(
 def test_content_view_list_view(
     content_item_with_tag_and_category, user_with_all_permissions, client
 ):
+    client_one = baker.make(Client)
+
     baker.make(
         ContentView,
-        user=user_with_all_permissions,
+        client=client_one,
         content_item=content_item_with_tag_and_category,
     )
     client.force_login(user_with_all_permissions)
@@ -100,9 +104,11 @@ def test_content_view_list_view(
 def test_content_share_list_view(
     content_item_with_tag_and_category, user_with_all_permissions, client
 ):
+    client_one = baker.make(Client)
+
     baker.make(
         ContentShare,
-        user=user_with_all_permissions,
+        client=client_one,
         content_item=content_item_with_tag_and_category,
     )
     client.force_login(user_with_all_permissions)
@@ -124,9 +130,11 @@ def test_content_share_list_view(
 def test_content_like_list_view(
     content_item_with_tag_and_category, user_with_all_permissions, client
 ):
+    client_one = baker.make(Client)
+
     baker.make(
         ContentLike,
-        user=user_with_all_permissions,
+        client=client_one,
         content_item=content_item_with_tag_and_category,
     )
     client.force_login(user_with_all_permissions)
@@ -148,9 +156,11 @@ def test_content_like_list_view(
 def test_content_bookmark_list_view(
     content_item_with_tag_and_category, user_with_all_permissions, client
 ):
+    client_one = baker.make(Client)
+
     baker.make(
         ContentBookmark,
-        user=user_with_all_permissions,
+        client=client_one,
         content_item=content_item_with_tag_and_category,
     )
     client.force_login(user_with_all_permissions)
@@ -175,10 +185,12 @@ def test_content_view_create_view(
     client.force_login(user_with_all_permissions)
     url = reverse("api:contentview-list")
 
+    client_one = baker.make(Client)
+
     response = client.post(
         url,
         data={
-            "user": user_with_all_permissions.id,
+            "client": client_one.id,
             "content_item": content_item_with_tag_and_category.id,
         },
         content_type="application/json",
@@ -198,10 +210,12 @@ def test_content_share_create_view(
     client.force_login(user_with_all_permissions)
     url = reverse("api:contentshare-list")
 
+    client_one = baker.make(Client)
+
     response = client.post(
         url,
         data={
-            "user": user_with_all_permissions.id,
+            "client": client_one.id,
             "content_item": content_item_with_tag_and_category.id,
         },
         content_type="application/json",
@@ -221,10 +235,12 @@ def test_content_like_create_view(
     client.force_login(user_with_all_permissions)
     url = reverse("api:contentlike-list")
 
+    client_one = baker.make(Client)
+
     response = client.post(
         url,
         data={
-            "user": user_with_all_permissions.id,
+            "client": client_one.id,
             "content_item": content_item_with_tag_and_category.id,
         },
         content_type="application/json",
@@ -244,10 +260,12 @@ def test_content_bookmark_create_view(
     client.force_login(user_with_all_permissions)
     url = reverse("api:contentbookmark-list")
 
+    client_one = baker.make(Client)
+
     response = client.post(
         url,
         data={
-            "user": user_with_all_permissions.id,
+            "client": client_one.id,
             "content_item": content_item_with_tag_and_category.id,
         },
         content_type="application/json",

@@ -1,7 +1,8 @@
-from django.conf import settings
 from django.db import models
 
-from mycarehub.common.models import AbstractBase
+from mycarehub.clients.models import Client
+from mycarehub.common.models import AbstractBase, Program
+from mycarehub.utils.general_utils import default_program
 
 from .models import ContentItem
 
@@ -12,8 +13,9 @@ class ContentInteraction(AbstractBase):
     behaviours for content interactions e.g like, save, share etc.
     """
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    client = models.ForeignKey(Client, on_delete=models.PROTECT)
     content_item = models.ForeignKey(ContentItem, on_delete=models.PROTECT)
+    program = models.ForeignKey(Program, on_delete=models.PROTECT, default=default_program)
 
     class Meta:
         abstract = True
@@ -34,7 +36,7 @@ class ContentLike(ContentInteraction):
 
     class Meta:
         unique_together = (
-            "user",
+            "client",
             "content_item",
         )
 
@@ -54,7 +56,7 @@ class ContentBookmark(ContentInteraction):
 
     class Meta:
         unique_together = (
-            "user",
+            "client",
             "content_item",
         )
 
@@ -73,7 +75,7 @@ class ContentShare(ContentInteraction):
 
     class Meta:
         unique_together = (
-            "user",
+            "client",
             "content_item",
         )
 
@@ -92,6 +94,6 @@ class ContentView(ContentInteraction):
 
     class Meta:
         unique_together = (
-            "user",
+            "client",
             "content_item",
         )
