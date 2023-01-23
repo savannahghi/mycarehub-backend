@@ -69,6 +69,7 @@ class ContentItemCategoryFilter(CommonFieldsFilterset):
         return queryset.annotate(content_count=Count("contentitem")).filter(content_count__gte=1)
 
     has_content = django_filters.BooleanFilter(method="category_has_content")
+    program_id = django_filters.UUIDFilter(field_name="programs", lookup_expr="exact")
 
     class Meta:
         model = ContentItemCategory

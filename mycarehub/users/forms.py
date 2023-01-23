@@ -64,6 +64,15 @@ class UserRegistrationForm(forms.Form):
         help_text="Pick the user's gender from the drop-down list",
     )
 
+    date_of_birth = forms.DateField(
+        required=True,
+        label="Date of birth",
+        help_text="Select the user's date of birth",
+        validators=[
+            validate_date_past,
+        ],
+    )
+
     user_type = forms.ChoiceField(
         required=True,
         choices=UserTypes.choices,
@@ -81,13 +90,4 @@ class UserRegistrationForm(forms.Form):
         required=True,
         label="Program ID",
         help_text="The user's currently assigned program",
-    )
-
-    date_of_birth = forms.DateField(
-        required=True,
-        label="Date of birth",
-        help_text="Select the user's date of birth",
-        validators=[
-            validate_date_past,
-        ],
     )
