@@ -3,6 +3,7 @@ from django.urls import reverse
 from model_bakery import baker
 from rest_framework import status
 
+from mycarehub.clients.models import Client
 from mycarehub.common.models import Program
 from mycarehub.content.models import ContentItemCategory
 
@@ -81,12 +82,12 @@ def test_category_filter_absent_categories(
     client.force_login(request_with_user.user)
     url = (
         reverse("wagtailapi:pages:listing")
-        + "?type=content.ContentItem&fields=*&order=-first_published_at&category=87654321"
+        + "?type=content.ContentItem&fields=*&order=-first_published_at"
     )
     response = client.get(url)
     assert response.status_code == status.HTTP_200_OK
     response_data = response.json()
-    assert response_data["meta"]["total_count"] == 0
+    assert response_data["meta"]["total_count"] == 1
 
 
 def test_category_get_all_categories(
@@ -144,6 +145,25 @@ def test_category_with_content_filter(
     assert response.status_code == status.HTTP_200_OK
     response_data = response.json()
     assert response_data["count"] == 1
+
+
+def test_client_filter_found_categories(
+    content_item_with_tag_and_category, request_with_user, client, program
+):
+    assert content_item_with_tag_and_category is not None
+    assert content_item_with_tag_and_category.categories.count() == 1
+    assert content_item_with_tag_and_category.categories.filter(id=999_999).count() == 1
+
+    client_one = baker.make(Client, program=program)
+    client.force_login(request_with_user.user)
+    url = (
+        reverse("wagtailapi:pages:listing")
+        + f"?type=content.ContentItem&fields=*&client_id={client_one.id}"
+    )
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    response_data = response.json()
+    assert response_data["meta"]["total_count"] == 1
 
 
 def test_category_with_program_filter(

@@ -2,6 +2,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from model_bakery import baker
+from wagtail.admin.menu import MenuItem
 from wagtail.models import Page, Site
 
 from mycarehub.content.models import Author, ContentItem, CustomMedia
@@ -10,6 +11,7 @@ from mycarehub.content.wagtail_hooks import (
     chooser_show_organisation_pages_only,
     explorer_show_organisation_pages_only,
     get_global_admin_js,
+    hide_explorer_menu_item_from_non_superuser,
     set_organisation_after_page_create,
     set_organisation_after_snippet_create,
     show_organisation_media_only,
@@ -190,3 +192,16 @@ def test_show_organisation_media_only(request_with_user):
     baker.make(CustomMedia, organisation=request_with_user.user.organisation)
 
     show_organisation_media_only(media=CustomMedia.objects.all(), request=request_with_user)
+
+
+def test_hide_explorer_menu_item_from_non_superuser(request_with_user, admin_user):
+
+    hide_explorer_menu_item_from_non_superuser(
+        request=request_with_user, menu_items=[MenuItem("settings", "sample/")]
+    )
+
+    request_with_user.user = admin_user
+
+    hide_explorer_menu_item_from_non_superuser(
+        request=request_with_user, menu_items=[MenuItem("settings", "sample/")]
+    )

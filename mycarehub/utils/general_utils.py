@@ -32,7 +32,7 @@ def default_program():
         org, _ = Program.objects.get_or_create(
             id=settings.DEFAULT_PROGRAM_ID,
             defaults={
-                "name": f"{settings.ORGANISATION_NAME} Program",
+                "name": f"{settings.ORGANISATION_NAME}",
             },
         )
         return org.pk

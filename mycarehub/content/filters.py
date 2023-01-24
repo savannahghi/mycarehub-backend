@@ -56,7 +56,27 @@ class CategoryFilter(BaseFilterBackend):
         if category_id and queryset.model is ContentItem:
             queryset = queryset.filter(Q(categories__id=category_id))
         if not category_id and not category_name and queryset.model is ContentItem:
-            queryset = queryset.filter(~Q(categories__id=1))
+            queryset = queryset.filter(~Q(categories__name="welcome"))
+
+        return queryset
+
+
+class ClientFilter(BaseFilterBackend):
+    """
+    Implements the client_id filter which returns only pages that a specific client can view
+
+    This filter accepts a client_id. Client properties are then used to filter content that is
+    "personalised" to the specific client. Currently includes:
+
+    - the program they belong to
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        query_params = request.query_params
+        client_id = query_params.get("client_id", "")
+
+        if client_id and queryset.model is ContentItem:
+            queryset = queryset.filter(Q(program__clients=client_id))
 
         return queryset
 
