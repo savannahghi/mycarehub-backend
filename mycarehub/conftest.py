@@ -72,7 +72,7 @@ def request_with_user(rf, django_user_model, user_with_all_permissions):
 
 
 @pytest.fixture
-def content_item_index(request_with_user):
+def content_item_index(request_with_user, program):
     # get the root page
     site = Site.find_for_request(request_with_user)
     assert site is not None
@@ -92,6 +92,7 @@ def content_item_index(request_with_user):
         title="Content Item Index",
         slug="articles",
         intro="content",
+        program=program,
     )
     home.add_child(instance=content_item_index)
     home.save_revision().publish()
@@ -102,7 +103,7 @@ def content_item_index(request_with_user):
 
 
 @pytest.fixture
-def content_item_with_tag_and_category(content_item_index):
+def content_item_with_tag_and_category(content_item_index, program):
     # get a hero image
     hero = baker.make("wagtailimages.Image", _create_files=True)
 
@@ -117,6 +118,7 @@ def content_item_with_tag_and_category(content_item_index):
         date=timezone.now().date(),
         author=author,
         hero_image=hero,
+        program=program,
     )
     content_item_index.add_child(instance=content_item)
     content_item_index.save_revision().publish()

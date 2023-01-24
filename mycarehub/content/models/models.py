@@ -157,9 +157,8 @@ class ContentItemPageForm(WagtailAdminPageForm):
         self, data=None, files=None, parent_page=None, subscription=None, *args, **kwargs
     ):  # pragma: no cover
         super().__init__(data, files, parent_page, subscription, *args, **kwargs)
-        # breakpoint()
         self.fields["categories"].queryset = self.fields["categories"].queryset.filter(
-            organisation=self.for_user.organisation, programs=parent_page.program
+            organisation=self.for_user.organisation, programs=parent_page.specific.program
         )
 
 
