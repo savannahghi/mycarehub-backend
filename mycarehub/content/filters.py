@@ -81,6 +81,21 @@ class ClientFilter(BaseFilterBackend):
         return queryset
 
 
+class FacilityFilter(BaseFilterBackend):
+    """
+    Implements the facility_id filter which only returns pages from a specific facility
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        query_params = request.query_params
+        facility_id = query_params.get("facility_id", "")
+
+        if facility_id and queryset.model is ContentItem:
+            queryset = queryset.filter(Q(facilities=facility_id))
+
+        return queryset
+
+
 class ContentItemCategoryFilter(CommonFieldsFilterset):
     def category_has_content(self, queryset, field, value):
         """

@@ -15,7 +15,7 @@ from wagtail.models import Orderable, Page
 from wagtail.search import index
 from wagtailmedia.edit_handlers import MediaChooserPanel
 
-from mycarehub.common.models import Organisation, Program
+from mycarehub.common.models import Facility, Organisation, Program
 from mycarehub.utils.general_utils import default_program
 
 from .snippets import Author, ContentItemCategory
@@ -160,6 +160,7 @@ class ContentItemPageForm(WagtailAdminPageForm):
         self.fields["categories"].queryset = self.fields["categories"].queryset.filter(
             organisation=self.for_user.organisation, programs=parent_page.specific.program
         )
+        self.fields["facilities"].queryset = parent_page.specific.program.facilities.all()
 
 
 class ContentItem(Page):
@@ -191,6 +192,10 @@ class ContentItem(Page):
         null=True,
         blank=True,
         related_name="%(app_label)s_%(class)s_related",
+    )
+
+    facilities = ParentalManyToManyField(
+        Facility, help_text="Determines which facilities content is meant for."
     )
 
     date = models.DateField(
@@ -317,6 +322,7 @@ class ContentItem(Page):
         FieldPanel("hero_image"),
         FieldPanel("body", classname="full"),
         FieldPanel("time_estimate_seconds"),
+        FieldPanel("facilities", widget=forms.CheckboxSelectMultiple),
         # documents, images and media attached to content item pages
         # a content item can have zero or more of each of these
         InlinePanel("gallery_images", label="Gallery images"),

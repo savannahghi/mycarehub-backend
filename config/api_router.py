@@ -33,25 +33,25 @@ router.register("content_share", ContentShareViewSet)
 
 app_name = "api"
 urlpatterns = router.urls + [
-    path("users/<pk>", UserAPIView.as_view(), name="users-detail"),
+    path("users/<pk>/", UserAPIView.as_view(), name="users-detail"),
     path(
         "users/",
         UserAPIView.as_view(),
         name="users-general",
     ),
-    path("organisations/<pk>", OrganisationAPIView.as_view(), name="organisations-detail"),
+    path("organisations/<pk>/", OrganisationAPIView.as_view(), name="organisations-detail"),
     path(
         "organisations/",
         OrganisationAPIView.as_view(),
         name="organisations-general",
     ),
-    path("programs/<pk>", ProgramAPIView.as_view(), name="programs-detail"),
+    path("programs/<pk>/", ProgramAPIView.as_view(), name="programs-detail"),
     path(
         "programs/",
         ProgramAPIView.as_view(),
         name="programs-general",
     ),
-    path("clients/<pk>", ClientAPIView.as_view(), name="clients-detail"),
+    path("clients/<pk>/", ClientAPIView.as_view(), name="clients-detail"),
     path(
         "clients/",
         ClientAPIView.as_view(),

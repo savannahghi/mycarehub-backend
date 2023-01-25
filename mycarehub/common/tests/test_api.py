@@ -125,6 +125,7 @@ class CRUDTestMixin(LoggedInMixin, APITestCase):
             organisation=self.global_organisation,
         )
         self.data = {
+            "id": uuid.uuid4(),
             "name": fake.name(),
             "mfl_code": random.randint(1, 999_999_999),
             "county": "Nairobi",
@@ -200,24 +201,6 @@ class FacilityViewsetTest(LoggedInMixin, APITestCase):
         response = self.client.post(self.url_list, data)
         assert response.status_code == 201, response.json()
         assert response.data["mfl_code"] == data["mfl_code"]
-
-    def test_create_facility_error_supplied_id(self):
-        """Test add facility."""
-        data = {
-            "id": uuid.uuid4(),
-            "name": fake.name(),
-            "mfl_code": random.randint(1, 999_999_999),
-            "county": random.choice(WHITELIST_COUNTIES),
-            "is_mycarehub_facility": True,
-            "operation_status": "Operational",
-            "organisation": self.global_organisation.pk,
-        }
-
-        response = self.client.post(self.url_list, data)
-        assert response.status_code == 400, response.json()
-        assert (
-            "You are not allowed to pass object with an id" in response.json()["id"]
-        ), response.json()
 
     def test_create_facility_error_bad_organisation(self):
         """Test add facility."""
@@ -664,6 +647,22 @@ def test_program_registration(user_with_all_permissions, client):
     assert response_data["id"] is not None
 
 
+def test_program_list(user_with_all_permissions, client):
+    client.force_login(user_with_all_permissions)
+    url = reverse("api:programs-general")
+
+    response = client.get(
+        url,
+        content_type="application/json",
+        accept="application/json",
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+
+    response_data = response.json()
+    assert response_data[0]["id"] is not None
+
+
 def test_program_registration_invalid_input(user_with_all_permissions, client):
     client.force_login(user_with_all_permissions)
     url = reverse("api:programs-general")
@@ -672,6 +671,70 @@ def test_program_registration_invalid_input(user_with_all_permissions, client):
         url,
         data={
             "program_id": fake.uuid4(),
+        },
+        content_type="application/json",
+        accept="application/json",
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_program_patch_no_facilities(user_with_all_permissions, client):
+    program = baker.make(Program)
+
+    client.force_login(user_with_all_permissions)
+    url = reverse("api:programs-detail", kwargs={"pk": program.id})
+
+    response = client.patch(
+        url,
+        data={
+            "name": fake.name(),
+        },
+        content_type="application/json",
+        accept="application/json",
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+
+    response_data = response.json()
+    assert response_data["id"] == str(program.id)
+
+
+def test_program_patch_facilities(user_with_all_permissions, client):
+    program = baker.make(Program)
+
+    client.force_login(user_with_all_permissions)
+    url = reverse("api:programs-detail", kwargs={"pk": program.id})
+
+    facility = baker.make(Facility)
+
+    response = client.patch(
+        url,
+        data={
+            "name": fake.name(),
+            "facilities": [facility.id],
+        },
+        content_type="application/json",
+        accept="application/json",
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+
+    response_data = response.json()
+    assert response_data["id"] == str(program.id)
+
+
+def test_program_patch_invalid_data(user_with_all_permissions, client):
+    program = baker.make(Program)
+
+    client.force_login(user_with_all_permissions)
+    url = reverse("api:programs-detail", kwargs={"pk": program.id})
+
+    response = client.patch(
+        url,
+        data={
+            "name": 12123123,
+            "facilities": ["invalid"],
         },
         content_type="application/json",
         accept="application/json",

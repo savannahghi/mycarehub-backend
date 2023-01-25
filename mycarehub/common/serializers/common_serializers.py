@@ -1,5 +1,6 @@
 """Common serializers."""
 import logging
+import uuid
 
 from django import forms
 from django.contrib.auth import get_user_model
@@ -28,6 +29,8 @@ class SimpleUserSerializer(serializers.ModelSerializer):
 
 
 class FacilitySerializer(BaseSerializer):
+    id = serializers.UUIDField(read_only=False, default=uuid.uuid4)
+
     class Meta(BaseSerializer.Meta):
         model = Facility
         fields = "__all__"
@@ -53,7 +56,17 @@ class OrganisationSerializer(BaseSerializer):
 class ProgramSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = Program
-        fields = ["id", "name"]
+        fields = ["id", "name", "facilities"]
+
+    def update(self, instance, validated_data):
+        facilities = validated_data.pop("facilities", None)
+        if facilities:
+            instance.facilities.clear()
+
+            for facility in facilities:
+                instance.facilities.add(facility)
+
+        return super().update(instance, validated_data)
 
 
 class OrganisationRegistrationSerializer(FormSerializer):

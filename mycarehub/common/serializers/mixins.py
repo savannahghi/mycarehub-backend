@@ -2,7 +2,6 @@
 import logging
 
 from rest_framework import exceptions, serializers
-from rest_framework.serializers import ValidationError
 
 from mycarehub.common.models import Organisation
 
@@ -87,9 +86,6 @@ class AuditFieldsMixin(PartialResponseMixin, serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Ensure that ids are not supplied when creating new instances."""
-        initial_data_id = isinstance(self.initial_data, dict) and self.initial_data.get("id")
-        if initial_data_id or validated_data.get("id"):
-            raise ValidationError({"id": "You are not allowed to pass object with an id"})
         self.populate_audit_fields(validated_data, True)
         return super().create(validated_data)
 

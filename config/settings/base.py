@@ -325,7 +325,6 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.OrderingFilter",
         "mycarehub.common.filters.OrganisationFilterBackend",
-        "mycarehub.common.filters.AllottedFacilitiesFilterBackend",
     ),
     "DEFAULT_PAGINATION_CLASS": (
         "rest_framework_datatables.pagination.DatatablesPageNumberPagination"

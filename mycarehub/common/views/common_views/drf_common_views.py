@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -27,7 +28,6 @@ class FacilityViewSet(BaseView):
         "mfl_code",
         "registration_number",
     )
-    facility_field_lookup = "pk"
 
 
 class UserFacilityViewSet(BaseView):
@@ -76,6 +76,12 @@ class ProgramAPIView(APIView):
     queryset = Program.objects.all()
     serializer_class = ProgramRegistrationSerializer
 
+    def get(self, request):
+        programs = Program.objects.all()
+        serializer = ProgramSerializer(programs, many=True)
+
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
+
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
@@ -96,5 +102,20 @@ class ProgramAPIView(APIView):
                     {"exception": str(e)},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )  # pragma: nocover
+
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk):
+        program = get_object_or_404(Program, pk=pk)
+
+        data = request.data
+        serializer = ProgramSerializer(
+            instance=program, context={"request": request}, data=data, partial=True
+        )
+        if serializer.is_valid():
+            updated_program = serializer.save()
+            return Response(
+                status=status.HTTP_200_OK, data=ProgramSerializer(updated_program).data
+            )
 
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
