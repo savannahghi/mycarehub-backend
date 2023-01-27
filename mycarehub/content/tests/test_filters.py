@@ -166,6 +166,24 @@ def test_client_filter_found_categories(
     assert response_data["meta"]["total_count"] == 1
 
 
+def test_content_facility_filter(
+    content_item_with_tag_and_category, request_with_user, client, facility
+):
+    assert content_item_with_tag_and_category is not None
+    assert content_item_with_tag_and_category.categories.count() == 1
+    assert content_item_with_tag_and_category.categories.filter(id=999_999).count() == 1
+
+    client.force_login(request_with_user.user)
+    url = (
+        reverse("wagtailapi:pages:listing")
+        + f"?type=content.ContentItem&fields=*&facility_id={facility.id}"
+    )
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    response_data = response.json()
+    assert response_data["meta"]["total_count"] == 1
+
+
 def test_category_with_program_filter(
     request_with_user,
     client,

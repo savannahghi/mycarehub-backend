@@ -62,7 +62,7 @@ def test_facility_string_representation():
         updated_by=updated_by,
     )
     facility.save()
-    assert str(facility) == f"{facility_name} - {mfl_code} (Nairobi)"
+    assert str(facility) == f"{facility_name}"
 
 
 def test_google_application_credentials():

@@ -7,7 +7,6 @@ from django.db.models.fields.json import JSONField
 from django.urls import reverse
 from django.utils import timezone
 
-from ..constants import WHITELIST_COUNTIES
 from ..utils import get_constituencies, get_counties, get_sub_counties, get_wards
 from .base_models import AbstractBase, AbstractBaseManager, AbstractBaseQuerySet
 
@@ -24,9 +23,7 @@ class FacilityQuerySet(AbstractBaseQuerySet):
 
     def mycarehub_facilities(self):
         """Return all the facilities that are part of the FYJ program."""
-        return self.active().filter(
-            county__in=WHITELIST_COUNTIES,
-        )
+        return self.active()
 
 
 # =============================================================================
@@ -58,10 +55,9 @@ class Facility(AbstractBase):
 
     name = models.TextField(unique=True)
     description = models.TextField(blank=True, default="")
-    mfl_code = models.IntegerField(unique=True, help_text="MFL Code")
-    county = models.CharField(max_length=64, choices=get_counties())
+    mfl_code = models.IntegerField(unique=True, help_text="MFL Code", blank=True, null=True)
+    county = models.CharField(max_length=64, choices=get_counties(), null=True, blank=True)
     phone = models.CharField(max_length=15, null=True, blank=True)
-    fhir_organization_id = models.CharField(unique=True, max_length=64, blank=True, null=True)
 
     objects = FacilityManager()
 
@@ -78,7 +74,7 @@ class Facility(AbstractBase):
             raise ValidationError("the facility name should exceed 3 characters")
 
     def __str__(self):
-        return f"{self.name} - {self.mfl_code} ({self.county})"
+        return f"{self.name}"
 
     class Meta(AbstractBase.Meta):
         verbose_name_plural = "facilities"

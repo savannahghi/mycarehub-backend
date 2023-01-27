@@ -7,7 +7,7 @@ from model_bakery import baker
 from taggit.models import Tag
 from wagtail.models import Page, Site
 
-from mycarehub.common.models import Program
+from mycarehub.common.models import Facility, Program
 from mycarehub.content.models import Author, ContentItem, ContentItemCategory, ContentItemIndexPage
 from mycarehub.home.models import HomePage
 from mycarehub.users.models import User
@@ -103,7 +103,12 @@ def content_item_index(request_with_user, program):
 
 
 @pytest.fixture
-def content_item_with_tag_and_category(content_item_index, program):
+def facility():
+    return baker.make(Facility)
+
+
+@pytest.fixture
+def content_item_with_tag_and_category(content_item_index, program, facility):
     # get a hero image
     hero = baker.make("wagtailimages.Image", _create_files=True)
 
@@ -134,6 +139,9 @@ def content_item_with_tag_and_category(content_item_index, program):
     tag = baker.make(Tag, name="a-valid-tag")  # expect slug a-valid-tag
     content_item.tags.add(tag)
     content_item.save()
+
+    content_item.facilities.add(facility)
+
     assert ContentItem.objects.filter(tags__name="a-valid-tag").count() == 1
 
     # sanity checks
