@@ -161,6 +161,9 @@ class ContentItemPageForm(WagtailAdminPageForm):
             organisation=self.for_user.organisation, programs=parent_page.specific.program
         )
         self.fields["facilities"].queryset = parent_page.specific.program.facilities.all()
+        self.fields["hero_image"].queryset = self.fields["hero_image"].queryset.filter(
+            organisation=self.for_user.organisation
+        )
 
 
 class ContentItem(Page):
@@ -260,7 +263,7 @@ class ContentItem(Page):
     # this is optional. When present, it is displayed as a banner before the
     # content item e.g before the text of an article
     hero_image = models.ForeignKey(
-        "wagtailimages.Image",
+        "content.CustomImage",
         on_delete=models.SET_NULL,
         related_name="content_hero_image",
         null=True,
@@ -421,7 +424,7 @@ class ContentItemMediaLink(Orderable):
         related_name="featured_media",
     )
     featured_media = models.ForeignKey(
-        "wagtailmedia.Media",
+        "content.CustomMedia",
         on_delete=models.CASCADE,
         related_name="content_item_media",
         help_text="Select or upload an audio or video file. "
@@ -447,7 +450,7 @@ class ContentItemMediaLink(Orderable):
 class ContentItemGalleryImage(Orderable):
     page = ParentalKey(ContentItem, on_delete=models.CASCADE, related_name="gallery_images")
     image = models.ForeignKey(
-        "wagtailimages.Image",
+        "content.CustomImage",
         on_delete=models.PROTECT,
         related_name="content_item_gallery_images",
         help_text="Select or upload an image. Most of these images will be viewed on mobile "

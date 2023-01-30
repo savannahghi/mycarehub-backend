@@ -188,7 +188,7 @@ def test_category_with_program_filter(
     request_with_user,
     client,
 ):
-    icon_livin = baker.make("wagtailimages.Image", _create_files=True)
+    icon_livin = baker.make("content.CustomImage", _create_files=True)
 
     program_set_one = baker.make(Program, _quantity=3)
     program_set_two = baker.make(Program, _quantity=3)

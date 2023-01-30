@@ -119,3 +119,8 @@ def hide_explorer_menu_item_from_non_superuser(request, menu_items):
         menu_items[:] = [
             item for item in menu_items if item.name not in ["documents", "settings", "reports"]
         ]
+
+
+@hooks.register("construct_homepage_summary_items")
+def construct_homepage_summary_items(request, summary_items):
+    summary_items.clear()

@@ -18,7 +18,7 @@ class Author(AbstractBase, ClusterableModel):
 
     name = models.CharField(max_length=128, help_text="Author's name (will be displayed publicly)")
     avatar = models.ForeignKey(
-        "wagtailimages.Image",
+        "content.CustomImage",
         on_delete=models.CASCADE,
         null=True,
         blank=True,
@@ -60,7 +60,7 @@ class ContentItemCategory(index.Indexed, ClusterableModel):
         "should be chosen carefully.",
     )
     icon = models.ForeignKey(
-        "wagtailimages.Image",
+        "content.CustomImage",
         null=True,
         blank=True,
         on_delete=models.CASCADE,

@@ -46,7 +46,7 @@ def test_content_item_tag_index_page_get_context(request_with_user):
     home.add_child(instance=content_item_index)
 
     # get a hero image
-    hero = baker.make("wagtailimages.Image", _create_files=True)
+    hero = baker.make("content.CustomImage", _create_files=True)
 
     # set up a content item
     author = baker.make(Author)
@@ -99,7 +99,7 @@ def test_content_item_properties(request_with_user):
     home.add_child(instance=content_item_index)
 
     # get a hero image
-    hero = baker.make("wagtailimages.Image", _create_files=True)
+    hero = baker.make("content.CustomImage", _create_files=True)
 
     # set up a content item
     author = baker.make(Author)
@@ -121,7 +121,7 @@ def test_content_item_properties(request_with_user):
     assert content_item.tag_names == []
 
     # add categories
-    icon = baker.make("wagtailimages.Image", _create_files=True)
+    icon = baker.make("content.CustomImage", _create_files=True)
     cat = baker.make(ContentItemCategory, icon=icon)
     content_item.categories.add(cat)
     assert content_item.category_details == [

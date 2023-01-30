@@ -18,7 +18,14 @@ from wagtail.images.api.v2.views import ImagesAPIViewSet
 from wagtail.images.views.serve import ServeView
 
 from mycarehub.common.views import AboutView, HomeView
-from mycarehub.content.views import CustomPageAPIViewset, SignedURLView
+from mycarehub.content.views import (
+    CustomImageAddView,
+    CustomImageIndexView,
+    CustomPageAPIViewset,
+    SignedURLView,
+    media_add,
+    media_index,
+)
 
 from .graphql_auth import DRFAuthenticatedGraphQLView
 
@@ -122,6 +129,16 @@ wagtail_api_router.register_endpoint("documents", DocumentsAPIViewSet)
 
 urlpatterns += [
     path("contentapi/", wagtail_api_router.urls, name="wagtail_content_api"),
+    path("admin/images/", CustomImageIndexView.as_view(), name="wagtailimages-index"),
+    path(
+        "admin/images/multiple/add/",
+        CustomImageAddView.as_view(),
+        name="wagtailimages-add_multiple",
+    ),
+    path("admin/media/", media_index, name="wagtailmedia-index"),
+    re_path(
+        r"^admin/media/(?P<media_type>audio|video|media)/add/$", media_add, name="wagtailmedia-add"
+    ),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     re_path(
