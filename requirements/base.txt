@@ -47,5 +47,4 @@ wagtailvideos~=2.10.9
 wagtailmedia~=0.12.0
 wagtail-readinglevel~=3.5.0
 wagtailfontawesome~=1.2.1
-wagtail-quick-create~=2.0.0
 django-nested-admin==3.4.0

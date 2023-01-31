@@ -105,7 +105,6 @@ THIRD_PARTY_APPS = [
     "wagtail.contrib.search_promotions",
     "wagtailreadinglevel",
     "wagtailfontawesome",
-    "wagtailquickcreate",
     "django_extensions",
     "nested_admin",
 ]
@@ -405,10 +404,7 @@ MULTI_IMAGE_EDIT_FIELDS = [
     "title",
     "tags",
 ]
-WAGTAIL_QUICK_CREATE_PAGE_TYPES = ["content.ContentItem"]
-WAGTAIL_QUICK_CREATE_DOCUMENTS = True
-WAGTAIL_QUICK_CREATE_IMAGES = True
-WAGTAIL_QUICK_CREATE_REPLACE_SUMMARY_PANEL = False
+WAGTAILIMAGES_IMAGE_MODEL = "content.CustomImage"
 
 # phone numbers
 PHONENUMBER_DB_FORMAT = "E164"

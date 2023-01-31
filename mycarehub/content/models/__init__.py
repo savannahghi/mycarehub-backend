@@ -1,3 +1,4 @@
+from .images import CustomImage, CustomRendition
 from .interactions import ContentBookmark, ContentLike, ContentShare, ContentView
 from .media import CustomMedia
 from .models import (
@@ -32,4 +33,6 @@ __all__ = [
     "ContentItemQuestionnaire",
     "CustomMedia",
     "ContentItemPageForm",
+    "CustomImage",
+    "CustomRendition",
 ]

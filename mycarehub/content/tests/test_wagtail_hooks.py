@@ -95,7 +95,7 @@ def test_set_content_item_program_after_page_create(
 ):
 
     # get a hero image
-    hero = baker.make("wagtailimages.Image", _create_files=True)
+    hero = baker.make("content.CustomImage", _create_files=True)
     # set up a content item
     author = baker.make(Author)
 
@@ -122,7 +122,7 @@ def test_explorer_show_organisation_pages_only(
     request_with_user, content_item_with_tag_and_category, content_item_index
 ):
     # get a hero image
-    hero = baker.make("wagtailimages.Image", _create_files=True)
+    hero = baker.make("content.CustomImage", _create_files=True)
 
     # set up a content item
     author = baker.make(Author)
@@ -153,7 +153,7 @@ def test_chooser_show_organisation_pages_only(
     request_with_user, content_item_with_tag_and_category, content_item_index
 ):
     # get a hero image
-    hero = baker.make("wagtailimages.Image", _create_files=True)
+    hero = baker.make("content.CustomImage", _create_files=True)
 
     # set up a content item
     author = baker.make(Author)

@@ -110,7 +110,7 @@ def facility():
 @pytest.fixture
 def content_item_with_tag_and_category(content_item_index, program, facility):
     # get a hero image
-    hero = baker.make("wagtailimages.Image", _create_files=True)
+    hero = baker.make("content.CustomImage", _create_files=True)
 
     # set up a content item
     author = baker.make(Author)
@@ -129,7 +129,7 @@ def content_item_with_tag_and_category(content_item_index, program, facility):
     content_item_index.save_revision().publish()
 
     # add a category
-    icon = baker.make("wagtailimages.Image", _create_files=True)
+    icon = baker.make("content.CustomImage", _create_files=True)
     cat = baker.make(ContentItemCategory, id=999_999, name="a-valid-category", icon=icon)
     content_item.categories.add(cat)
     content_item.save()

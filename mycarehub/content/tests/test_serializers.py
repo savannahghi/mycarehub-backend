@@ -35,7 +35,7 @@ def test_media_serialized_field():
     home.add_child(instance=content_item_index)
 
     # get a hero image
-    hero = baker.make("wagtailimages.Image", _create_files=True)
+    hero = baker.make("content.CustomImage", _create_files=True)
 
     # set up a content item
     author = baker.make(Author)
@@ -51,7 +51,7 @@ def test_media_serialized_field():
     )
     content_item_index.add_child(instance=content_item)
 
-    featured_media = baker.make("wagtailmedia.Media", _create_files=True)
+    featured_media = baker.make("content.CustomMedia", _create_files=True)
     media = baker.make(
         ContentItemMediaLink,
         page=content_item,
