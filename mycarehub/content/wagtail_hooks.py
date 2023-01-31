@@ -116,9 +116,7 @@ def register_author_chooser_viewset():
 @hooks.register("construct_main_menu")
 def hide_explorer_menu_item_from_non_superuser(request, menu_items):
     if not request.user.is_superuser:
-        menu_items[:] = [
-            item for item in menu_items if item.name not in ["documents", "settings", "reports"]
-        ]
+        menu_items[:] = [item for item in menu_items if item.name not in ["settings", "reports"]]
 
 
 @hooks.register("construct_homepage_summary_items")

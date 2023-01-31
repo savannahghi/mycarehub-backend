@@ -405,6 +405,7 @@ MULTI_IMAGE_EDIT_FIELDS = [
     "tags",
 ]
 WAGTAILIMAGES_IMAGE_MODEL = "content.CustomImage"
+WAGTAILDOCS_DOCUMENT_MODEL = "content.CustomDocument"
 
 # phone numbers
 PHONENUMBER_DB_FORMAT = "E164"

@@ -19,6 +19,8 @@ from wagtail.images.views.serve import ServeView
 
 from mycarehub.common.views import AboutView, HomeView
 from mycarehub.content.views import (
+    CustomDocumentAddView,
+    CustomDocumentIndexView,
     CustomImageAddView,
     CustomImageIndexView,
     CustomPageAPIViewset,
@@ -138,6 +140,12 @@ urlpatterns += [
     path("admin/media/", media_index, name="wagtailmedia-index"),
     re_path(
         r"^admin/media/(?P<media_type>audio|video|media)/add/$", media_add, name="wagtailmedia-add"
+    ),
+    path("admin/documents/", CustomDocumentIndexView.as_view(), name="wagtaildocs-index"),
+    path(
+        "admin/documents/multiple/add/",
+        CustomDocumentAddView.as_view(),
+        name="wagtaildocs-add_multiple",
     ),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
