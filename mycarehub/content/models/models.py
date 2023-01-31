@@ -390,7 +390,7 @@ class ContentItemDocumentLink(Orderable):
 
     page = ParentalKey(ContentItem, related_name="documents")
     document = models.ForeignKey(
-        "wagtaildocs.Document",
+        "content.CustomDocument",
         on_delete=models.CASCADE,
         related_name="content_item_documents",
         help_text="Select or upload a PDF document. It is IMPORTANT to limit "

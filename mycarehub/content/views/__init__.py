@@ -1,4 +1,5 @@
 from .chooser import author_chooser_viewset
+from .documents import CustomDocumentAddView, CustomDocumentIndexView
 from .images import CustomImageAddView, CustomImageIndexView
 from .interaction import (
     ContentBookmarkViewSet,
@@ -26,4 +27,6 @@ __all__ = [
     "CustomImageAddView",
     "media_add",
     "media_index",
+    "CustomDocumentAddView",
+    "CustomDocumentIndexView",
 ]
