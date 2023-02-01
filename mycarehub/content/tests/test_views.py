@@ -6,6 +6,7 @@ from model_bakery import baker
 from rest_framework import status
 
 from mycarehub.clients.models import Client
+from mycarehub.content.models import CustomDocument, CustomImage, CustomMedia
 
 from ..models import (
     Author,
@@ -335,4 +336,139 @@ def test_add_media(user_with_all_permissions, client):
     )
 
     print(response.content)
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_custom_image_index_view(admin_user, user_with_all_permissions, client):
+    admin_user.organisation = user_with_all_permissions.organisation
+    client.force_login(admin_user)
+    url = reverse("wagtailimages:index")
+
+    baker.make(
+        CustomImage, organisation=user_with_all_permissions.organisation, _create_files=True
+    )
+    baker.make(CustomImage, _create_files=True)
+
+    response = client.get(url)
+
+    print(response.content)
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_custom_document_index_view(admin_user, user_with_all_permissions, client):
+    admin_user.organisation = user_with_all_permissions.organisation
+    client.force_login(admin_user)
+    url = reverse("wagtaildocs:index")
+
+    baker.make(
+        CustomDocument, organisation=user_with_all_permissions.organisation, _create_files=True
+    )
+    baker.make(CustomDocument, _create_files=True)
+
+    response = client.get(url)
+
+    print(response.content)
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_custom_media_index_view(admin_user, user_with_all_permissions, client):
+    admin_user.organisation = user_with_all_permissions.organisation
+    client.force_login(admin_user)
+    url = reverse("wagtailmedia:index")
+
+    baker.make(
+        CustomMedia, organisation=user_with_all_permissions.organisation, _create_files=True
+    )
+    baker.make(CustomMedia, _create_files=True)
+
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+
+    params_response = client.get(
+        url,
+        {"ordering": "title", "collection_id": 1, "q": "test", "tag": "sample"},
+        HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+    )
+    assert params_response.status_code == status.HTTP_200_OK
+
+
+def test_custom_image_add(admin_user, user_with_all_permissions, client):
+    client.force_login(admin_user)
+    url = reverse("wagtailimages:add")
+
+    image = SimpleUploadedFile("file.jpeg", b"file_content", content_type="image/jpeg")
+
+    response = client.post(
+        url,
+        data={
+            "name": "Test Image",
+        },
+        files={"file", image},
+    )
+
+    print(response.content)
+
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_custom_document_add(admin_user, user_with_all_permissions, client):
+    client.force_login(admin_user)
+    url = reverse("wagtaildocs:add")
+
+    doc = SimpleUploadedFile("file.pdf", b"file_content", content_type="application/pdf")
+
+    response = client.post(
+        url,
+        data={
+            "name": "Test Document",
+        },
+        files={"file", doc},
+    )
+
+    print(response.content)
+
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_custom_image_add_existing(admin_user, user_with_all_permissions, client):
+    client.force_login(admin_user)
+
+    image = baker.make(
+        CustomImage, organisation=user_with_all_permissions.organisation, _create_files=True
+    )
+    # /admin/images/multiple/2/
+    url = f"/admin/images/multiple/{image.id}/"
+
+    response = client.post(
+        url,
+        data={
+            "name": "Test Image",
+        },
+        files={"file", image.file},
+    )
+
+    print(response.content)
+
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_custom_document_add_existing(admin_user, user_with_all_permissions, client):
+    client.force_login(admin_user)
+
+    doc = baker.make(
+        CustomDocument, organisation=user_with_all_permissions.organisation, _create_files=True
+    )
+    # /admin/documents/multiple/2/
+    url = f"/admin/documents/multiple/{doc.id}/"
+
+    response = client.post(
+        url,
+        data={
+            "name": "Test Document",
+        },
+        files={"file", doc.file},
+    )
+
+    print(response.content)
+
     assert response.status_code == status.HTTP_200_OK

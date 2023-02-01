@@ -1,9 +1,12 @@
 from django.core.paginator import Paginator
 from wagtail.documents.views.documents import IndexView
-from wagtail.documents.views.multiple import AddView
 
 
 class CustomDocumentIndexView(IndexView):
+    """
+    Modifies the `get_context_data` to only show documents in an organisation
+    """
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -22,12 +25,3 @@ class CustomDocumentIndexView(IndexView):
         )
 
         return context
-
-
-class CustomDocumentAddView(AddView):
-    def save_object(self, form):
-        document = form.save(commit=False)
-        document.uploaded_by_user = self.request.user
-        document.organisation = self.request.user.organisation
-        document.save()
-        return document
