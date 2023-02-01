@@ -393,7 +393,7 @@ WAGTAILIMAGES_FEATURE_DETECTION_ENABLED = True
 TAGGIT_CASE_INSENSITIVE = True
 WAGTAILMEDIA = {
     "MEDIA_MODEL": "content.CustomMedia",
-    "MEDIA_FORM_BASE": "mycarehub.content.filters.CustomBaseMediaForm",
+    "MEDIA_FORM_BASE": "mycarehub.content.forms.CustomBaseMediaForm",
     "AUDIO_EXTENSIONS": ["aac", "wav"],
     "VIDEO_EXTENSIONS": ["mp4"],
 }
@@ -405,7 +405,9 @@ MULTI_IMAGE_EDIT_FIELDS = [
     "tags",
 ]
 WAGTAILIMAGES_IMAGE_MODEL = "content.CustomImage"
+WAGTAILIMAGES_IMAGE_FORM_BASE = "mycarehub.content.forms.CustomImageForm"
 WAGTAILDOCS_DOCUMENT_MODEL = "content.CustomDocument"
+WAGTAILDOCS_DOCUMENT_FORM_BASE = "mycarehub.content.forms.CustomDocumentForm"
 
 # phone numbers
 PHONENUMBER_DB_FORMAT = "E164"

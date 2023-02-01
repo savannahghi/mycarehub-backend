@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from wagtail.core import hooks
+from wagtail.documents import get_document_model
+from wagtail.images import get_image_model
 from wagtail.snippets.models import register_snippet
 
 from .models import Author, ContentItem, ContentItemCategory
@@ -122,3 +124,17 @@ def hide_explorer_menu_item_from_non_superuser(request, menu_items):
 @hooks.register("construct_homepage_summary_items")
 def construct_homepage_summary_items(request, summary_items):
     summary_items.clear()
+
+
+@hooks.register("construct_document_chooser_queryset")
+def show_organisation_documents_only(documents, request):
+    documents = get_document_model().objects.filter(organisation=request.user.organisation)
+
+    return documents
+
+
+@hooks.register("construct_image_chooser_queryset")
+def show_organisation_images_only(images, request):
+    images = get_image_model().objects.filter(organisation=request.user.organisation)
+
+    return images

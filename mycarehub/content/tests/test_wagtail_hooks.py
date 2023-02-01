@@ -14,6 +14,8 @@ from mycarehub.content.wagtail_hooks import (
     hide_explorer_menu_item_from_non_superuser,
     set_organisation_after_page_create,
     set_organisation_after_snippet_create,
+    show_organisation_documents_only,
+    show_organisation_images_only,
     show_organisation_media_only,
 )
 
@@ -205,3 +207,15 @@ def test_hide_explorer_menu_item_from_non_superuser(request_with_user, admin_use
     hide_explorer_menu_item_from_non_superuser(
         request=request_with_user, menu_items=[MenuItem("settings", "sample/")]
     )
+
+
+def test_show_organisation_documents_only(request_with_user):
+    documents = show_organisation_documents_only([], request_with_user)
+
+    assert len(documents) == 0
+
+
+def test_show_organisation_images_only(request_with_user):
+    images = show_organisation_images_only([], request_with_user)
+
+    assert len(images) == 0

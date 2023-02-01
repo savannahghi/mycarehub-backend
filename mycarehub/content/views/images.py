@@ -1,9 +1,12 @@
 from django.core.paginator import Paginator
 from wagtail.images.views.images import IndexView
-from wagtail.images.views.multiple import AddView
 
 
 class CustomImageIndexView(IndexView):
+    """
+    Modifies the `get_context_data` to only show images in an organisation
+    """
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -23,12 +26,3 @@ class CustomImageIndexView(IndexView):
         )
 
         return context
-
-
-class CustomImageAddView(AddView):
-    def save_object(self, form):
-        image = form.save(commit=False)
-        image.uploaded_by_user = self.request.user
-        image.organisation = self.request.user.organisation
-        image.save()
-        return image

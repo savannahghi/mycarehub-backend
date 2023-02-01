@@ -16,6 +16,11 @@ class CustomImage(AbstractImage):
 
     admin_form_fields = Image.admin_form_fields
 
+    class Meta(AbstractImage.Meta):
+        permissions = [
+            ("choose_image", "Can choose image"),
+        ]
+
 
 class CustomRendition(AbstractRendition):
     image = models.ForeignKey(CustomImage, on_delete=models.CASCADE, related_name="renditions")
