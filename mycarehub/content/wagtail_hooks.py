@@ -5,6 +5,8 @@ from wagtail.documents import get_document_model
 from wagtail.images import get_image_model
 from wagtail.snippets.models import register_snippet
 
+from mycarehub.home.models import HomePage
+
 from .models import Author, ContentItem, ContentItemCategory
 from .views import AuthorSnippetViewSet, ContentItemCategorySnippetViewSet, author_chooser_viewset
 
@@ -58,6 +60,9 @@ def before_publish_page(request, page):
 
 @hooks.register("after_create_page")
 def set_organisation_after_page_create(request, page):
+    if not hasattr(page, "organisation"):
+        return
+
     page.organisation = request.user.organisation
 
     if page.specific_class == ContentItem:
@@ -69,13 +74,15 @@ def set_organisation_after_page_create(request, page):
 
 @hooks.register("construct_explorer_page_queryset")
 def explorer_show_organisation_pages_only(parent_page, pages, request):
-    for page in pages:
-        if not hasattr(page, "organisation"):
-            pages = pages & pages.not_page(page)
-            continue
+    # TODO: this should be optimized :-)
+    if parent_page.slug == "root":
+        for page in pages:
+            if page.specific_class == HomePage:
+                pages = page.get_children()
 
-        if hasattr(page, "organisation") and page.organisation != request.user.organisation:
-            pages = pages & pages.not_page(page)
+        for page in pages:
+            if page.specific.organisation != request.user.organisation:
+                pages = pages & pages.not_page(page)
 
     return pages
 

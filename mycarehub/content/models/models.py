@@ -380,6 +380,8 @@ class ContentItem(Page):
         "content.ContentItemIndexPage",
     ]
 
+    subpage_types = []  # type: ignore
+
 
 class ContentItemDocumentLink(Orderable):
     """

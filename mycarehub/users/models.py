@@ -48,9 +48,7 @@ class User(AbstractUser):
         on_delete=PROTECT,
         default=default_organisation,
     )
-    program = ForeignKey(
-        "common.Program", on_delete=PROTECT, default=default_program, null=True, blank=True
-    )
+    program = ForeignKey("common.Program", on_delete=PROTECT, default=default_program)
 
     @property
     def permissions(self):

@@ -52,8 +52,6 @@ class CategoryFilter(BaseFilterBackend):
             queryset = queryset.filter(Q(categories__name=category_name))
         if category_id and queryset.model is ContentItem:
             queryset = queryset.filter(Q(categories__id=category_id))
-        if not category_id and not category_name and queryset.model is ContentItem:
-            queryset = queryset.filter(~Q(categories__name="welcome"))
 
         return queryset
 
