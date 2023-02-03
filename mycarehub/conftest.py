@@ -72,7 +72,7 @@ def request_with_user(rf, django_user_model, user_with_all_permissions):
 
 
 @pytest.fixture
-def content_item_index(request_with_user, program):
+def homepage(request_with_user):
     # get the root page
     site = Site.find_for_request(request_with_user)
     assert site is not None
@@ -87,6 +87,11 @@ def content_item_index(request_with_user, program):
     root.add_child(instance=home)
     root.save_revision().publish()
 
+    return home
+
+
+@pytest.fixture
+def content_item_index(homepage, program):
     # set up a content item index page
     content_item_index = ContentItemIndexPage(
         title="Content Item Index",
@@ -94,8 +99,8 @@ def content_item_index(request_with_user, program):
         intro="content",
         program=program,
     )
-    home.add_child(instance=content_item_index)
-    home.save_revision().publish()
+    homepage.add_child(instance=content_item_index)
+    homepage.save_revision().publish()
 
     content_item_index.save_revision().publish()
 

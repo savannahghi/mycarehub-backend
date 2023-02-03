@@ -1,6 +1,9 @@
+from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from wagtail.models import Page, Site
 
 from mycarehub.common.models import Program
 from mycarehub.home.models import HomePage
@@ -10,13 +13,36 @@ from .models import ContentItemIndexPage
 
 @receiver(post_save, sender=Program)
 def create_program_content_index_page(sender, instance, created, **kwargs):
-    if created:
-        try:
-            homepage = HomePage.objects.get(organisation=instance.organisation)
-        except ObjectDoesNotExist:
-            print("none")
-            return
+    # this check prevents the signal from running on creation of the default program
+    # it causes a problem that prevents the running of `createsuperuser`
+    if settings.DEFAULT_PROGRAM_ID == str(instance.id) and created:
+        return
 
+    try:
+        homepage = HomePage.objects.get(title="Mycarehub Home Page")
+    except ObjectDoesNotExist:
+        homepage_content_type = ContentType.objects.get_for_model(HomePage)
+
+        homepage = HomePage(
+            title="Mycarehub Home Page",
+            content_type=homepage_content_type,
+        )
+
+        root = Page.get_first_root_node()
+        root.add_child(instance=homepage)
+
+        Site.objects.update_or_create(
+            hostname="localhost",
+            defaults={
+                "root_page": homepage,
+                "is_default_site": True,
+                "site_name": "mycarehub.com",
+            },
+        )
+
+    try:
+        content_item_index = ContentItemIndexPage.objects.get(program=instance)
+    except ObjectDoesNotExist:
         content_item_index = ContentItemIndexPage(
             title=f"{instance.name} Program Content",
             intro=f"Content for {instance.name} program",
@@ -25,3 +51,10 @@ def create_program_content_index_page(sender, instance, created, **kwargs):
         )
 
         homepage.add_child(instance=content_item_index)
+
+        return
+
+    content_item_index.organisation = instance.organisation
+    content_item_index.program = instance
+
+    content_item_index.save()

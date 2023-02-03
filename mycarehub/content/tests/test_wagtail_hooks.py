@@ -5,10 +5,11 @@ from model_bakery import baker
 from wagtail.admin.menu import MenuItem
 from wagtail.models import Page, Site
 
-from mycarehub.content.models import Author, ContentItem, CustomMedia
+from mycarehub.content.models import Author, ContentItem, ContentItemIndexPage, CustomMedia
 from mycarehub.content.wagtail_hooks import (
     before_publish_page,
     chooser_show_organisation_pages_only,
+    construct_homepage_summary_items,
     explorer_show_organisation_pages_only,
     get_global_admin_js,
     hide_explorer_menu_item_from_non_superuser,
@@ -18,6 +19,7 @@ from mycarehub.content.wagtail_hooks import (
     show_organisation_images_only,
     show_organisation_media_only,
 )
+from mycarehub.home.models import HomePage
 
 pytestmark = pytest.mark.django_db
 
@@ -88,7 +90,17 @@ def test_set_organisation_after_page_create(
     request_with_user,
     content_item_index,
 ):
+    root = Page.get_first_root_node()
+    home = HomePage(
+        title="Home",
+        slug="index",
+    )
+    root.add_child(instance=home)
+    root.save_revision().publish()
+
     set_organisation_after_page_create(request=request_with_user, page=content_item_index)
+
+    set_organisation_after_page_create(request=request_with_user, page=home)
 
 
 def test_set_content_item_program_after_page_create(
@@ -120,9 +132,7 @@ def test_set_content_item_program_after_page_create(
     set_organisation_after_page_create(request=request_with_user, page=content_item)
 
 
-def test_explorer_show_organisation_pages_only(
-    request_with_user, content_item_with_tag_and_category, content_item_index
-):
+def test_explorer_show_organisation_pages_only(request_with_user, homepage, content_item_index):
     # get a hero image
     hero = baker.make("content.CustomImage", _create_files=True)
 
@@ -142,12 +152,24 @@ def test_explorer_show_organisation_pages_only(
     content_item_index.add_child(instance=content_item)
     content_item_index.save_revision().publish()
 
+    content_item_index_two = ContentItemIndexPage(
+        title="Content Item Index Two",
+        slug="articlez",
+        intro="content",
+        organisation=request_with_user.user.organisation,
+    )
+
+    homepage.add_child(instance=content_item_index_two)
+    homepage.save_revision().publish()
+
     pages = Page.objects.all()
 
-    explorer_show_organisation_pages_only(parent_page=None, pages=pages, request=request_with_user)
+    explorer_show_organisation_pages_only(
+        parent_page=Page.get_first_root_node(), pages=pages, request=request_with_user
+    )
 
     explorer_show_organisation_pages_only(
-        parent_page=None, pages=ContentItem.objects.all(), request=request_with_user
+        parent_page=content_item_index, pages=ContentItem.objects.all(), request=request_with_user
     )
 
 
@@ -219,3 +241,7 @@ def test_show_organisation_images_only(request_with_user):
     images = show_organisation_images_only([], request_with_user)
 
     assert len(images) == 0
+
+
+def test_construct_homepage_summary_items(request_with_user):
+    construct_homepage_summary_items(request=request_with_user, summary_items=[])
