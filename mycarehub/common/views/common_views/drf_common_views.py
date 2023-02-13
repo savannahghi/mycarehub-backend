@@ -72,7 +72,6 @@ class OrganisationAPIView(APIView):
 
 
 class ProgramAPIView(APIView):
-
     queryset = Program.objects.all()
     serializer_class = ProgramRegistrationSerializer
 

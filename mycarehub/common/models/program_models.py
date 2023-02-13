@@ -5,7 +5,6 @@ from .common_models import Facility
 
 
 class Program(AbstractBase):
-
     name = models.TextField(max_length=100, unique=True)
     facilities = models.ManyToManyField(Facility, blank=True, related_name="programs")
 

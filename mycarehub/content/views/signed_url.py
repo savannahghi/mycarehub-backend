@@ -10,7 +10,6 @@ from mycarehub.utils.signed_url import generate_media_blob_name, generate_signed
 
 class SignedURLView(generic.View):
     def post(self, request, *args, **kwargs):
-
         # Checks the storage class being used
         # Storage class should be Google Cloud Storage for signed url generation to proceed
         if get_storage_class().__name__ != "MediaRootGoogleCloudStorage":

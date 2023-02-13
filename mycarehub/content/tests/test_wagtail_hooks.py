@@ -107,7 +107,6 @@ def test_set_content_item_program_after_page_create(
     request_with_user,
     content_item_index,
 ):
-
     # get a hero image
     hero = baker.make("content.CustomImage", _create_files=True)
     # set up a content item
@@ -219,7 +218,6 @@ def test_show_organisation_media_only(request_with_user):
 
 
 def test_hide_explorer_menu_item_from_non_superuser(request_with_user, admin_user):
-
     hide_explorer_menu_item_from_non_superuser(
         request=request_with_user, menu_items=[MenuItem("settings", "sample/")]
     )

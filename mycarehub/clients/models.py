@@ -8,7 +8,6 @@ from mycarehub.utils.general_utils import default_program
 
 
 class Client(AbstractBase):
-
     name = CharField(_("Name of Client"), blank=True, max_length=255)
     gender = CharField(choices=GenderChoices.choices, max_length=16, null=True, blank=True)
     date_of_birth = DateField(null=True, blank=True)

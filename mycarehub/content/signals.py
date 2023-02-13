@@ -1,11 +1,13 @@
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models.signals import post_save
+from django.db.models import F
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from wagtail.models import Page, Site
 
 from mycarehub.common.models import Program
+from mycarehub.content.models import ContentBookmark, ContentItem, ContentLike
 from mycarehub.home.models import HomePage
 
 from .models import ContentItemIndexPage
@@ -58,3 +60,15 @@ def create_program_content_index_page(sender, instance, created, **kwargs):
     content_item_index.program = instance
 
     content_item_index.save()
+
+
+@receiver(post_delete, sender=ContentLike)
+def reduce_like_count(sender, instance, *args, **kwargs):
+    ContentItem.objects.filter(id=instance.content_item.id).update(like_count=F("like_count") - 1)
+
+
+@receiver(post_delete, sender=ContentBookmark)
+def reduce_bookmark_count(sender, instance, *args, **kwargs):
+    ContentItem.objects.filter(id=instance.content_item.id).update(
+        bookmark_count=F("bookmark_count") - 1
+    )
