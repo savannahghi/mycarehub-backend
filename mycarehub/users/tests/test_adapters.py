@@ -5,7 +5,6 @@ from mycarehub.users.adapters import AccountAdapter, SocialAccountAdapter
 
 class TestAdapters:
     def test_is_open_for_signup(self):
-
         req = MagicMock()
         social_login = MagicMock()
 

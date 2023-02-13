@@ -15,7 +15,6 @@ from .models import (
 
 
 class ContentItemCategorySerializer(BaseSerializer):
-
     icon_url = serializers.SerializerMethodField()
 
     def get_icon_url(self, category):
@@ -30,7 +29,6 @@ class ContentItemCategorySerializer(BaseSerializer):
 
 class ContentViewSerializer(BaseSerializer):
     def create(self, validated_data):
-
         with transaction.atomic():
             content_view = ContentView.objects.create(**validated_data)
 
@@ -46,7 +44,6 @@ class ContentViewSerializer(BaseSerializer):
 
 class ContentShareSerializer(BaseSerializer):
     def create(self, validated_data):
-
         with transaction.atomic():
             content_share = ContentShare.objects.create(**validated_data)
 
@@ -62,7 +59,6 @@ class ContentShareSerializer(BaseSerializer):
 
 class ContentLikeSerializer(BaseSerializer):
     def create(self, validated_data):
-
         with transaction.atomic():
             content_like = ContentLike.objects.create(**validated_data)
 
@@ -78,7 +74,6 @@ class ContentLikeSerializer(BaseSerializer):
 
 class ContentBookmarkSerializer(BaseSerializer):
     def create(self, validated_data):
-
         with transaction.atomic():
             content_bookmark = ContentBookmark.objects.create(**validated_data)
 

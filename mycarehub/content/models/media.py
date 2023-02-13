@@ -6,7 +6,6 @@ from mycarehub.common.models import Organisation
 
 
 class CustomMedia(AbstractMedia):
-
     organisation = models.ForeignKey(
         Organisation,
         on_delete=models.PROTECT,

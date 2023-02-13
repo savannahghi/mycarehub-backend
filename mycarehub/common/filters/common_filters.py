@@ -17,7 +17,6 @@ class FacilityFilter(CommonFieldsFilterset):
 
 
 class UserFacilityAllotmentFilter(CommonFieldsFilterset):
-
     search = filters.SearchFilter()
 
     class Meta:
