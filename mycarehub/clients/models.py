@@ -1,5 +1,6 @@
-from django.db.models import PROTECT, CharField, ForeignKey
+from django.db.models import PROTECT, CharField, DateTimeField, ForeignKey
 from django.db.models.fields import DateField
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from mycarehub.common.models import AbstractBase
@@ -14,3 +15,4 @@ class Client(AbstractBase):
     program = ForeignKey(
         "common.Program", on_delete=PROTECT, default=default_program, related_name="clients"
     )
+    enrollment_date = DateTimeField(default=timezone.now)

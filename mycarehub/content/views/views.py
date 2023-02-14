@@ -15,6 +15,7 @@ from mycarehub.content.filters import (
     CategoryFilter,
     ClientFilter,
     ContentItemCategoryFilter,
+    ContentSequenceFilter,
     FacilityFilter,
     TagFilter,
 )
@@ -27,6 +28,7 @@ class CustomPageAPIViewset(PagesAPIViewSet):
     filter_backends = [
         TagFilter,
         ClientFilter,
+        ContentSequenceFilter,
         FacilityFilter,
         CategoryFilter,
         FieldsFilter,

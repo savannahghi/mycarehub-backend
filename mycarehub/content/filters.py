@@ -1,9 +1,12 @@
 import django_filters
 from django.db.models import Count, Q
+from django.utils import timezone
 from rest_framework.filters import BaseFilterBackend
 from wagtail.admin.filters import WagtailFilterSet
 
+from mycarehub.clients.models import Client
 from mycarehub.common.filters.base_filters import CommonFieldsFilterset
+from mycarehub.common.models import ContentSequence
 from mycarehub.content.models import ContentItem
 
 from .models import (
@@ -72,6 +75,35 @@ class ClientFilter(BaseFilterBackend):
 
         if client_id and queryset.model is ContentItem:
             queryset = queryset.filter(Q(program__clients=client_id))
+
+        return queryset
+
+
+class ContentSequenceFilter(BaseFilterBackend):
+    """
+    Implements a content sequence filter. The sequence determines how/when content is served
+    i.e based on the time a user joined which allows gradual delivery of content to a user.
+
+    This filter accepts a client_id.
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        query_params = request.query_params
+        client_id = query_params.get("client_id", "")
+
+        if client_id and queryset.model is ContentItem:
+            client = Client.objects.get(id=client_id)
+            program = client.program
+
+            if program.content_sequence == ContentSequence.GRADUAL:
+                # How long a client has been active since creation/enrollment
+                today = timezone.now()
+                client_active_delta = today - client.enrollment_date
+
+                # Determine the content to show i.e up to which date
+                effective_date = program.start_date + client_active_delta
+
+                return queryset.filter(date__lte=effective_date)
 
         return queryset
 
