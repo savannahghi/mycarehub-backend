@@ -394,7 +394,7 @@ TAGGIT_CASE_INSENSITIVE = True
 WAGTAILMEDIA = {
     "MEDIA_MODEL": "content.CustomMedia",
     "MEDIA_FORM_BASE": "mycarehub.content.forms.CustomBaseMediaForm",
-    "AUDIO_EXTENSIONS": ["aac", "wav"],
+    "AUDIO_EXTENSIONS": ["aac", "wav", "mp3"],
     "VIDEO_EXTENSIONS": ["mp4"],
 }
 WAGTAILDOCS_EXTENSIONS = [
@@ -408,6 +408,8 @@ WAGTAILIMAGES_IMAGE_MODEL = "content.CustomImage"
 WAGTAILIMAGES_IMAGE_FORM_BASE = "mycarehub.content.forms.CustomImageForm"
 WAGTAILDOCS_DOCUMENT_MODEL = "content.CustomDocument"
 WAGTAILDOCS_DOCUMENT_FORM_BASE = "mycarehub.content.forms.CustomDocumentForm"
+WAGTAIL_ENABLE_UPDATE_CHECK = "LTS"
+WAGTAIL_ENABLE_WHATS_NEW_BANNER = True
 
 # phone numbers
 PHONENUMBER_DB_FORMAT = "E164"
