@@ -13,7 +13,7 @@ from .organisation_models import (
     OrganisationAbstractBase,
     OrganisationSequenceGenerator,
 )
-from .program_models import Program
+from .program_models import ContentSequence, Program
 from .utils import is_image_type, unique_list
 
 __all__ = [
@@ -32,4 +32,5 @@ __all__ = [
     "is_image_type",
     "unique_list",
     "Program",
+    "ContentSequence",
 ]

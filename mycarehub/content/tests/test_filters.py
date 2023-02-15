@@ -4,7 +4,7 @@ from model_bakery import baker
 from rest_framework import status
 
 from mycarehub.clients.models import Client
-from mycarehub.common.models import Program
+from mycarehub.common.models import ContentSequence, Program
 from mycarehub.content.models import ContentItemCategory
 
 pytestmark = pytest.mark.django_db
@@ -153,6 +153,42 @@ def test_client_filter_found_categories(
     assert content_item_with_tag_and_category is not None
     assert content_item_with_tag_and_category.categories.count() == 1
     assert content_item_with_tag_and_category.categories.filter(id=999_999).count() == 1
+
+    client_one = baker.make(Client, program=program)
+    client.force_login(request_with_user.user)
+    url = (
+        reverse("wagtailapi:pages:listing")
+        + f"?type=content.ContentItem&fields=*&client_id={client_one.id}"
+    )
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    response_data = response.json()
+    assert response_data["meta"]["total_count"] == 1
+
+
+def test_content_sequence_filter_gradual(
+    content_item_with_tag_and_category, request_with_user, client, program
+):
+    program.content_sequence = ContentSequence.GRADUAL
+    program.save()
+
+    client_one = baker.make(Client, program=program)
+    client.force_login(request_with_user.user)
+    url = (
+        reverse("wagtailapi:pages:listing")
+        + f"?type=content.ContentItem&fields=*&client_id={client_one.id}"
+    )
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    response_data = response.json()
+    assert response_data["meta"]["total_count"] == 1
+
+
+def test_content_sequence_filter_instant(
+    content_item_with_tag_and_category, request_with_user, client, program
+):
+    program.content_sequence = ContentSequence.INSTANT
+    program.save()
 
     client_one = baker.make(Client, program=program)
     client.force_login(request_with_user.user)
