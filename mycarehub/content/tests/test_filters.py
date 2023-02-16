@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 from django.urls import reverse
 from model_bakery import baker
@@ -200,6 +202,23 @@ def test_content_sequence_filter_instant(
     assert response.status_code == status.HTTP_200_OK
     response_data = response.json()
     assert response_data["meta"]["total_count"] == 1
+
+
+def test_content_sequence_filter_invalid_client(
+    content_item_with_tag_and_category, request_with_user, client, program
+):
+    program.content_sequence = ContentSequence.INSTANT
+    program.save()
+
+    client.force_login(request_with_user.user)
+    url = (
+        reverse("wagtailapi:pages:listing")
+        + f"?type=content.ContentItem&fields=*&client_id={uuid.uuid4()}"
+    )
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    response_data = response.json()
+    assert response_data["meta"]["total_count"] == 0
 
 
 def test_content_facility_filter(

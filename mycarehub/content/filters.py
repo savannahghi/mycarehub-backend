@@ -1,4 +1,5 @@
 import django_filters
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count, Q
 from django.utils import timezone
 from rest_framework.filters import BaseFilterBackend
@@ -92,7 +93,11 @@ class ContentSequenceFilter(BaseFilterBackend):
         client_id = query_params.get("client_id", "")
 
         if client_id and queryset.model is ContentItem:
-            client = Client.objects.get(id=client_id)
+            try:
+                client = Client.objects.get(id=client_id)
+            except ObjectDoesNotExist:
+                return queryset
+
             program = client.program
 
             if program.content_sequence == ContentSequence.GRADUAL:
