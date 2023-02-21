@@ -198,10 +198,6 @@ def test_chooser_show_organisation_pages_only(
 
     chooser_show_organisation_pages_only(pages=pages, request=request_with_user)
 
-    chooser_show_organisation_pages_only(
-        pages=ContentItem.objects.all(), request=request_with_user
-    )
-
 
 def test_set_organisation_after_snippet_create(request_with_user):
     author = baker.make(Author)
