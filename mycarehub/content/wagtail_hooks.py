@@ -3,11 +3,10 @@ from django.utils.safestring import mark_safe
 from wagtail.core import hooks
 from wagtail.documents import get_document_model
 from wagtail.images import get_image_model
+from wagtail.models import Page
 from wagtail.snippets.models import register_snippet
 
-from mycarehub.home.models import HomePage
-
-from .models import Author, ContentItem, ContentItemCategory
+from .models import Author, ContentItem, ContentItemCategory, ContentItemIndexPage
 from .views import AuthorSnippetViewSet, ContentItemCategorySnippetViewSet, author_chooser_viewset
 
 
@@ -73,15 +72,14 @@ def set_organisation_after_page_create(request, page):
 
 @hooks.register("construct_explorer_page_queryset")
 def explorer_show_organisation_pages_only(parent_page, pages, request):
-    # TODO: this should be optimized :-)
-    if parent_page.slug == "root":
-        for page in pages:
-            if page.specific_class == HomePage:
-                pages = page.get_children()
+    if parent_page.is_root():
+        pages = pages.exact_type(ContentItemIndexPage)
 
-        for page in pages:
-            if page.specific.organisation != request.user.organisation:
-                pages = pages & pages.not_page(page)
+        index_pages = ContentItemIndexPage.objects.filter(organisation=request.user.organisation)
+        for page in index_pages:
+            pages = pages | Page.objects.page(page)
+
+        return pages
 
     return pages
 
@@ -89,12 +87,15 @@ def explorer_show_organisation_pages_only(parent_page, pages, request):
 @hooks.register("construct_page_chooser_queryset")
 def chooser_show_organisation_pages_only(pages, request):
     for page in pages:
-        if not hasattr(page, "organisation"):
-            pages = pages & pages.not_page(page)
+        if not hasattr(page.specific, "organisation"):
+            pages = pages & Page.objects.not_page(page)
             continue
 
-        if hasattr(page, "organisation") and page.organisation != request.user.organisation:
-            pages = pages & pages.not_page(page)
+        if (
+            hasattr(page.specific, "organisation")
+            and page.specific.organisation != request.user.organisation
+        ):
+            pages = pages & Page.objects.not_page(page)
 
     return pages
 
