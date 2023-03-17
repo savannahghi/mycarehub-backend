@@ -5,14 +5,14 @@ steps:
       [
         "build",
         "-t",
-        "europe-west1-docker.pkg.dev/$PROJECT_ID/sghi/mycarehub-${_DEPLOYMENT_TYPE}:$COMMIT_SHA",
+        "europe-west1-docker.pkg.dev/$PROJECT_ID/bewell-app/fafanuka-${_DEPLOYMENT_TYPE}:$COMMIT_SHA",
         ".",
       ]
 
   # Push the container image to Container Registry
   - name: "gcr.io/cloud-builders/docker"
     args:
-      ["push", "europe-west1-docker.pkg.dev/$PROJECT_ID/sghi/mycarehub-${_DEPLOYMENT_TYPE}:$COMMIT_SHA"]
+      ["push", "europe-west1-docker.pkg.dev/$PROJECT_ID/bewell-app/fafanuka-${_DEPLOYMENT_TYPE}:$COMMIT_SHA"]
 
   # Deploy an image from Container Registry to Cloud Run
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -21,7 +21,7 @@ steps:
       'run',
       'deploy',
       '${_SERVICE_NAME}',
-      '--image', 'europe-west1-docker.pkg.dev/$PROJECT_ID/sghi/mycarehub-${_DEPLOYMENT_TYPE}:$COMMIT_SHA',
+      '--image', 'europe-west1-docker.pkg.dev/$PROJECT_ID/bewell-app/fafanuka-${_DEPLOYMENT_TYPE}:$COMMIT_SHA',
       '--region', 'europe-west1',
       '--platform', 'managed',
       '--allow-unauthenticated',
@@ -36,7 +36,7 @@ steps:
   ]
 
 images:
-  - "europe-west1-docker.pkg.dev/$PROJECT_ID/sghi/mycarehub-${_DEPLOYMENT_TYPE}:$COMMIT_SHA"
+  - "europe-west1-docker.pkg.dev/$PROJECT_ID/bewell-app/fafanuka-${_DEPLOYMENT_TYPE}:$COMMIT_SHA"
 
 timeout: 1200s
 queueTtl: 3600s

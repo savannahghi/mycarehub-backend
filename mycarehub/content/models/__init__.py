@@ -1,4 +1,5 @@
 from .documents import CustomDocument
+from .fafanuka import FafanukaContentItem
 from .images import CustomImage, CustomRendition
 from .interactions import ContentBookmark, ContentLike, ContentShare, ContentView
 from .media import CustomMedia
@@ -37,4 +38,5 @@ __all__ = [
     "CustomImage",
     "CustomRendition",
     "CustomDocument",
+    "FafanukaContentItem",
 ]
