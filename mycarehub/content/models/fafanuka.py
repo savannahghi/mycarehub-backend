@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.api import APIField
 from wagtail.models import Page
@@ -14,10 +15,10 @@ class FafanukaContentItem(Page):
     """
 
     class ItemTypes(models.TextChoices):
-        GENERAL_TIPS = "GENERAL DIABETES TIPS"
-        TYPE_1 = "TYPE 1 DIABETES "
-        TYPE_2 = "TYPE 2 DIABETES "
-        GESTATIONAL = "GESTATIONAL DIABETES "
+        GENERAL_DIABETES_TIPS = "GENERAL DIABETES TIPS"
+        TYPE_1_DIABETES = "TYPE 1 DIABETES"
+        TYPE_2_DIABETES = "TYPE 2 DIABETES"
+        GESTATIONAL_DIABETES = "GESTATIONAL DIABETES"
 
     # basic properties that each post has
     organisation = models.ForeignKey(
@@ -58,8 +59,8 @@ class FafanukaContentItem(Page):
             ],
             heading="About",
         ),
-        FieldPanel("english_content", classname="full"),
-        FieldPanel("kiswahili_content", classname="full"),
+        FieldPanel("english_content"),
+        FieldPanel("kiswahili_content"),
     ]
 
     # these fields determine the content that is indexed for search purposes
@@ -83,3 +84,17 @@ class FafanukaContentItem(Page):
     ]
 
     subpage_types = []  # type: ignore
+
+    def save(self, *args, **kwargs):
+        """Set a custom title for content"""
+        new_title = self.english_content[:30]
+        self.slug = slugify(new_title)
+        self.title = new_title
+        super().save(*args, **kwargs)
+
+
+# Assign default values to the slug and title field, in order to avoid validation errors
+slug_field = FafanukaContentItem._meta.get_field("slug")
+slug_field.default = "default-blank-slug"
+title_field = FafanukaContentItem._meta.get_field("title")
+title_field.default = "default title value"
