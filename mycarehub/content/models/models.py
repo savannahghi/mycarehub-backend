@@ -139,7 +139,6 @@ class ContentItemIndexPage(Page):
         "home.HomePage",
     ]
     subpage_types = [
-        "content.ContentItem",
         "content.FafanukaContentItem",
     ]
 

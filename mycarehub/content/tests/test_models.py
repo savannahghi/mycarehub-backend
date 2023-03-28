@@ -10,6 +10,7 @@ from mycarehub.content.models import (
     ContentItemCategory,
     ContentItemIndexPage,
     ContentItemTagIndexPage,
+    FafanukaContentItem,
 )
 from mycarehub.home.models import HomePage
 
@@ -168,3 +169,17 @@ def test_content_item_validate_article_hero_image(request_with_user):
         content_item_index.add_child(instance=content_item)
 
     assert "an article must have a hero image" in str(c.value.messages)
+
+
+def test_set_custom_title_from_english_content():
+    content_item = FafanukaContentItem(
+        path="test",
+        depth=3,
+        date="2018-03-03",
+        english_content="This is some sample content for testing purposes",
+        kiswahili_content="This is some sample content for testing purposes",
+        category="GENERAL DIABETES TIPS",
+    )
+    content_item.save()
+    assert content_item.title == "This is some sample content fo"
+    assert content_item.slug == "this-is-some-sample-content-fo"
