@@ -45,10 +45,10 @@ class FafanukaContentItem(Page):
         max_length=64,
         choices=ItemTypes.choices,
     )
-    english_content = models.CharField(
+    english_content = models.TextField(
         max_length=160,
     )
-    kiswahili_content = models.CharField(
+    kiswahili_content = models.TextField(
         max_length=160,
     )
     content_panels = Page.content_panels + [
