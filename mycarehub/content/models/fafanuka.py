@@ -6,6 +6,20 @@ from wagtail.models import Page
 from wagtail.search import index
 
 from mycarehub.common.models import Organisation, Program
+from mycarehub.common.models.base_models import AbstractBase
+
+
+class FafanukaContentBody(AbstractBase):
+    """Fafanuka content item body."""
+
+    class LanguageType(models.TextChoices):
+        """Languages."""
+
+        ENGLISH = "ENGLISH"
+        KISWAHILI = "KISWAHILI"
+
+    language = models.CharField(max_length=255, choices=LanguageType)
+    body = models.TextField(max_length=160)
 
 
 class FafanukaContentItem(Page):
@@ -14,13 +28,20 @@ class FafanukaContentItem(Page):
     sent to Fafanuka subscribers.
     """
 
-    class ItemTypes(models.TextChoices):
-        GENERAL_DIABETES_TIPS = "GENERAL DIABETES TIPS"
+    class DiabetesType(models.TextChoices):
+        """The three different types of diabetes."""
+
         TYPE_1_DIABETES = "TYPE 1 DIABETES"
         TYPE_2_DIABETES = "TYPE 2 DIABETES"
         GESTATIONAL_DIABETES = "GESTATIONAL DIABETES"
 
-    # basic properties that each post has
+    class SubGroup(models.TextChoices):
+        """Diabetes content sub groups."""
+
+        DIABETES_GENERAL_INFORMATION = 1
+        DIABETES_AND_SCREENING = 2
+        DIABETES_MANAGEMENT = 3
+
     organisation = models.ForeignKey(
         Organisation,
         on_delete=models.PROTECT,
@@ -36,31 +57,28 @@ class FafanukaContentItem(Page):
         blank=True,
         related_name="%(app_label)s_%(class)s_related",
     )
-
-    date = models.DateField(
-        "Post date",
-        help_text="This will be shown to readers as the publication date",
-    )
     category = models.CharField(
         max_length=64,
-        choices=ItemTypes.choices,
+        choices=DiabetesType.choices,
     )
-    english_content = models.TextField(
-        max_length=160,
+    subgroup = models.CharField(max_length=255, choices=SubGroup)
+    sequence_number = models.IntegerField(null=True, blank=True)
+    sequence = models.CharField(max_length=10, null=True, blank=True)
+    content = models.ForeignKey(
+        FafanukaContentBody,
+        on_delete=models.PROTECT,
+        related_name="%(app_label)s_%(class)s_related",
     )
-    kiswahili_content = models.TextField(
-        max_length=160,
-    )
+
     content_panels = Page.content_panels + [
         MultiFieldPanel(
             [
-                FieldPanel("date"),
                 FieldPanel("category"),
             ],
             heading="About",
         ),
-        FieldPanel("english_content"),
-        FieldPanel("kiswahili_content"),
+        FieldPanel("content"),
+        # FieldPanel("kiswahili_content"),
     ]
 
     # these fields determine the content that is indexed for search purposes
@@ -86,7 +104,7 @@ class FafanukaContentItem(Page):
     subpage_types = []  # type: ignore
 
     def save(self, *args, **kwargs):
-        """Set a custom title for content"""
+        """Override save method."""
         new_title = self.english_content[:30]
         self.slug = slugify(new_title)
         self.title = new_title
