@@ -1,0 +1,45 @@
+name: Multitenant Staging environment Deployment
+
+on:
+  push:
+    branches:
+      # - develop-v2
+      - retire-cloudbuild
+
+jobs:
+  deploy_to_multitenant_staging:
+    strategy:
+      matrix:
+        go-version: [1.18.x]
+    name: Deploy multitenant staging server to google cloud run
+    runs-on: ubuntu-latest
+    environment:
+      name: multitenant-staging
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - id: "auth"
+        uses: "google-github-actions/auth@v0"
+        with:
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
+
+      # Configure Docker to use the gcloud command-line tool as a credential
+      # helper for authentication
+      - run: |-
+          gcloud --quiet auth configure-docker
+
+      - name: Build and Push Image
+        run: |-
+          docker build -t eu.gcr.io/${{ secrets.GOOGLE_CLOUD_PROJECT }}/${{ secrets.GCR_NAME }}:$GITHUB_SHA .
+          docker push eu.gcr.io/${{ secrets.GOOGLE_CLOUD_PROJECT }}/${{ secrets.GCR_NAME }}:$GITHUB_SHA
+
+      - name: Deploy to Google Cloud Run
+        uses: "google-github-actions/deploy-cloudrun@v0"
+        with:
+          service: ${{ secrets.SERVICE_NAME }}
+          region: "europe-west1"
+          secrets: "/secrets/api/key=mycarehub-multitenant-stage:latest"
+          image: "eu.gcr.io/${{ secrets.GOOGLE_CLOUD_PROJECT }}/${{ secrets.GCR_NAME }}:${{  github.sha }}"
