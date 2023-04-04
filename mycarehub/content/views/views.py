@@ -17,6 +17,7 @@ from mycarehub.content.filters import (
     ContentItemCategoryFilter,
     ContentSequenceFilter,
     FacilityFilter,
+    FafanukaFilterSet,
     TagFilter,
 )
 from mycarehub.content.models import ContentItemCategory
@@ -26,6 +27,7 @@ from mycarehub.content.serializers import ContentItemCategorySerializer
 class CustomPageAPIViewset(PagesAPIViewSet):
     # the order is important...wagtail filters come last
     filter_backends = [
+        FafanukaFilterSet,
         TagFilter,
         ClientFilter,
         ContentSequenceFilter,
@@ -41,7 +43,7 @@ class CustomPageAPIViewset(PagesAPIViewSet):
         SearchFilter,  # must be last
     ]
     known_query_parameters = PagesAPIViewSet.known_query_parameters.union(
-        ["tag", "category", "category_name", "client_id", "facility_id"]
+        ["offer_code", "initial_content", "current_sequence_number", "current_subgroup"]
     )
 
 
