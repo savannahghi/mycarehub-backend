@@ -198,36 +198,41 @@ class FafanukaFilterSet(BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         """Filter queryset by category, language and last sequence."""
-        if len(queryset) == 0:
-            return queryset
 
         if queryset.model is FafanukaContentItem:
             query_params = request.query_params
-            offer = query_params.get("offer_code", "")
             default_filters = {
                 "organisation": request.user.organisation,
                 "program": request.user.program,
                 "live": True,  # TODO: Remember to change this to happen only after publishing
-                "offer": [offer, FafanukaContentItem.OfferType.GENERAL_TIPS],
             }
 
             initial_content = query_params.get("initial_content", "")
             if initial_content:
                 filters = {
-                    "subgroup": FafanukaContentItem.SubGroup.DIABETES_GENERAL_INFORMATION,
-                    "sequence": 1,
+                    "subgroup": FafanukaContentItem.SubGroup.DIABETES_GENERAL_INFORMATION.value,
+                    "sequence_number": 1,
                 }
                 filters.update(default_filters)
                 return queryset.filter(**filters)
 
             # Check sequence - based on some previous sequence
-            current_sequence_number = query_params.get("current_sequence_number", "")
+            offer = query_params.get("offer_code", "")
+            default_filters.update(
+                {
+                    "offer__in": [offer, FafanukaContentItem.OfferType.GENERAL_TIPS.value],
+                }
+            )
+            current_sequence_number = query_params.get(
+                "current_sequence_number", ""
+            )  # TODO: Validate not 0
             current_subgroup = query_params.get("current_subgroup", "")
             next_sequence_number = (
                 int(current_sequence_number) + 1
             )  # Programatically get the next one (don't assume next is always +1)
 
-            subgroup_filters = default_filters.update({"subgroup": current_subgroup})
+            subgroup_filters = {"subgroup": current_subgroup}  # TODO Handle None([])
+            subgroup_filters.update(default_filters)
             current_subgroup_last_sequence_number = (
                 FafanukaContentItem.objects.filter(**subgroup_filters)
                 .order_by("sequence_number")
@@ -235,20 +240,21 @@ class FafanukaFilterSet(BaseFilterBackend):
                 .sequence_number
             )
             if next_sequence_number <= current_subgroup_last_sequence_number:
-                return queryset.filter(
-                    **subgroup_filters.update({"sequence_number": next_sequence_number})
-                ).first()
+                subgroup_filters.update({"sequence_number": next_sequence_number})
+                return queryset.filter(**subgroup_filters)
 
             # Other subgroups outside the current one
-            content = FafanukaContentItem.objects.filter(default_filters).order_by("subgroup")
+            content = FafanukaContentItem.objects.filter(**default_filters).order_by("subgroup")
             last_subgroup = content.last().subgroup
             next_subgroup = int(current_subgroup) + 1
             if next_subgroup <= last_subgroup:  # We are still within content pool so we can send
-                subgroup_filters = default_filters.update(
+                default_filters.update(
                     {
                         "subgroup": next_subgroup,
                     }
                 )
-                return queryset.filter(**subgroup_filters).order_by("sequence_number").first()
+                return queryset.filter(**default_filters).order_by("sequence_number")
 
-            return []
+            return FafanukaContentItem.objects.none()
+
+        return queryset

@@ -107,9 +107,13 @@ class FafanukaContentItem(Page):
 
     subpage_types = []  # type: ignore
 
+    def __str__(self):
+        """Human readable model representation."""
+        return f"{self.sequence} {self.title}"
+
     def generate_sequence_number(self):
         """Generate content sequence and sequence numbers."""
-        if self.__class__.objects.filter(pk=self.pk):
+        if self.__class__.objects.filter(pk=self.pk, sequence__isnull=False):
             return
 
         filters = {
@@ -136,7 +140,6 @@ class FafanukaContentItem(Page):
 
     def save(self, *args, **kwargs):
         """Override save method."""
-        self.generate_sequence_number()  # Do this when the content is published
         new_title = self.english_content[:30]
         self.slug = slugify(new_title)
         self.title = new_title

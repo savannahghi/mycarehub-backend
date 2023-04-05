@@ -1,25 +1,20 @@
 Feature: Fafanuka content sending
 
-    Scenario: How do offers affect the content a subscriber receives
+    Scenario: Content creation
+        Given a content's offer, body (Swahili and English), subgroup (Facts)
+        Then one should be able to create content
+
+    Scenario: Content Workflows
+        pass
+
+    Scenario: First subscription
         Given it's the first time a subscriber joins Fafanuka
-        Then they will all receive, General Information under "Diabetes General Information"
-        Then after all that data is exhausted in that subgroup, they will receive content specific to a particular offer
+        When there is content already added added for Fafanuka
+        Then they should recieve the first content, i.e under DIabetes General Information, sequence 1
+        When there is no content present
+        Then they should not recieve any content
 
-    Scenario: How does the content states affect the content a user receives
-        Given that we want to send only content that has been published
-        Then when fetching content to send, we will fetch all contents where there live status == True
-
-    Scenario: Initial content
-        Given it's the first time a subscriber joins Fafanuka
-        Then, they should receive the first content in "Diabetes General Information" subgroup
-        When there is no content in that subgroup
-        Then we don't send any content
-
-    Scenario: Send content based on a previous sequence
-        Given that the subscriber has already received previous content
-        Then they will receive the next content in that sequence flow
-
-    Scenario: Subscriber has completed the sequence in the current subgroup
-        Given that the subscriber has already viewed all the content in the current subgroup
-        Then we will check, if there's a next subgroup
-        Then select the first content and send
+    Scenario: Scheduled content
+        Given a subscriber is (still) opted in to Fafanuka
+        When the scheduled day and time for sending content is due
+        Then they should receive published (live) content, based on their offer (TYPE1, TYPE2, GESTATIONAL, GENERAL), and the next content in their sequence
