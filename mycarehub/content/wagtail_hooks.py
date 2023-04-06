@@ -6,6 +6,8 @@ from wagtail.images import get_image_model
 from wagtail.models import Page
 from wagtail.snippets.models import register_snippet
 
+from mycarehub.content.models.fafanuka import FafanukaContentItem
+
 from .models import Author, ContentItem, ContentItemCategory, ContentItemIndexPage
 from .views import AuthorSnippetViewSet, ContentItemCategorySnippetViewSet, author_chooser_viewset
 
@@ -39,7 +41,6 @@ def before_publish_page(request, page):
 
     Document type pages must have documents linked before publishing.
     """
-
     if page.specific_class == ContentItem:
         if page.item_type == "AUDIO_VIDEO" and page.featured_media.count() == 0:
             msg = (
@@ -63,9 +64,12 @@ def set_organisation_after_page_create(request, page):
 
     page.organisation = request.user.organisation
 
-    if page.specific_class == ContentItem:
+    if page.specific_class in [ContentItem, FafanukaContentItem]:
         index = page.get_parent()
         page.program = index.program
+
+    if page.specific_class == FafanukaContentItem:
+        page.generate_sequence_number()
 
     page.save()
 

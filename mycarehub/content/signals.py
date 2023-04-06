@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
+from django.utils.text import slugify
 from wagtail.models import Page, Site
 
 from mycarehub.common.models import Program
@@ -21,14 +22,15 @@ def create_program_content_index_page(sender, instance, created, **kwargs):
         return
 
     try:
-        homepage = HomePage.objects.get(title="Mycarehub Home Page")
+        homepage = HomePage.objects.get(title="SIL Home Page")
     except ObjectDoesNotExist:
         homepage_content_type = ContentType.objects.get_for_model(HomePage)
 
         homepage = HomePage(
-            title="Mycarehub Home Page",
+            title="SIL Home Page",
             content_type=homepage_content_type,
         )
+        homepage.slug = slugify(homepage.title)
 
         root = Page.get_first_root_node()
         root.add_child(instance=homepage)
@@ -38,7 +40,7 @@ def create_program_content_index_page(sender, instance, created, **kwargs):
             defaults={
                 "root_page": homepage,
                 "is_default_site": True,
-                "site_name": "mycarehub.com",
+                "site_name": "savannahinformatics.com",
             },
         )
 

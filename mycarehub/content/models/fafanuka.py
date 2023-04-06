@@ -1,5 +1,8 @@
+import threading
+
 from django.db import models
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.api import APIField
 from wagtail.models import Page
@@ -14,13 +17,28 @@ class FafanukaContentItem(Page):
     sent to Fafanuka subscribers.
     """
 
-    class ItemTypes(models.TextChoices):
-        GENERAL_DIABETES_TIPS = "GENERAL DIABETES TIPS"
-        TYPE_1_DIABETES = "TYPE 1 DIABETES"
-        TYPE_2_DIABETES = "TYPE 2 DIABETES"
-        GESTATIONAL_DIABETES = "GESTATIONAL DIABETES"
+    class OfferType(models.TextChoices):
+        """The three different types of diabetes."""
 
-    # basic properties that each post has
+        TYPE_1_DIABETES = "001032833390", _("TYPE 1 DIABETES")
+        TYPE_2_DIABETES = "001032833389", _("TYPE 2 DIABETES")
+        GESTATIONAL_DIABETES = "001032833393", _("GESTATIONAL DIABETES")
+        GENERAL_TIPS = "001032833395", _("GENERAL")
+
+    class SubGroup(models.IntegerChoices):
+        """Diabetes content sub groups."""
+
+        DIABETES_GENERAL_INFORMATION = 1, _("Diabetes General Information")
+        DIABETES_AND_SCREENING = 2, _("Diabetes and Screening")
+        DIABETES_MANAGEMENT = 3, _("Diabetes mangement")
+        DIABETES_AND_PREGNANCY = 4, _("Diabetes and pregnancy")
+        EXERCISE_AND_DIABETES = 5, _("Exercise and diabetes")
+        DIABETES_AND_PREVENTION = 6, _("Diabetes and prevention")
+        DIET_AND_NUTRITION = 7, _("Diabetes and nutrition")
+        DIABETES_COMPLICATIONS = 8, _("Diabetes and complications")
+        DIABETES_AND_SUPPORT = 9, _("Diabetes and support")
+        DIABETES_AND_FOOTCARE = 10, _("Diabetes and footcare")
+
     organisation = models.ForeignKey(
         Organisation,
         on_delete=models.PROTECT,
@@ -36,46 +54,50 @@ class FafanukaContentItem(Page):
         blank=True,
         related_name="%(app_label)s_%(class)s_related",
     )
-
-    date = models.DateField(
-        "Post date",
-        help_text="This will be shown to readers as the publication date",
-    )
-    category = models.CharField(
+    offer = models.CharField(
         max_length=64,
-        choices=ItemTypes.choices,
+        choices=OfferType.choices,
+        default=OfferType.GENERAL_TIPS,
     )
-    english_content = models.TextField(
-        max_length=160,
+    subgroup = models.IntegerField(
+        choices=SubGroup.choices,
+        default=SubGroup.DIABETES_GENERAL_INFORMATION,
     )
-    kiswahili_content = models.TextField(
-        max_length=160,
-    )
+    sequence_number = models.IntegerField(null=True, blank=True)
+    sequence = models.CharField(max_length=10, null=True, blank=True)
+    swahili_content = models.TextField(max_length=160)
+    english_content = models.TextField(max_length=160)
+
     content_panels = Page.content_panels + [
         MultiFieldPanel(
             [
-                FieldPanel("date"),
-                FieldPanel("category"),
+                FieldPanel("offer"),
+                FieldPanel("subgroup"),
             ],
             heading="About",
         ),
+        FieldPanel("swahili_content"),
         FieldPanel("english_content"),
-        FieldPanel("kiswahili_content"),
     ]
 
     # these fields determine the content that is indexed for search purposes
     search_fields = Page.search_fields + [
-        index.SearchField("category"),
+        index.SearchField("offer"),
         index.SearchField("english_content"),
-        index.SearchField("kiswahili_content"),
+        index.SearchField("swahili_content"),
     ]
 
     # this configuration allows these custom fields to be available over the API
     api_fields = [
-        APIField("date"),
-        APIField("category"),
+        APIField("live"),
+        APIField("organisation"),
+        APIField("program"),
+        APIField("offer"),
+        APIField("subgroup"),
+        APIField("sequence"),
+        APIField("sequence_number"),
         APIField("english_content"),
-        APIField("kiswahili_content"),
+        APIField("swahili_content"),
     ]
 
     # limit the parent page types
@@ -85,8 +107,39 @@ class FafanukaContentItem(Page):
 
     subpage_types = []  # type: ignore
 
+    def __str__(self):
+        """Human readable model representation."""
+        return f"{self.sequence} {self.title}"
+
+    def generate_sequence_number(self):
+        """Generate content sequence and sequence numbers."""
+        if self.__class__.objects.filter(pk=self.pk, sequence__isnull=False):
+            return
+
+        filters = {
+            "organisation": self.organisation,
+            "program": self.program,
+            "offer": self.offer,
+            "subgroup": self.subgroup,
+        }
+        seq = self.__class__.objects.filter(**filters).count()
+        lock = threading.Lock()
+
+        def increment_seq(lock):
+            lock.acquire()
+            nonlocal seq
+            seq = seq + 1
+            lock.release()
+
+        thread = threading.Thread(target=increment_seq, args=(lock,))
+        thread.start()
+        thread.join()
+
+        self.sequence_number = seq
+        self.sequence = f"{self.subgroup}.{self.sequence_number}"
+
     def save(self, *args, **kwargs):
-        """Set a custom title for content"""
+        """Override save method."""
         new_title = self.english_content[:30]
         self.slug = slugify(new_title)
         self.title = new_title

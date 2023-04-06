@@ -175,10 +175,9 @@ def test_set_custom_title_from_english_content():
     content_item = FafanukaContentItem(
         path="test",
         depth=3,
-        date="2018-03-03",
         english_content="This is some sample content for testing purposes",
-        kiswahili_content="This is some sample content for testing purposes",
-        category="GENERAL DIABETES TIPS",
+        swahili_content="This is some sample content for testing purposes",
+        offer="001032833395",
     )
     content_item.save()
     assert content_item.title == "This is some sample content fo"
