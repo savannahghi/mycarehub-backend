@@ -123,11 +123,15 @@ LOGGING = {
         }
     },
     "handlers": {
+        "elasticapm": {
+            "level": "WARNING",
+            "class": "elasticapm.contrib.django.handlers.LoggingHandler",
+        },
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "verbose",
-        }
+        },
     },
     "root": {"level": "INFO", "handlers": ["console"]},
     "loggers": {
@@ -143,6 +147,11 @@ LOGGING = {
             "propagate": False,
         },
         "django.security.DisallowedHost": {
+            "level": "ERROR",
+            "handlers": ["console"],
+            "propagate": False,
+        },
+        "elasticapm.errors": {
             "level": "ERROR",
             "handlers": ["console"],
             "propagate": False,
@@ -170,5 +179,12 @@ sentry_sdk.init(
     traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=1.0),
 )
 
-# Your stuff...
+# ELASTIC APM
 # ------------------------------------------------------------------------------
+ELASTIC_APM = {
+    "ENABLED": env("ELASTIC_APM_ENABLED", "False"),
+    "SERVICE_NAME": "savannah-informatics-cms",
+    "SECRET_TOKEN": env("ELASTIC_APM_SECRET_TOKEN"),
+    "SERVER_URL": env("ELASTIC_APM_SERVER_URL"),
+    "ENVIRONMENT": env("SENTRY_ENVIRONMENT", default="production"),
+}
