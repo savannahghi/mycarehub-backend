@@ -150,6 +150,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # MIDDLEWARE
 # ------------------------------------------------------------------------------
 MIDDLEWARE = [
+    "sil_sentry_middleware.sentry_middleware_for_4xx",
+    "sil_sentry_middleware.sentry_middleware_for_5xx",
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
