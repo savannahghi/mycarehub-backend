@@ -166,9 +166,16 @@ integrations = [
 sentry_sdk.init(
     dsn=SENTRY_DSN,
     integrations=integrations,
-    environment=env("SENTRY_ENVIRONMENT", default="production"),
+    environment=env("ENVIRONMENT", default="production"),
     traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=1.0),
 )
 
-# Your stuff...
+# Elastic APM
 # ------------------------------------------------------------------------------
+ELASTIC_APM = {
+    "ENABLED": env.bool("ELASTIC_APM_ENABLED", default=False),
+    "SERVICE_NAME": env("SERVICE_NAME"),
+    "SECRET_TOKEN": env("ELASTIC_APM_SECRET_TOKEN"),
+    "SERVER_URL": env("ELASTIC_APM_SERVER_URL"),
+    "ENVIRONMENT": env("ENVIRONMENT", default="production"),
+}
