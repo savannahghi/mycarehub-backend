@@ -107,6 +107,7 @@ THIRD_PARTY_APPS = [
     "wagtailfontawesome",
     "django_extensions",
     "nested_admin",
+    "elasticapm.contrib.django",
 ]
 
 LOCAL_APPS = [
