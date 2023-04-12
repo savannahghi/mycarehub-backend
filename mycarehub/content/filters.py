@@ -201,11 +201,9 @@ class FafanukaFilterSet(BaseFilterBackend):
 
         if queryset.model is FafanukaContentItem:
             query_params = request.query_params
-            offer = query_params.get("offer_code", "")
             default_filters = {
                 "organisation": request.user.organisation,
                 "program": request.user.program,
-                "offer": offer,
                 "live": True,  # TODO: Remember to change this to happen only after publishing
             }
 
@@ -214,11 +212,13 @@ class FafanukaFilterSet(BaseFilterBackend):
                 filters = {
                     "subgroup": FafanukaContentItem.SubGroup.DIABETES_GENERAL_INFORMATION.value,
                     "sequence_number": 1,
+                    "offer": FafanukaContentItem.OfferType.GENERAL_TIPS,
                 }
                 filters.update(default_filters)
                 return queryset.filter(**filters)
 
             # Check sequence - based on some previous sequence
+            offer = query_params.get("offer_code", "")
             default_filters.update(
                 {
                     "offer__in": [offer, FafanukaContentItem.OfferType.GENERAL_TIPS.value],
