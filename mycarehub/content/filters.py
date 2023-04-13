@@ -212,6 +212,7 @@ class FafanukaFilterSet(BaseFilterBackend):
                 filters = {
                     "subgroup": FafanukaContentItem.SubGroup.DIABETES_GENERAL_INFORMATION.value,
                     "sequence_number": 1,
+                    "offer": FafanukaContentItem.OfferType.GENERAL_TIPS,
                 }
                 filters.update(default_filters)
                 return queryset.filter(**filters)
