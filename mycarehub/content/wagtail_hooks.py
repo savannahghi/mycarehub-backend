@@ -6,7 +6,7 @@ from wagtail.images import get_image_model
 from wagtail.models import Page
 from wagtail.snippets.models import register_snippet
 
-from .models import Author, ContentItem, ContentItemCategory, ContentItemIndexPage
+from .models import Author, ContentItem, ContentItemCategory
 from .views import AuthorSnippetViewSet, ContentItemCategorySnippetViewSet, author_chooser_viewset
 
 
@@ -70,20 +70,6 @@ def set_organisation_after_page_create(request, page):
     page.save()
 
 
-@hooks.register("construct_explorer_page_queryset")
-def explorer_show_organisation_pages_only(parent_page, pages, request):
-    if parent_page.is_root():
-        pages = pages.exact_type(ContentItemIndexPage)
-
-        index_pages = ContentItemIndexPage.objects.filter(organisation=request.user.organisation)
-        for page in index_pages:
-            pages = pages | Page.objects.page(page)
-
-        return pages
-
-    return pages
-
-
 @hooks.register("construct_page_chooser_queryset")
 def chooser_show_organisation_pages_only(pages, request):
     for page in pages:
@@ -120,12 +106,6 @@ def show_organisation_media_only(media, request):
 @hooks.register("register_admin_viewset")
 def register_author_chooser_viewset():
     return author_chooser_viewset
-
-
-@hooks.register("construct_main_menu")
-def hide_explorer_menu_item_from_non_superuser(request, menu_items):
-    if not request.user.is_superuser:
-        menu_items[:] = [item for item in menu_items if item.name not in ["settings", "reports"]]
 
 
 @hooks.register("construct_homepage_summary_items")
