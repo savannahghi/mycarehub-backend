@@ -2,17 +2,14 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from model_bakery import baker
-from wagtail.admin.menu import MenuItem
 from wagtail.models import Page, Site
 
-from mycarehub.content.models import Author, ContentItem, ContentItemIndexPage, CustomMedia
+from mycarehub.content.models import Author, ContentItem, CustomMedia
 from mycarehub.content.wagtail_hooks import (
     before_publish_page,
     chooser_show_organisation_pages_only,
     construct_homepage_summary_items,
-    explorer_show_organisation_pages_only,
     get_global_admin_js,
-    hide_explorer_menu_item_from_non_superuser,
     set_organisation_after_page_create,
     set_organisation_after_snippet_create,
     show_organisation_documents_only,
@@ -131,47 +128,6 @@ def test_set_content_item_program_after_page_create(
     set_organisation_after_page_create(request=request_with_user, page=content_item)
 
 
-def test_explorer_show_organisation_pages_only(request_with_user, homepage, content_item_index):
-    # get a hero image
-    hero = baker.make("content.CustomImage", _create_files=True)
-
-    # set up a content item
-    author = baker.make(Author)
-    content_item = ContentItem(
-        title="An article",
-        slug="article-1",
-        intro="intro",
-        body="body",
-        item_type="ARTICLE",
-        date=timezone.now().date(),
-        author=author,
-        hero_image=hero,
-        organisation=request_with_user.user.organisation,
-    )
-    content_item_index.add_child(instance=content_item)
-    content_item_index.save_revision().publish()
-
-    content_item_index_two = ContentItemIndexPage(
-        title="Content Item Index Two",
-        slug="articlez",
-        intro="content",
-        organisation=request_with_user.user.organisation,
-    )
-
-    homepage.add_child(instance=content_item_index_two)
-    homepage.save_revision().publish()
-
-    pages = Page.objects.all()
-
-    explorer_show_organisation_pages_only(
-        parent_page=Page.get_first_root_node(), pages=pages, request=request_with_user
-    )
-
-    explorer_show_organisation_pages_only(
-        parent_page=content_item_index, pages=ContentItem.objects.all(), request=request_with_user
-    )
-
-
 def test_chooser_show_organisation_pages_only(
     request_with_user, content_item_with_tag_and_category, content_item_index
 ):
@@ -211,18 +167,6 @@ def test_show_organisation_media_only(request_with_user):
     baker.make(CustomMedia, organisation=request_with_user.user.organisation)
 
     show_organisation_media_only(media=CustomMedia.objects.all(), request=request_with_user)
-
-
-def test_hide_explorer_menu_item_from_non_superuser(request_with_user, admin_user):
-    hide_explorer_menu_item_from_non_superuser(
-        request=request_with_user, menu_items=[MenuItem("settings", "sample/")]
-    )
-
-    request_with_user.user = admin_user
-
-    hide_explorer_menu_item_from_non_superuser(
-        request=request_with_user, menu_items=[MenuItem("settings", "sample/")]
-    )
 
 
 def test_show_organisation_documents_only(request_with_user):
