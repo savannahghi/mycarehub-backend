@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group, Permission
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
@@ -67,3 +67,13 @@ def account_confirmed_handler(sender, instance, created, **kwargs):
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def assign_user_editor_permission(sender, instance, created, **kwargs):
+    try:
+        group = Group.objects.get(name=f"{instance.program.name} Editor")
+    except Group.DoesNotExist:
+        return
+    instance.groups.clear()
+    instance.groups.add(group)
