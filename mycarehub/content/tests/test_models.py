@@ -128,7 +128,7 @@ def test_content_item_properties(request_with_user):
         {
             "category_id": cat.id,
             "category_name": cat.name,
-            "category_icon": cat.icon.file.url,
+            "category_icon": icon.file.url,
         }
     ]
 

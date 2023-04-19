@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
@@ -73,7 +74,8 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 def assign_user_editor_permission(sender, instance, created, **kwargs):
     try:
         group = Group.objects.get(name=f"{instance.program.name} Editor")
-    except Group.DoesNotExist:
+    except ObjectDoesNotExist:
         return
+
     instance.groups.clear()
     instance.groups.add(group)

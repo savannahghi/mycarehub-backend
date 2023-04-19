@@ -273,7 +273,7 @@ class AuditAbstractBaseModelTest(TestCase):
         # It is already timezone aware
         assert timezone.is_aware(instance.created)
         created_naive_datetime = datetime.datetime.now()
-        instance.create = created_naive_datetime  # This should not even update
+        instance.created = created_naive_datetime  # This should not even update
         instance.save()
         assert timezone.is_aware(instance.created)
 

@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop-v2
-      - deploy-multitenant-k8s
 
 env:
   DJANGO_SETTINGS_MODULE: "config.settings.production"

@@ -2,19 +2,13 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from mycarehub.utils.excel_utils import AuditSerializerExcelIO
 
-from ..mixins import AuditSerializerExcelIOMixin
-
-
-class BaseView(ModelViewSet, AuditSerializerExcelIOMixin):
+class BaseView(ModelViewSet):
     """Base class for most application views.
 
     This view's `create` method has been extended to support the creation of
     a single or multiple records.
     """
-
-    excel_io_class = AuditSerializerExcelIO
 
     def create(self, request, *args, **kwargs):
         """Create and persist single or multiple records."""
