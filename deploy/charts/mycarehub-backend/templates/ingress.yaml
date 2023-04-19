@@ -1,0 +1,27 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: {{ .Release.Name }}
+    namespace: {{ .Release.Namespace }}
+    annotations:
+        cert-manager.io/cluster-issuer: {{ .Values.networking.issuer.name }}
+        konghq.com/protocols: "https"
+        konghq.com/https-redirect-status-code: "308"
+spec:
+    ingressClassName: kong
+    tls:
+        - secretName: {{ .Values.networking.issuer.name }}
+          hosts:
+              - {{ .Values.networking.ingress.host }}
+    rules:
+        - host: {{ .Values.networking.ingress.host }}
+          http:
+              paths:
+                  - path: /
+                    pathType: ImplementationSpecific
+                    backend:
+                        service:
+                            name: svc-{{ .Release.Name }}
+                            port:
+                                number: 80

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  selector:
+    matchLabels:
+     app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        team: ""
+    spec:
+      containers:
+        - name: {{ .Release.Name }}
+          image: {{ .Values.app.container.image }}
+          imagePullPolicy: {{ .Values.app.container.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: ""
+              value: ""
+        - name: cloudsql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.33.2
+          command: ["/cloud_sql_proxy",
+                    "-instances={{ .Values.app.container.env.db.instanceName }}=tcp:5432",
+                    "-credential_file=/secrets/cloudsql/key.json"]
+          securityContext:
+              runAsUser: 2 # non-root user
+              allowPrivilegeEscalation: false
+
+          volumeMounts:
+              - name: cloudsql-instance-credentials
+                mountPath: /secrets/cloudsql
+                readOnly: true
+      volumes:
+          - name: {{ .Values.app.container.env.db.instanceSecret }}
+            secret:
+                secretName: {{ .Values.app.container.env.db.instanceSecret }}
