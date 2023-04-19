@@ -21,25 +21,29 @@ spec:
           imagePullPolicy: {{ .Values.app.container.imagePullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.app.container.port }}
               protocol: TCP
           env:
-            - name: ""
-              value: ""
+            - name: GOOGLE_CLOUD_PROJECT
+              value: {{ .Values.app.container.env.googleCloudProject | quote }}
+            - name: SETTINGS_NAME
+              value: {{ .Values.app.container.env.settingsName | quote }}
+            - name: DJANGO_SETTINGS_MODULE
+              value: {{ .Values.app.container.env.djangoSettingsModule }}
+            - name: DEFAULT_ORG_ID
+              value: {{ .Values.app.container.env.defaultOrgId  }}
+      
         - name: cloudsql-proxy
           image: gcr.io/cloudsql-docker/gce-proxy:1.33.2
-          command: ["/cloud_sql_proxy",
-                    "-instances={{ .Values.app.container.env.db.instanceName }}=tcp:5432",
-                    "-credential_file=/secrets/cloudsql/key.json"]
-          securityContext:
-              runAsUser: 2 # non-root user
-              allowPrivilegeEscalation: false
+          args: ["--port=5432",
+                    "-instances={{ .Values.app.container.env.db.instanceName }}",
+                    "-credential_file={{ .Values.app.container.googleApplicationCredentialsSecret.filePath }}"]
 
           volumeMounts:
-              - name: cloudsql-instance-credentials
-                mountPath: /secrets/cloudsql
+              - name: {{ .Values.app.container.googleApplicationCredentialsSecret.name }}
+                mountPath: {{ .Values.app.container.googleApplicationCredentialsSecret.mountPath }}
                 readOnly: true
       volumes:
-          - name: {{ .Values.app.container.env.db.instanceSecret }}
+          - name: {{ .Values.app.container.googleApplicationCredentialsSecret.name }}
             secret:
-                secretName: {{ .Values.app.container.env.db.instanceSecret }}
+              secretName: {{ .Values.app.container.googleApplicationCredentialsSecret.name }}

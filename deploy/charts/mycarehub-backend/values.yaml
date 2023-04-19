@@ -4,52 +4,31 @@
 app:
     replicaCount: 1
     container:
-        image: ""
         imagePullPolicy: "Always"
         port: 8080
         env:
             environment: "test"
-
+        googleApplicationCredentialsSecret:
+            name: "mycarehub-backend-service-account"
+            filePath: "/secrets/gcp/key.json"
+            mountPath: "/secrets/gcp"
 
 service:
-    type: ClusterIP
+    type: NodePort
     port: 80
 
 
-serviceAccount:
-    # Specifies whether a service account should be created
-    create: true
-    # Annotations to add to the service account
-    annotations: {}
-    # The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
-
-podAnnotations: {}
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
 ingress:
-    enabled: false
-    className: ""
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-        - host: chart-example.local
-          paths:
-              - path: /
-                pathType: ImplementationSpecific
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
+  enabled: true
+  className: "kong"
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/protocols: "https"
+    konghq.com/https-redirect-status-code: "308"
+  hosts:
+    - host: ""
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []

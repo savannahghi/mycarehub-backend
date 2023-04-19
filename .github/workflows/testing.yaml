@@ -1,0 +1,76 @@
+name: Testing Deployment
+
+on: 
+  push:
+    branches:
+      - add-k8-deployment
+
+env:
+  DJANGO_SETTINGS_MODULE: "config.settings.production"
+  DEFAULT_ORG_ID: "4181df12-ca96-4f28-b78b-8e8ad88b25df"
+  DEPLOYMENT_TYPE: 'test'
+  GOOGLE_APPLICATION_CREDENTIALS: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+  NAMESPACE: testing-sghi-mycarehub-backend
+  APPNAME: mycarehub-backend
+  APPDOMAIN: ${{ secrets.APPDOMAIN }}
+  GKE_ZONE: europe-west1-b
+  GOOGLE_CLOUD_PROJECT: sghi-307909
+  TEST_CLUSTER_NAME: sghi-apps
+  GCR_NAME: "sghi-testing"
+  APP_REPLICA_COUNT: ${{ secrets.APP_REPLICA_COUNT }}
+  SETTINGS_NAME: ${{ secrets.SETTINGS_NAME }}
+  DB_INSTANCE_NAME: ${{ secrets.DB_INSTANCE_NAME }}
+  DOCKER_IMAGE_TAG: eu.gcr.io/sghi-307909/sghi-testing:${{ github.sha }}
+
+jobs:
+  deploy_to_testing:
+    name: Deploy testing instance to google kubernetes engine
+    runs-on: ubuntu-latest
+    environment:
+      name: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Decrypt GCS service account
+        run: ./.github/scripts/decrypt_secret.sh
+        env:
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: ${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
+          project_id: ${{ env.GOOGLE_CLOUD_PROJECT }}
+
+      # Configure Docker to use the gcloud command-line tool as a credential
+      # helper for authentication
+      - run: |-
+         gcloud --quiet auth configure-docker
+   
+      - name: Build and Push Image
+        run: |-
+          docker build -t eu.gcr.io/${{ env.GOOGLE_CLOUD_PROJECT }}/${{ env.GCR_NAME }}:$GITHUB_SHA .
+          docker push eu.gcr.io/${{ env.GOOGLE_CLOUD_PROJECT }}/${{ env.GCR_NAME }}:$GITHUB_SHA
+
+      - name: Install cloudsql proxy
+        uses: mattes/gce-cloudsql-proxy-action@v1
+        with:
+          creds: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          instance: ${{ env.GOOGLE_CLOUD_PROJECT }}:${{ secrets.PROD_DATABASE_REGION }}:${{ secrets.PROD_DATABASE_INSTANCE }}
+
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+      - name: Authenticate with GKE
+        uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
+        with:
+          cluster_name: ${{ env.TEST_CLUSTER_NAME }}
+          location: ${{ env.GKE_ZONE }}
+          credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
+      - name: Deploy to Google Kubernetes engine
+        shell: bash
+        run: cd deploy/ && cat deploy.sh && sh deploy.sh
