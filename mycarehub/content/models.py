@@ -167,7 +167,6 @@ class ContentItemTagIndexPage(Page):
     ]
 
     def get_context(self, request):
-
         # Filter by tag
         tag = request.GET.get("tag")
         content_items = ContentItem.objects.filter(tags__name=tag)

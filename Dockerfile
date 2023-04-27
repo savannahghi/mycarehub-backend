@@ -1,6 +1,6 @@
 ARG PYTHON_VERSION=3.9-slim-buster
 
-FROM node:10-stretch-slim as client-builder
+FROM node:18-bullseye-slim as client-builder
 
 ARG APP_HOME=/app
 WORKDIR ${APP_HOME}
@@ -52,11 +52,14 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   gettext \
   # wget
   wget \
-  # npm and nodejs
-  nodejs npm postgis gdal-bin libgdal-dev \
+  curl \
+  postgis gdal-bin libgdal-dev \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
+
+RUN curl -sL https://deb.nodesource.com/setup_19.x | bash
+RUN apt-get install --yes nodejs
 
 # All absolute dir copies ignore workdir instruction. All relative dir copies are wrt to the workdir instruction
 # copy python dependency wheels from python-build-stage

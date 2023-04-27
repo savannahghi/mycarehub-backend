@@ -59,7 +59,6 @@ class CustomPageAPIViewset(PagesAPIViewSet):
 
 class SignedURLView(generic.View):
     def post(self, request, *args, **kwargs):
-
         # Checks the storage class being used
         # Storage class should be Google Cloud Storage for signed url generation to proceed
         if get_storage_class().__name__ != "MediaRootGoogleCloudStorage":
