@@ -36,7 +36,6 @@ def before_publish_page(request, page):
     """
 
     if page.specific_class == ContentItem:
-
         if page.item_type == "AUDIO_VIDEO" and page.featured_media.count() == 0:
             msg = (
                 "an AUDIO_VIDEO content item must have at least one video "

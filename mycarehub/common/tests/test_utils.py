@@ -32,7 +32,6 @@ def mock_baker(values):
     )
 
     class _Baker(baker.Baker):
-
         fields = values
 
         def _get_field_names(self):

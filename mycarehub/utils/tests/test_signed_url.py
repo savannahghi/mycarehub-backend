@@ -4,7 +4,6 @@ from ..signed_url import generate_media_blob_name, generate_media_name, generate
 
 
 def test_generate_signed_upload_url():
-
     name = generate_media_name(file_name="Test File.mp4")
     link = generate_signed_upload_url(
         bucket_name=settings.GS_BUCKET_NAME,

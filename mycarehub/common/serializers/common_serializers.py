@@ -18,7 +18,6 @@ class FacilitySerializer(BaseSerializer):
 
 
 class UserFacilityAllotmentSerializer(BaseSerializer):
-
     user_data = SimpleUserSerializer(source="user", read_only=True)
     user_name = serializers.ReadOnlyField(source="user.__str__")
     allotment_type_name = serializers.ReadOnlyField(source="get_allotment_type_display")
