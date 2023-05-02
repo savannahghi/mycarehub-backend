@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mycarehub-backend.fullname" . }}
+  labels:
+    {{- include "mycarehub-backend.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "mycarehub-backend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "mycarehub-backend.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ .Values.app.container.image }}
+          imagePullPolicy: {{ .Values.app.container.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+          env:
+            - name: GOOGLE_CLOUD_PROJECT
+              value: {{ .Values.app.container.env.googleCloudProject | quote }}
+
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: {{ .Values.app.container.env.googleApplicationCredentialsSecret.filePath }}
+
+            - name: SETTINGS_NAME
+              value: {{ .Values.app.container.env.settingsName | quote }}
+
+            - name: DJANGO_SETTINGS_MODULE
+              value: {{ .Values.app.container.env.djangoSettingsModule }}
+
+            - name: DEFAULT_ORG_ID
+              value: {{ .Values.app.container.env.defaultOrgId  }}
+
+            - name: PORT
+              value: {{ .Values.service.port | quote }}
+
+          volumeMounts:
+          - name: {{ .Values.app.container.env.googleApplicationCredentialsSecret.name }}
+            mountPath: {{ .Values.app.container.env.googleApplicationCredentialsSecret.mountPath }}
+            readOnly: true
+
+        - name: cloudsql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.33.2
+          command: [
+            "/cloud_sql_proxy",
+            "-instances={{ .Values.app.container.env.databaseInstanceConnectionName }}=tcp:5432",
+            "-credential_file={{ .Values.app.container.env.googleApplicationCredentialsSecret.filePath }}"]
+
+          securityContext:
+            runAsNonRoot: false
+            allowPrivilegeEscalation: false
+
+          volumeMounts:
+          - name: {{ .Values.app.container.env.googleApplicationCredentialsSecret.name }}
+            mountPath: {{ .Values.app.container.env.googleApplicationCredentialsSecret.mountPath }}
+            readOnly: true
+
+      volumes:
+        - name: {{ .Values.app.container.env.googleApplicationCredentialsSecret.name }}
+          secret:
+            secretName: {{ .Values.app.container.env.googleApplicationCredentialsSecret.name }}
