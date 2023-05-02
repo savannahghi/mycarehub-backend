@@ -34,7 +34,7 @@ helm upgrade \
     --set networking.issuer.privateKeySecretRef="letsencrypt-prod"\
     --set networking.ingress.host="${APPDOMAIN}"\
     --wait \
-    --timeout 300s \
+    --timeout 900s \
     -f ./charts/mycarehub-backend/values.yaml \
     $APPNAME \
     ./charts/mycarehub-backend
