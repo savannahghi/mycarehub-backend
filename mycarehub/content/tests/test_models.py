@@ -182,3 +182,38 @@ def test_set_custom_title_from_english_content():
     content_item.save()
     assert content_item.title == "This is some sample content fo"
     assert content_item.slug == "this-is-some-sample-content-fo"
+
+
+def test_generate_offer_id():
+    content = FafanukaContentItem(
+        path="test",
+        depth=3,
+        english_content="This is some sample content for testing purposes",
+        swahili_content="This is some sample content for testing purposes",
+        offer="001032833395",
+    )
+    assert content.generate_offer_id == 1
+    content = FafanukaContentItem(
+        path="test",
+        depth=3,
+        english_content="This is some sample content for testing purposes",
+        swahili_content="This is some sample content for testing purposes",
+        offer="001032833390",
+    )
+    assert content.generate_offer_id == 2
+    content = FafanukaContentItem(
+        path="test",
+        depth=3,
+        english_content="This is some sample content for testing purposes",
+        swahili_content="This is some sample content for testing purposes",
+        offer="001032833389",
+    )
+    assert content.generate_offer_id == 3
+    content = FafanukaContentItem(
+        path="test",
+        depth=3,
+        english_content="This is some sample content for testing purposes",
+        swahili_content="This is some sample content for testing purposes",
+        offer="001032833393",
+    )
+    assert content.generate_offer_id == 4

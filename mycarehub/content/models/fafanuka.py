@@ -68,6 +68,8 @@ class FafanukaContentItem(Page):
     swahili_content = models.TextField(max_length=160)
     english_content = models.TextField(max_length=160)
 
+    offer_id = models.IntegerField(null=True, blank=True)
+
     content_panels = Page.content_panels + [
         MultiFieldPanel(
             [
@@ -136,10 +138,21 @@ class FafanukaContentItem(Page):
         thread.join()
 
         self.sequence_number = seq
-        self.sequence = f"{self.subgroup}.{self.sequence_number}"
+        self.sequence = f"{self.offer_id}.{self.sequence_number}"
+
+    def generate_offer_id(self):
+        self.OFFER_ID_MAPPING = {
+            "001032833395": 1,
+            "001032833390": 2,
+            "001032833389": 3,
+        }
+
+        return self.OFFER_ID_MAPPING.get(self.offer, 4)
 
     def save(self, *args, **kwargs):
         """Override save method."""
+        self.offer_id = self.generate_offer_id()
+
         new_title = self.english_content[:30]
         self.slug = slugify(new_title)
         self.title = new_title
