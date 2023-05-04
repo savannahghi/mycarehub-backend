@@ -83,7 +83,6 @@ THIRD_PARTY_APPS = [
     "mjml",
     "oauth2_provider",
     "django.contrib.admin",
-    "graphene_django",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.embeds",
@@ -115,6 +114,7 @@ LOCAL_APPS = [
     "mycarehub.home.apps.HomeConfig",
     "mycarehub.content.apps.ContentConfig",
     "mycarehub.clients.apps.ClientsConfig",
+    "mycarehub.mchprovider",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -129,8 +129,9 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 AUTH_USER_MODEL = "users.User"
-LOGIN_REDIRECT_URL = "users:redirect"
-LOGIN_URL = "account_login"
+
+LOGIN_REDIRECT_URL = "wagtailadmin_home"
+LOGIN_URL = "wagtailadmin_login"
 
 # PASSWORDS
 # ------------------------------------------------------------------------------
@@ -281,20 +282,38 @@ LOGGING = {
 
 # django-allauth
 # ------------------------------------------------------------------------------
-ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
+ACCOUNT_ALLOW_REGISTRATION = True
 ACCOUNT_AUTHENTICATION_METHOD = "username"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_ADAPTER = "mycarehub.users.adapters.AccountAdapter"
-SOCIALACCOUNT_ADAPTER = "mycarehub.users.adapters.SocialAccountAdapter"
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 ACCOUNT_SESSION_REMEMBER = None  # ask the user 'Remember me'
 ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_MIN_LENGTH = 5
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = env.str("DJANGO_ACCOUNT_DEFAULT_HTTP_PROTOCOL", default="https")
+
+SOCIALACCOUNT_ADAPTER = "mycarehub.users.adapters.SocialAccountAdapter"
 SOCIALACCOUNT_AUTO_SIGNUP = True
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+SOCIALACCOUNT_EMAIL_VERIFICATION = ACCOUNT_EMAIL_VERIFICATION
+SOCIALACCOUNT_EMAIL_REQUIRED = ACCOUNT_EMAIL_REQUIRED
+SOCIALACCOUNT_LOGIN_ON_GET = False
+SOCIALACCOUNT_PROVIDERS = {
+    "mycarehub": {
+        "APP": {
+            "client_id": env.str("MYCAREHUB_CLIENT_ID", default=""),
+            "secret": env.str("MYCAREHUB_CLIENT_SECRET", default=""),
+        },
+        "VERIFIED_EMAIL": True,
+        "ACCESS_TOKEN_URL": env.str("MYCAREHUB_ACCESS_TOKEN_URL", default=""),
+        "AUTHORIZE_URL": env.str("MYCAREHUB_AUTHORIZE_URL", default=""),
+        "INTROSPECT_URL": env.str("MYCAREHUB_INTROSPECT_URL", default=""),
+    }
+}
+SOCIALACCOUNT_QUERY_EMAIL = False
+SOCIALACCOUNT_STORE_TOKENS = True
 
 # django-compressor
 # ------------------------------------------------------------------------------
@@ -449,7 +468,6 @@ WHITELISTED_DOMAINS = env.list(
     ],
 )
 
-GRAPHENE = {"SCHEMA": "mycarehub.schema.schema.schema"}
 API_VERSION = "0.0.1"
 
 # debug_toolbar

@@ -5,7 +5,6 @@ from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, re_path
 from django.views import defaults as default_views
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import RedirectView, TemplateView
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.schemas import get_schema_view
@@ -26,8 +25,6 @@ from mycarehub.content.views import (
     media_index,
 )
 
-from .graphql_auth import DRFAuthenticatedGraphQLView
-
 urlpatterns = [
     path("sysadmin/", HomeView.as_view(), name="home"),
     re_path(
@@ -43,11 +40,6 @@ urlpatterns = [
     path("users/", include("mycarehub.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     path("common/", include("mycarehub.common.urls", namespace="common")),
-    path(
-        "graphql",
-        csrf_exempt(DRFAuthenticatedGraphQLView.as_view(graphiql=True)),
-        name="graphql",
-    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     # Static file serving when using Gunicorn + Uvicorn for local web socket development

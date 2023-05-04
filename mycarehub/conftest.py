@@ -15,6 +15,10 @@ from mycarehub.users.tests.factories import UserFactory
 
 fake = Faker()
 
+baker.generators.add(
+    "wagtail.images.models.WagtailImageField", "model_bakery.random_gen.gen_image_field"
+)
+
 
 @pytest.fixture(autouse=True)
 def media_storage(settings, tmpdir):

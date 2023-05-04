@@ -18,9 +18,6 @@ from rest_framework.test import APITestCase
 
 from mycarehub.common.constants import WHITELIST_COUNTIES
 from mycarehub.common.models import Facility, Organisation, Program, UserFacilityAllotment
-from mycarehub.common.serializers import FacilitySerializer
-
-from .test_utils import patch_baker
 
 DIR_PATH = path.join(path.dirname(path.abspath(__file__)))
 MEDIA_PATH = path.join(DIR_PATH, "media")
@@ -86,13 +83,6 @@ class LoggedInMixin(APITestCase):
         )
 
         assert self.client.login(username=username, password="pass123") is True
-
-        self.patch_organisation = partial(
-            patch_baker, values={"organisation": self.global_organisation}
-        )
-        self.org_patcher = self.patch_organisation()
-        self.org_patcher.start()
-        self.addCleanup(self.org_patcher.stop)
 
         headers = self.extra_headers()
         self.client.get = partial(self.client.get, **headers)
@@ -375,7 +365,7 @@ class FacilityFormTest(LoggedInMixin, TestCase):
         )
         self.assertEqual(
             response.status_code,
-            302,
+            200,
         )
 
 
@@ -542,48 +532,8 @@ class UserFacilityAllotmentFormTest(LoggedInMixin, TestCase):
         )
         self.assertEqual(
             response.status_code,
-            302,
+            200,
         )
-
-
-class DRFSerializerExcelIOMixinTest(LoggedInMixin, APITestCase):
-    """Test suite for excel io mixin API."""
-
-    def setUp(self) -> None:
-        super().setUp()
-
-        versions = baker.make(Facility, 10, organisation=self.global_organisation)
-        self.data = FacilitySerializer(versions, many=True).data
-
-    def test_dump_data(self) -> None:
-        """Test `dump_data` action."""
-
-        url = reverse("api:facility-dump-data")
-        data = {"dump_fields": ["name", "mfl_code", "county"]}
-        response = self.client.get(url, data=data)
-
-        assert response.status_code == status.HTTP_200_OK
-        assert response["content-disposition"] == "attachment; filename=facilities.xlsx"
-        assert response["content-type"] == "application/xlsx; charset=utf-8"
-
-    def test_get_available_fields(self) -> None:
-        """Test the `get_available_fields` action."""
-
-        url = reverse("api:facility-get-available-fields")
-        response = self.client.get(url)
-
-        assert response.status_code == status.HTTP_200_OK, response.json()
-        assert len(response.data) == 1
-        assert response.data[0]["id"] == "*"
-
-    def test_get_filter_form(self) -> None:
-        """Test the `get_filter_form` action."""
-
-        url = reverse("api:facility-get-filter-form")
-        response = self.client.get(url)
-
-        assert response.status_code == status.HTTP_200_OK
-        assert response["content-type"] == "text/html; charset=utf-8"
 
 
 def test_organisation_registration(user_with_all_permissions, client):

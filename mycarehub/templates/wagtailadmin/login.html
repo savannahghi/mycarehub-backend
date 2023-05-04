@@ -1,0 +1,17 @@
+{% extends "wagtailadmin/login.html" %}
+
+{% load socialaccount %}
+
+{% load i18n %}
+
+{% block submit_buttons %}
+    {{ block.super }}
+    {% get_providers as socialaccount_providers %}
+
+    {% for provider in socialaccount_providers %}
+        <span style="font-weight: bold; font-size: 18px; display: inline-block; height: 25px">OR</span>
+        <a href="{% provider_login_url provider.id%}">
+            <button type="button" class="button" style="background-color: #2E1F5E"> {% trans 'Sign in with' %} {{provider.name}}</button>
+        </a>
+    {% endfor %}
+{% endblock %}
