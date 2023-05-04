@@ -365,7 +365,7 @@ class FacilityFormTest(LoggedInMixin, TestCase):
         )
         self.assertEqual(
             response.status_code,
-            200,
+            302,
         )
 
 
@@ -532,7 +532,7 @@ class UserFacilityAllotmentFormTest(LoggedInMixin, TestCase):
         )
         self.assertEqual(
             response.status_code,
-            200,
+            302,
         )
 
 
