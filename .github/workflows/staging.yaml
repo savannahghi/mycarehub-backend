@@ -1,0 +1,65 @@
+name: Staging Deployment
+
+on: 
+  push:
+    branches:
+      - develop
+
+env:
+  DJANGO_SETTINGS_MODULE: "config.settings.production"
+  DEFAULT_ORG_ID: "4181df12-ca96-4f28-b78b-8e8ad88b25df"
+  DEPLOYMENT_TYPE: test
+  GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+  NAMESPACE: ${{ secrets.NAMESPACE }}
+  APPNAME: ${{ secrets.APPNAME }}
+  APPDOMAIN: ${{ secrets.APPDOMAIN }}
+  GKE_ZONE: ${{ secrets.GKE_ZONE }}
+  GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
+  TEST_CLUSTER_NAME: ${{ secrets.TEST_CLUSTER_NAME }}
+  GCR_NAME: ${{ secrets.GCR_NAME }}
+  APP_REPLICA_COUNT: ${{ secrets.APP_REPLICA_COUNT }}
+  SETTINGS_NAME: ${{ secrets.SETTINGS_NAME }}
+  DB_INSTANCE_NAME: ${{ secrets.DB_INSTANCE_NAME }}
+  PORT: ${{ secrets.PORT }}
+  DOCKER_IMAGE_TAG: eu.gcr.io/sghi-307909/sghi-testing:${{ github.sha }}
+
+jobs:
+  deploy_to_testing:
+    name: Deploy staging server to google kubernetes engine
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
+
+      # Configure Docker to use the gcloud command-line tool as a credential
+      # helper for authentication
+      - run: |-
+         gcloud --quiet auth configure-docker
+
+      - name: Build and Push Image
+        run: |-
+          docker build -t eu.gcr.io/${{ secrets.GOOGLE_CLOUD_PROJECT }}/${{ secrets.GCR_NAME }}:$GITHUB_SHA .
+          docker push eu.gcr.io/${{ secrets.GOOGLE_CLOUD_PROJECT }}/${{ secrets.GCR_NAME }}:$GITHUB_SHA
+
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+      - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
+        with:
+          cluster_name: ${{ secrets.TEST_CLUSTER_NAME }}
+          location: ${{ secrets.GKE_ZONE }}
+          credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+ 
+      - name: Deploy to Google Kubernetes engine
+        shell: bash
+        run: cd deploy/ && cat deploy.sh && sh deploy.sh
