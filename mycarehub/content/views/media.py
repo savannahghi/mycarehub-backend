@@ -7,7 +7,7 @@ from wagtail import VERSION as WAGTAIL_VERSION
 from wagtail.admin.auth import PermissionPolicyChecker
 from wagtail.admin.forms.search import SearchForm
 from wagtail.admin.models import popular_tags_for_model
-from wagtail.core.models import Collection
+from wagtail.models import Collection
 from wagtailmedia.models import get_media_model
 from wagtailmedia.permissions import permission_policy
 from wagtailmedia.utils import paginate
