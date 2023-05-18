@@ -182,3 +182,24 @@ def test_set_custom_title_from_english_content():
     content_item.save()
     assert content_item.title == "This is some sample content fo"
     assert content_item.slug == "this-is-some-sample-content-fo"
+
+
+def test_generate_sequence_number():
+    first_content_item = FafanukaContentItem(
+        path="test-1",
+        depth=3,
+        english_content="This is some sample content for testing purposes",
+        swahili_content="This is some sample content for testing purposes",
+        offer="001032833395",
+    )
+    second_content_item = FafanukaContentItem(
+        path="test-2",
+        depth=3,
+        english_content="This is some sample content for testing purposes",
+        swahili_content="This is some sample content for testing purposes",
+        offer="001032833395",
+    )
+    first_content_item.save()
+    second_content_item.save()
+    assert first_content_item.sequence == "1.1"
+    assert second_content_item.sequence == "1.2"
