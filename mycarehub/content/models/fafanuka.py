@@ -148,7 +148,6 @@ class FafanukaContentItem(Page):
 
     def save(self, *args, **kwargs):
         """Override save method."""
-        self.generate_sequence_number()
         new_title = self.english_content[:30]
         self.slug = slugify(new_title)
         self.title = new_title
