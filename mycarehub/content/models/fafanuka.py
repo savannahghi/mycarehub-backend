@@ -120,7 +120,6 @@ class FafanukaContentItem(Page):
             "organisation": self.organisation,
             "program": self.program,
             "offer": self.offer,
-            "subgroup": self.subgroup,
         }
         seq = self.__class__.objects.filter(**filters).count()
         lock = threading.Lock()
@@ -135,8 +134,17 @@ class FafanukaContentItem(Page):
         thread.start()
         thread.join()
 
+        """Define the offer code to key mapping"""
+        offercode_to_key_mapping = {
+            self.OfferType.GENERAL_TIPS.value: 1,
+            self.OfferType.TYPE_1_DIABETES.value: 2,
+            self.OfferType.TYPE_2_DIABETES.value: 3,
+            self.OfferType.GESTATIONAL_DIABETES.value: 4,
+        }
+
         self.sequence_number = seq
-        self.sequence = f"{self.subgroup}.{self.sequence_number}"
+        self.offercode_to_key_mapping = offercode_to_key_mapping
+        self.sequence = f"{self.offercode_to_key_mapping[self.offer]}.{self.sequence_number}"
 
     def save(self, *args, **kwargs):
         """Override save method."""
