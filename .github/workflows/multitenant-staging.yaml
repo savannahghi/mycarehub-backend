@@ -1,9 +1,6 @@
 name: Multitenant Staging Deployment
 
-on:
-  push:
-    branches:
-      - develop-v2
+on: [push]
 
 env:
   DJANGO_SETTINGS_MODULE: "config.settings.production"
@@ -26,9 +23,15 @@ env:
 jobs:
   deploy_to_testing:
     name: Deploy multitenant staging server to google kubernetes engine
+    if: ${{ github.ref == 'refs/heads/develop-v2'}}
+    strategy:
+      matrix:
+        go-version: [1.18.x]
+        environment: [multitenant-staging, sil-uat]
+
     runs-on: ubuntu-latest
     environment:
-      name: multitenant-staging
+      name: ${{ matrix.environment }}
 
     steps:
       - name: Checkout
@@ -64,11 +67,17 @@ jobs:
         shell: bash
         run: cd deploy/ && cat deploy.sh && sh deploy.sh
 
-  deploy_to_sil_testing:
+  deploy_to_prod:
     name: Deploy sil testing server to google kubernetes engine
+    if: ${{ github.ref == 'refs/heads/main-v2'}}
+    strategy:
+      matrix:
+        go-version: [1.18.x]
+        environment: [multitenant-prod]
+
     runs-on: ubuntu-latest
     environment:
-      name: sil-uat
+      name: ${{ matrix.environment }}
 
     steps:
       - name: Checkout
