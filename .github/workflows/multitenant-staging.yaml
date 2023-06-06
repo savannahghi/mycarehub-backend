@@ -68,12 +68,12 @@ jobs:
         run: cd deploy/ && cat deploy.sh && sh deploy.sh
 
   deploy_to_prod:
-    name: Deploy sil testing server to google kubernetes engine
+    name: Deploy sil prod server to google kubernetes engine
     if: ${{ github.ref == 'refs/heads/main-v2'}}
     strategy:
       matrix:
         go-version: [1.18.x]
-        environment: [multitenant-prod]
+        environment: [multitenant-prod, sil-prod]
 
     runs-on: ubuntu-latest
     environment:
