@@ -42,18 +42,18 @@ def before_publish_page(request, page):
 
     if page.specific_class == ContentItem:
         if page.item_type == "AUDIO_VIDEO" and page.featured_media.count() == 0:
-            msg = (
+            message = (
                 "an AUDIO_VIDEO content item must have at least one video "
                 "or audio file before publication"
             )
-            raise ValidationError(msg)
+            raise ValidationError(message)
 
         if page.item_type == "PDF_DOCUMENT" and page.documents.count() == 0:
-            msg = (
+            message = (
                 "a PDF_DOCUMENT content item must have at least one document "
                 "attached before publication"
             )
-            raise ValidationError(msg)
+            raise ValidationError(message)
 
 
 @hooks.register("after_create_page")
