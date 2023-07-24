@@ -125,6 +125,7 @@ def test_category_name_filter_found_categories(
     url = (
         reverse("wagtailapi:pages:listing")
         + "?type=content.ContentItem&fields=*&category_name=a-valid-category"
+        + "&exclude_category=consumer-faqs"
     )
     response = client.get(url)
     assert response.status_code == status.HTTP_200_OK

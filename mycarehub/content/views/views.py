@@ -41,7 +41,7 @@ class CustomPageAPIViewset(PagesAPIViewSet):
         SearchFilter,  # must be last
     ]
     known_query_parameters = PagesAPIViewSet.known_query_parameters.union(
-        ["tag", "category", "category_name", "client_id", "facility_id"]
+        ["tag", "category", "category_name", "client_id", "facility_id", "exclude_category"]
     )
 
 

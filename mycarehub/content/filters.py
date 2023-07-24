@@ -54,15 +54,14 @@ class CategoryFilter(BaseFilterBackend):
         query_params = request.query_params
         category_id = query_params.get("category", "")
         category_name = query_params.get("category_name", "")
-
-        exclude_category_names = ["consumer-faqs", "pro-faqs"]
+        exclude_categories = query_params.getlist("exclude_category")
 
         if category_name and queryset.model is ContentItem:
             queryset = queryset.filter(Q(categories__name=category_name))
         if category_id and queryset.model is ContentItem:
             queryset = queryset.filter(Q(categories__id=category_id))
-        if not category_name and queryset.model is ContentItem:
-            queryset = queryset.exclude(categories__name__in=exclude_category_names)
+        if exclude_categories and queryset.model is ContentItem:
+            queryset = queryset.exclude(categories__name__in=exclude_categories)
 
         return queryset
 
