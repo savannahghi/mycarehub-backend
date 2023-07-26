@@ -1,5 +1,6 @@
-from django.core.exceptions import ValidationError
+from django.shortcuts import redirect
 from django.utils.safestring import mark_safe
+from wagtail.admin import messages
 from wagtail.core import hooks
 from wagtail.documents import get_document_model
 from wagtail.images import get_image_model
@@ -46,14 +47,16 @@ def before_publish_page(request, page):
                 "an AUDIO_VIDEO content item must have at least one video "
                 "or audio file before publication"
             )
-            raise ValidationError(message)
+            messages.error(request, message)
+            return redirect("wagtailadmin_pages:edit", page.pk)
 
         if page.item_type == "PDF_DOCUMENT" and page.documents.count() == 0:
             message = (
                 "a PDF_DOCUMENT content item must have at least one document "
                 "attached before publication"
             )
-            raise ValidationError(message)
+            messages.error(request, message)
+            return redirect("wagtailadmin_pages:edit", page.pk)
 
 
 @hooks.register("after_create_page")

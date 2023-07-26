@@ -1,4 +1,5 @@
 import pytest
+from django.contrib import messages
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from django.urls import reverse
@@ -7,6 +8,7 @@ from rest_framework import status
 
 from mycarehub.clients.models import Client
 from mycarehub.content.models import CustomDocument, CustomImage, CustomMedia
+from mycarehub.content.wagtail_hooks import before_publish_page
 
 from ..models import (
     Author,
@@ -472,3 +474,95 @@ def test_custom_document_add_existing(admin_user, user_with_all_permissions, cli
     print(response.content)
 
     assert response.status_code == status.HTTP_200_OK
+
+
+def test_content_view_with_no_attached_audio_video_media(
+    content_item_with_tag_and_category, request_with_user, client
+):
+    client.force_login(request_with_user.user)
+    url = reverse("api:contentview-list")
+
+    page = content_item_with_tag_and_category
+    page.item_type = "AUDIO_VIDEO"
+    page.save()
+    page.refresh_from_db()
+
+    # Simulate the message error and handle it with the messages framework
+    request_with_user._messages = messages.storage.default_storage(request_with_user)
+    before_publish_page(request_with_user, page)
+
+    messages_str = [str(message) for message in request_with_user._messages]
+
+    expected_message = (
+        "an AUDIO_VIDEO content item must have at least one video "
+        "or audio file before publication"
+    )
+
+    # Strip extra newlines and whitespaces
+    messages_str = [msg.strip() for msg in messages_str]
+
+    assert expected_message in messages_str
+
+    client_one = baker.make(Client)
+
+    response = client.post(
+        url,
+        data={
+            "client": client_one.id,
+            "content_item": page.id,
+        },
+        content_type="application/json",
+        accept="application/json",
+    )
+
+    print(response.content)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response_data = response.json()
+    assert response_data["id"] != ""
+
+
+def test_content_view_with_no_attached_pdf_document_media(
+    content_item_with_tag_and_category, request_with_user, client
+):
+    client.force_login(request_with_user.user)
+    url = reverse("api:contentview-list")
+
+    page = content_item_with_tag_and_category
+    page.item_type = "PDF_DOCUMENT"
+    page.save()
+    page.refresh_from_db()
+
+    # Simulate the message error and handle it with the messages framework
+    request_with_user._messages = messages.storage.default_storage(request_with_user)
+    before_publish_page(request_with_user, page)
+
+    messages_str = [str(message) for message in request_with_user._messages]
+
+    expected_message = (
+        "a PDF_DOCUMENT content item must have at least one document "
+        "attached before publication"
+    )
+
+    # Strip extra newlines and whitespaces
+    messages_str = [msg.strip() for msg in messages_str]
+
+    assert expected_message in messages_str
+
+    client_one = baker.make(Client)
+
+    response = client.post(
+        url,
+        data={
+            "client": client_one.id,
+            "content_item": page.id,
+        },
+        content_type="application/json",
+        accept="application/json",
+    )
+
+    print(response.content)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response_data = response.json()
+    assert response_data["id"] != ""

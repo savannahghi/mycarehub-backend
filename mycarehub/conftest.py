@@ -1,6 +1,7 @@
 import pytest
 from django.conf import settings
 from django.contrib.auth.models import Group, Permission
+from django.contrib.messages.storage.fallback import FallbackStorage
 from django.utils import timezone
 from faker import Faker
 from model_bakery import baker
@@ -72,6 +73,9 @@ def request_with_user(rf, django_user_model, user_with_all_permissions):
     url = settings.ADMIN_URL + "/common/organisation/add/"
     request = rf.get(url)
     request.user = user_with_all_permissions
+    setattr(request, "session", "session")
+    messages = FallbackStorage(request)
+    setattr(request, "_messages", messages)
     return request
 
 
