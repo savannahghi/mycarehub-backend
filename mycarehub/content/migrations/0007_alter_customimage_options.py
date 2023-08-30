@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('content', '0006_auto_20230131_1150'),
+        ("content", "0006_auto_20230131_1150"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='customimage',
-            options={'permissions': [('choose_image', 'Can choose image')]},
+            name="customimage",
+            options={"permissions": [("choose_image", "Can choose image")]},
         ),
     ]

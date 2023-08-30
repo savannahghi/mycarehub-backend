@@ -4,24 +4,28 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('common', '0002_initial'),
+        ("common", "0002_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='facility',
-            name='fhir_organization_id',
+            model_name="facility",
+            name="fhir_organization_id",
         ),
         migrations.AlterField(
-            model_name='facility',
-            name='county',
-            field=models.CharField(blank=True, choices=[('Nairobi', 'Nairobi'), ('Kajiado', 'Kajiado')], max_length=64, null=True),
+            model_name="facility",
+            name="county",
+            field=models.CharField(
+                blank=True,
+                choices=[("Nairobi", "Nairobi"), ("Kajiado", "Kajiado")],
+                max_length=64,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='facility',
-            name='mfl_code',
-            field=models.IntegerField(blank=True, help_text='MFL Code', null=True, unique=True),
+            model_name="facility",
+            name="mfl_code",
+            field=models.IntegerField(blank=True, help_text="MFL Code", null=True, unique=True),
         ),
     ]

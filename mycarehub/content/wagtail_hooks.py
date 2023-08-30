@@ -7,7 +7,7 @@ from wagtail.images import get_image_model
 from wagtail.models import Page
 from wagtail.snippets.models import register_snippet
 
-from .models import Author, ContentItem, ContentItemCategory
+from .models import Author, ContentItem, ContentItemCategory, SMSContentItem
 from .views import AuthorSnippetViewSet, ContentItemCategorySnippetViewSet, author_chooser_viewset
 
 
@@ -66,7 +66,7 @@ def set_organisation_after_page_create(request, page):
 
     page.organisation = request.user.organisation
 
-    if page.specific_class == ContentItem:
+    if page.specific_class in [ContentItem, SMSContentItem]:
         index = page.get_parent()
         page.program = index.program
 

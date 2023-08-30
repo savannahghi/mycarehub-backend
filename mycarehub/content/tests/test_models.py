@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -11,6 +13,7 @@ from mycarehub.content.models import (
     ContentItemIndexPage,
     ContentItemTagIndexPage,
 )
+from mycarehub.content.models.sms import SMSContentItem, SMSItemCategory, SMSItemTag
 from mycarehub.home.models import HomePage
 
 pytestmark = pytest.mark.django_db
@@ -168,3 +171,112 @@ def test_content_item_validate_article_hero_image(request_with_user):
         content_item_index.add_child(instance=content_item)
 
     assert "an article must have a hero image" in str(c.value.messages)
+
+
+def test_set_custom_title_from_english_content():
+    category = baker.make(
+        SMSItemCategory,
+        code="001032833390",
+        name="TYPE 1 DIABETES",
+        sequence_key=1,
+    )
+    tag = baker.make(
+        SMSItemTag,
+        name="Lifestyle Education",
+    )
+    sms_content_item = SMSContentItem(
+        path="test",
+        depth=3,
+        english_content="This is some sample content for testing purposes",
+        swahili_content="This is some sample content for testing purposes",
+        category=category,
+        tag=tag,
+    )
+
+    sms_content_item.save()
+    assert sms_content_item.title == "This is some sample content f…"
+    assert sms_content_item.slug == "this-is-some-sample-content-f"
+
+    assert str(sms_content_item) == "1.1 This is some sample content f…"
+    assert str(sms_content_item.category) == "TYPE 1 DIABETES"
+    assert str(sms_content_item.tag) == "Lifestyle Education"
+
+
+def test_set_sms_content_item_sequence_number():
+    """Test generation of sequence numbers for sms content."""
+    category = baker.make(
+        SMSItemCategory,
+        code="001032833390",
+        name="TYPE 1 DIABETES",
+        sequence_key=1,
+    )
+    tag = baker.make(
+        SMSItemTag,
+        name="Lifestyle Education",
+    )
+    sms_content_item = SMSContentItem(
+        path="test",
+        depth=3,
+        english_content="This is some sample content for testing purposes",
+        swahili_content="This is some sample content for testing purposes",
+        category=category,
+        tag=tag,
+    )
+
+    sms_content_item.save()
+    assert sms_content_item.sequence
+    assert sms_content_item.sequence == "1.1"
+
+
+@patch("mycarehub.content.models.sms." + "LOGGER")
+def test_sms_content_item_sequence_already_set(mock_logger):
+    """Test sequence number already set."""
+    category = baker.make(
+        SMSItemCategory,
+        code="001032833390",
+        name="TYPE 1 DIABETES",
+        sequence_key=1,
+    )
+    tag = baker.make(
+        SMSItemTag,
+        name="Lifestyle Education",
+    )
+    sms_content_item = SMSContentItem(
+        path="test",
+        depth=3,
+        english_content="This is some sample content for testing purposes",
+        swahili_content="This is some sample content for testing purposes",
+        category=category,
+        tag=tag,
+    )
+    sms_content_item.save()
+    sms_content_item.generate_sequence_number()
+    mock_logger.info.assert_called_once_with("Sequence has already been set")
+
+
+def test_bypass_generate_sequence_after_save():
+    """Test generation of sequence numbers for sms content."""
+    category = baker.make(
+        SMSItemCategory,
+        code="001032833390",
+        name="TYPE 1 DIABETES",
+        sequence_key=1,
+    )
+    tag = baker.make(
+        SMSItemTag,
+        name="Lifestyle Education",
+    )
+    sms_content_item = SMSContentItem(
+        path="test",
+        depth=3,
+        english_content="This is some sample content for testing purposes",
+        swahili_content="This is some sample content for testing purposes",
+        category=category,
+        tag=tag,
+    )
+
+    sms_content_item.save()
+
+    sms_content_item.english_content = "This is a new title to test the save method"
+    sms_content_item.save()
+    assert sms_content_item.title == "This is a new title to test t…"
