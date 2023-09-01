@@ -14,6 +14,7 @@ from .models import (
     ContentItemTagIndexPage,
     MediaSerializedField,
 )
+from .sms import SMSContentItem
 from .snippets import Author, ContentItemCategory
 
 __all__ = [
@@ -37,4 +38,5 @@ __all__ = [
     "CustomImage",
     "CustomRendition",
     "CustomDocument",
+    "SMSContentItem",
 ]

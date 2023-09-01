@@ -140,6 +140,7 @@ class ContentItemIndexPage(Page):
     ]
     subpage_types = [
         "content.ContentItem",
+        "content.SMSContentItem",
     ]
 
     def get_context(self, request):
