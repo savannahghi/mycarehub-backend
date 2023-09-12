@@ -13,7 +13,7 @@ from mycarehub.common.models import AbstractBase, Organisation, Program
 LOGGER = logging.getLogger(__name__)
 
 
-class SMSItemCategory(AbstractBase):
+class SMSContentItemCategory(AbstractBase):
     """Category associated to an SMS."""
 
     code = models.CharField(max_length=32)
@@ -30,7 +30,7 @@ class SMSItemCategory(AbstractBase):
         return f"{self.name}"
 
 
-class SMSItemTag(AbstractBase):
+class SMSContentItemTag(AbstractBase):
     """Category associated to an SMS."""
 
     name = models.CharField(max_length=64)
@@ -62,10 +62,10 @@ class SMSContentItem(Page):
     )
 
     category = models.ForeignKey(
-        SMSItemCategory, on_delete=models.PROTECT, related_name="categories"
+        SMSContentItemCategory, on_delete=models.PROTECT, related_name="categories"
     )
 
-    tag = models.ForeignKey(SMSItemTag, on_delete=models.PROTECT, related_name="tags")
+    tag = models.ForeignKey(SMSContentItemTag, on_delete=models.PROTECT, related_name="tags")
     sequence_number = models.IntegerField(null=True, blank=True)
     sequence = models.CharField(max_length=10, null=True, blank=True)
     swahili_content = models.TextField(max_length=160)

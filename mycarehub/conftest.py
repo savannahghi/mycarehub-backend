@@ -10,6 +10,7 @@ from wagtail.models import Page, Site
 
 from mycarehub.common.models import Facility, Program
 from mycarehub.content.models import Author, ContentItem, ContentItemCategory, ContentItemIndexPage
+from mycarehub.content.models.sms import SMSContentItem, SMSContentItemCategory, SMSContentItemTag
 from mycarehub.home.models import HomePage
 from mycarehub.users.models import User
 from mycarehub.users.tests.factories import UserFactory
@@ -34,6 +35,25 @@ def test_email_backend(settings):
 @pytest.fixture
 def program() -> Program:
     return baker.make(Program)
+
+
+@pytest.fixture
+def sms_category(program):
+    return baker.make(
+        SMSContentItemCategory,
+        code="001032833390",
+        name="TYPE 1 DIABETES",
+        program=program,
+        sequence_key=1,
+    )
+
+
+@pytest.fixture
+def sms_tag():
+    return baker.make(
+        SMSContentItemTag,
+        name="Lifestyle Education",
+    )
 
 
 @pytest.fixture
@@ -166,6 +186,54 @@ def content_item_with_tag_and_category(content_item_index, program, facility):
     # return the initialized content item
     content_item.save_revision().publish()
     return content_item
+
+
+@pytest.fixture
+def initial_sms_content_item(content_item_index, program, sms_category, sms_tag):
+    """Initial SMS content item fixture."""
+    initial_sms_content_item = SMSContentItem(
+        organisation=sms_category.organisation,
+        title="This is some sample content f…",
+        slug="this-is-some-sample-content-f",
+        path="test",
+        depth=3,
+        english_content="This is some sample content for testing purposes",
+        swahili_content="This is some sample content for testing purposes",
+        category=sms_category,
+        tag=sms_tag,
+        program=program,
+    )
+
+    content_item_index.add_child(instance=initial_sms_content_item)
+    content_item_index.save_revision().publish()
+
+    initial_sms_content_item.save()
+
+    return initial_sms_content_item
+
+
+@pytest.fixture
+def sms_content_item(content_item_index, program, sms_category, sms_tag):
+    """Subsequent SMS content item fixture."""
+    sms_content_item = SMSContentItem(
+        organisation=sms_category.organisation,
+        title="This is some sample content f…",
+        slug="this-is-some-sample-content-f",
+        path="test",
+        depth=3,
+        english_content="Hello is some sample content for testing purposes",
+        swahili_content="Hello is some sample content for testing purposes",
+        category=sms_category,
+        tag=sms_tag,
+        program=program,
+    )
+
+    content_item_index.add_child(instance=sms_content_item)
+    content_item_index.save_revision().publish()
+
+    sms_content_item.save()
+
+    return sms_content_item
 
 
 def gen_rich_text_field():

@@ -267,3 +267,31 @@ def test_category_with_program_filter(
     assert response.status_code == status.HTTP_200_OK
     response_data = response.json()
     assert response_data["count"] == 1
+
+
+def test_sms_content_item_initial_content_filter(sms_content_item, request_with_user, client):
+    """Test SMSContentItem filterset."""
+    client.force_login(request_with_user.user)
+    url = (
+        reverse("wagtailapi:pages:listing")
+        + "?type=content.SMSContentItem&fields=*&offer_code=001032833390&initial_content=True"
+    )
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    response_data = response.json()
+    assert response_data["meta"]["total_count"] == 1
+
+
+def test_sms_content_item_next_sequence_content_filter(
+    sms_content_item, initial_sms_content_item, request_with_user, client
+):
+    """Test SMSContentItem filterset."""
+    client.force_login(request_with_user.user)
+    url = (
+        reverse("wagtailapi:pages:listing")
+        + "?type=content.SMSContentItem&fields=*&offer_code=001032833390&current_sequence_number=1"
+    )
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    response_data = response.json()
+    assert response_data["meta"]["total_count"] == 1
