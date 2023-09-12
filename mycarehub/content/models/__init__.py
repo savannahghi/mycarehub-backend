@@ -39,4 +39,6 @@ __all__ = [
     "CustomRendition",
     "CustomDocument",
     "SMSContentItem",
+    "SMSContentItemCategory",
+    "SMSContentItemTag",
 ]

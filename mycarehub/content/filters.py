@@ -9,6 +9,7 @@ from mycarehub.clients.models import Client
 from mycarehub.common.filters.base_filters import CommonFieldsFilterset
 from mycarehub.common.models import ContentSequence
 from mycarehub.content.models import ContentItem
+from mycarehub.content.models.sms import SMSContentItem, SMSContentItemCategory
 
 from .models import (
     Author,
@@ -189,3 +190,50 @@ class AuthorFilterSet(WagtailFilterSet):
     class Meta:
         model = Author
         fields = ["name"]
+
+
+class SMSContentItemFilterSet(BaseFilterBackend):
+    """
+    Filter sms content backend.
+
+    Filters by:
+        1. Category
+        2. Language - the language the content should be returned in
+        3. End (Last content sequence) - to get the next content that should be returned
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        """Filter queryset by category, language and last sequence."""
+
+        if queryset.model is SMSContentItem:
+            query_params = request.query_params
+            default_filters = {
+                "organisation": request.user.organisation,
+                "program": request.user.program,
+                "live": True,  # TODO: Remember to change this to happen only after publishing
+            }
+
+            # get the first content for each offer
+            initial_content = query_params.get("initial_content", "").lower() == "true"
+            category = query_params.get("offer_code", "")
+            category_obj = SMSContentItemCategory.objects.get(code=category)
+
+            if initial_content:
+                filters = {
+                    "sequence_number": 1,
+                    "category": category_obj,
+                }
+                filters.update(default_filters)
+                return queryset.filter(**filters)
+            else:
+                # Check sequence based on some previous sequence
+                current_sequence_number = query_params.get("current_sequence_number", "")
+                next_sequence_number = int(current_sequence_number) + 1
+                filters = {
+                    "category": category_obj,
+                    "sequence_number": next_sequence_number,
+                }
+                filters.update(default_filters)
+                return queryset.filter(**filters)
+
+        return queryset

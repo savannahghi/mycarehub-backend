@@ -13,7 +13,7 @@ from mycarehub.content.models import (
     ContentItemIndexPage,
     ContentItemTagIndexPage,
 )
-from mycarehub.content.models.sms import SMSContentItem, SMSItemCategory, SMSItemTag
+from mycarehub.content.models.sms import SMSContentItem, SMSContentItemCategory, SMSContentItemTag
 from mycarehub.home.models import HomePage
 
 pytestmark = pytest.mark.django_db
@@ -175,13 +175,13 @@ def test_content_item_validate_article_hero_image(request_with_user):
 
 def test_set_custom_title_from_english_content():
     category = baker.make(
-        SMSItemCategory,
+        SMSContentItemCategory,
         code="001032833390",
         name="TYPE 1 DIABETES",
         sequence_key=1,
     )
     tag = baker.make(
-        SMSItemTag,
+        SMSContentItemTag,
         name="Lifestyle Education",
     )
     sms_content_item = SMSContentItem(
@@ -205,13 +205,13 @@ def test_set_custom_title_from_english_content():
 def test_set_sms_content_item_sequence_number():
     """Test generation of sequence numbers for sms content."""
     category = baker.make(
-        SMSItemCategory,
+        SMSContentItemCategory,
         code="001032833390",
         name="TYPE 1 DIABETES",
         sequence_key=1,
     )
     tag = baker.make(
-        SMSItemTag,
+        SMSContentItemTag,
         name="Lifestyle Education",
     )
     sms_content_item = SMSContentItem(
@@ -232,13 +232,13 @@ def test_set_sms_content_item_sequence_number():
 def test_sms_content_item_sequence_already_set(mock_logger):
     """Test sequence number already set."""
     category = baker.make(
-        SMSItemCategory,
+        SMSContentItemCategory,
         code="001032833390",
         name="TYPE 1 DIABETES",
         sequence_key=1,
     )
     tag = baker.make(
-        SMSItemTag,
+        SMSContentItemTag,
         name="Lifestyle Education",
     )
     sms_content_item = SMSContentItem(
@@ -257,13 +257,13 @@ def test_sms_content_item_sequence_already_set(mock_logger):
 def test_bypass_generate_sequence_after_save():
     """Test generation of sequence numbers for sms content."""
     category = baker.make(
-        SMSItemCategory,
+        SMSContentItemCategory,
         code="001032833390",
         name="TYPE 1 DIABETES",
         sequence_key=1,
     )
     tag = baker.make(
-        SMSItemTag,
+        SMSContentItemTag,
         name="Lifestyle Education",
     )
     sms_content_item = SMSContentItem(
