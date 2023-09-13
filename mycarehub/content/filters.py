@@ -9,7 +9,7 @@ from mycarehub.clients.models import Client
 from mycarehub.common.filters.base_filters import CommonFieldsFilterset
 from mycarehub.common.models import ContentSequence
 from mycarehub.content.models import ContentItem
-from mycarehub.content.models.sms import SMSContentItem, SMSContentItemCategory
+from mycarehub.content.models.sms import SMSContentItem, SMSContentItemCategory, SMSContentItemTag
 
 from .models import (
     Author,
@@ -180,6 +180,24 @@ class ContentItemCategoryFilterSet(WagtailFilterSet):
 
     class Meta:
         model = ContentItemCategory
+        fields = ["name"]
+
+
+class SMSContentItemCategoryFilterSet(WagtailFilterSet):
+    def filter_queryset(self, *args, **kwargs):
+        return self.queryset.filter(organisation=self.request.user.organisation)
+
+    class Meta:
+        model = SMSContentItemCategory
+        fields = ["name"]
+
+
+class SMSContentItemTagFilterSet(WagtailFilterSet):
+    def filter_queryset(self, *args, **kwargs):
+        return self.queryset.filter(organisation=self.request.user.organisation)
+
+    class Meta:
+        model = SMSContentItemTag
         fields = ["name"]
 
 

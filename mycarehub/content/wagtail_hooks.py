@@ -7,8 +7,22 @@ from wagtail.images import get_image_model
 from wagtail.models import Page
 from wagtail.snippets.models import register_snippet
 
-from .models import Author, ContentItem, ContentItemCategory, SMSContentItem
-from .views import AuthorSnippetViewSet, ContentItemCategorySnippetViewSet, author_chooser_viewset
+from mycarehub.content.views.snippets import SMSContentItemTagSnippetViewSet
+
+from .models import (
+    Author,
+    ContentItem,
+    ContentItemCategory,
+    SMSContentItem,
+    SMSContentItemCategory,
+    SMSContentItemTag,
+)
+from .views import (
+    AuthorSnippetViewSet,
+    ContentItemCategorySnippetViewSet,
+    SMSContentItemCategorySnippetViewSet,
+    author_chooser_viewset,
+)
 
 
 @hooks.register("insert_global_admin_js")
@@ -91,6 +105,8 @@ def chooser_show_organisation_pages_only(pages, request):
 
 register_snippet(Author, viewset=AuthorSnippetViewSet)
 register_snippet(ContentItemCategory, viewset=ContentItemCategorySnippetViewSet)
+register_snippet(SMSContentItemCategory, viewset=SMSContentItemCategorySnippetViewSet)
+register_snippet(SMSContentItemTag, viewset=SMSContentItemTagSnippetViewSet)
 
 
 @hooks.register("after_create_snippet")

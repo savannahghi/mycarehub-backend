@@ -43,16 +43,17 @@ def sms_category(program):
         SMSContentItemCategory,
         code="001032833390",
         name="TYPE 1 DIABETES",
-        program=program,
         sequence_key=1,
+        programs=[program],
     )
 
 
 @pytest.fixture
-def sms_tag():
+def sms_tag(program):
     return baker.make(
         SMSContentItemTag,
         name="Lifestyle Education",
+        programs=[program],
     )
 
 

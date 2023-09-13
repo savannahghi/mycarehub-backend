@@ -9,7 +9,11 @@ from .interaction import (
 )
 from .media import media_index
 from .signed_url import SignedURLView
-from .snippets import AuthorSnippetViewSet, ContentItemCategorySnippetViewSet
+from .snippets import (
+    AuthorSnippetViewSet,
+    ContentItemCategorySnippetViewSet,
+    SMSContentItemCategorySnippetViewSet,
+)
 from .views import ContentItemCategoryViewSet, CustomPageAPIViewset
 
 __all__ = [
@@ -22,6 +26,7 @@ __all__ = [
     "ContentBookmarkViewSet",
     "AuthorSnippetViewSet",
     "ContentItemCategorySnippetViewSet",
+    "SMSContentItemCategorySnippetViewSet",
     "author_chooser_viewset",
     "CustomImageIndexView",
     "CustomImageAddView",
