@@ -1,9 +1,11 @@
 import logging
 import threading
 
+from django import forms
 from django.db import models
 from django.utils.text import Truncator, slugify
-from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
+from modelcluster.fields import ParentalManyToManyField
+from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel, WagtailAdminPageForm
 from wagtail.api import APIField
 from wagtail.models import Page
 from wagtail.search import index
@@ -13,36 +15,76 @@ from mycarehub.common.models import AbstractBase, Organisation, Program
 LOGGER = logging.getLogger(__name__)
 
 
-class SMSContentItemCategory(AbstractBase):
-    """Category associated to an SMS."""
+class SMSContentItemPageForm(WagtailAdminPageForm):
+    def __init__(
+        self, data=None, files=None, parent_page=None, subscription=None, *args, **kwargs
+    ):  # pragma: no cover
+        super().__init__(data, files, parent_page, subscription, *args, **kwargs)
+        self.fields["category"].queryset = self.fields["category"].queryset.filter(
+            organisation=self.for_user.organisation, programs=parent_page.specific.program
+        )
 
-    code = models.CharField(max_length=32)
+
+class SMSContentItemCategory(AbstractBase):
+    """Category associated with an SMS."""
+
+    code = models.CharField(max_length=32, unique=True)
     name = models.CharField(max_length=64)
-    sequence_key = models.IntegerField(unique=True)
-    program = models.ForeignKey(
-        Program,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-    )
+    sequence_key = models.IntegerField()
+    programs = ParentalManyToManyField(Program)
 
     def __str__(self):
         return f"{self.name}"
+
+    class Meta:
+        unique_together = (
+            "sequence_key",
+            "code",
+        )
+        verbose_name_plural = "sms content item categories"
+
+    panels = [
+        FieldPanel("code"),
+        FieldPanel("name"),
+        FieldPanel("sequence_key"),
+        FieldPanel("programs", widget=forms.CheckboxSelectMultiple),
+    ]
+
+    def get_programs(self):
+        return "\n".join([p.name for p in self.programs.all()])
 
 
 class SMSContentItemTag(AbstractBase):
-    """Category associated to an SMS."""
+    """Tag associated with an SMS."""
 
     name = models.CharField(max_length=64)
+    code = models.IntegerField()
+    programs = ParentalManyToManyField(Program)
 
     def __str__(self):
         return f"{self.name}"
+
+    class Meta:
+        verbose_name_plural = "sms content item tags"
+        unique_together = (
+            "name",
+            "code",
+        )
+
+    panels = [
+        FieldPanel("name"),
+        FieldPanel("code"),
+        FieldPanel("programs", widget=forms.CheckboxSelectMultiple),
+    ]
+
+    def get_programs(self):
+        return "\n".join([p.name for p in self.programs.all()])
 
 
 class SMSContentItem(Page):
     """
-    An `SMSContentItem` represents the content
-    sent to sms subscribers.
+    An `SMSContentItem` represents the content that
+    is sent to sms subscribers.
     """
 
     organisation = models.ForeignKey(
@@ -93,6 +135,8 @@ class SMSContentItem(Page):
         index.SearchField("english_content"),
         index.SearchField("swahili_content"),
     ]
+
+    base_form_class = SMSContentItemPageForm
 
     # this configuration allows these custom fields to be available over the API
     api_fields = [

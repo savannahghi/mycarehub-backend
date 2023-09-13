@@ -14,7 +14,7 @@ from .models import (
     ContentItemTagIndexPage,
     MediaSerializedField,
 )
-from .sms import SMSContentItem
+from .sms import SMSContentItem, SMSContentItemCategory, SMSContentItemTag
 from .snippets import Author, ContentItemCategory
 
 __all__ = [

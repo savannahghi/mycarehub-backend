@@ -269,7 +269,9 @@ def test_category_with_program_filter(
     assert response_data["count"] == 1
 
 
-def test_sms_content_item_initial_content_filter(sms_content_item, request_with_user, client):
+def test_sms_content_item_initial_content_filter(
+    initial_sms_content_item, request_with_user, client
+):
     """Test SMSContentItem filterset."""
     client.force_login(request_with_user.user)
     url = (
@@ -280,10 +282,11 @@ def test_sms_content_item_initial_content_filter(sms_content_item, request_with_
     assert response.status_code == status.HTTP_200_OK
     response_data = response.json()
     assert response_data["meta"]["total_count"] == 1
+    assert response_data["items"][0]["sequence_number"] == 1
 
 
 def test_sms_content_item_next_sequence_content_filter(
-    sms_content_item, initial_sms_content_item, request_with_user, client
+    initial_sms_content_item, sms_content_item, request_with_user, client
 ):
     """Test SMSContentItem filterset."""
     client.force_login(request_with_user.user)
@@ -295,3 +298,20 @@ def test_sms_content_item_next_sequence_content_filter(
     assert response.status_code == status.HTTP_200_OK
     response_data = response.json()
     assert response_data["meta"]["total_count"] == 1
+    assert response_data["items"][0]["sequence_number"] == 2
+
+
+def test_sms_content_item_category_snippet_filter(sms_category, request_with_user, client):
+    """Test SMSContentItemCategory snippet."""
+    client.force_login(request_with_user.user)
+    url = reverse("wagtailsnippets_content_smscontentitemcategory:list")
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_sms_content_item_tag_snippet_filter(sms_category, request_with_user, client):
+    """Test SMSContentItemtag snippet."""
+    client.force_login(request_with_user.user)
+    url = reverse("wagtailsnippets_content_smscontentitemtag:list")
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK

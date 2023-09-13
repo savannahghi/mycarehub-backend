@@ -6,6 +6,7 @@ from django.utils import timezone
 from model_bakery import baker
 from wagtail.models import Page
 
+from mycarehub.common.models.program_models import Program
 from mycarehub.content.models import (
     Author,
     ContentItem,
@@ -280,3 +281,23 @@ def test_bypass_generate_sequence_after_save():
     sms_content_item.english_content = "This is a new title to test the save method"
     sms_content_item.save()
     assert sms_content_item.title == "This is a new title to test t…"
+
+
+def test_sms_content_item_category_get_programs():
+    program = baker.make(Program, name="Fafanuka")
+    content_item_category = baker.make(
+        SMSContentItemCategory,
+        code="001032833390",
+        name="TYPE 1 DIABETES",
+        sequence_key=1,
+        programs=[program],
+    )
+    assert content_item_category.get_programs() == "Fafanuka"
+
+
+def test_sms_content_item_tag_get_programs():
+    program = baker.make(Program, name="Fafanuka")
+    content_item_category = baker.make(
+        SMSContentItemTag, name="Diabetets and exercise", programs=[program]
+    )
+    assert content_item_category.get_programs() == "Fafanuka"
