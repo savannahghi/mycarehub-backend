@@ -5,7 +5,7 @@ from django import forms
 from django.db import models
 from django.utils.text import Truncator, slugify
 from modelcluster.fields import ParentalManyToManyField
-from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel, WagtailAdminPageForm
+from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 from wagtail.api import APIField
 from wagtail.models import Page
 from wagtail.search import index
@@ -13,16 +13,6 @@ from wagtail.search import index
 from mycarehub.common.models import AbstractBase, Organisation, Program
 
 LOGGER = logging.getLogger(__name__)
-
-
-class SMSContentItemPageForm(WagtailAdminPageForm):
-    def __init__(
-        self, data=None, files=None, parent_page=None, subscription=None, *args, **kwargs
-    ):  # pragma: no cover
-        super().__init__(data, files, parent_page, subscription, *args, **kwargs)
-        self.fields["category"].queryset = self.fields["category"].queryset.filter(
-            organisation=self.for_user.organisation, programs=parent_page.specific.program
-        )
 
 
 class SMSContentItemCategory(AbstractBase):
@@ -135,8 +125,6 @@ class SMSContentItem(Page):
         index.SearchField("english_content"),
         index.SearchField("swahili_content"),
     ]
-
-    base_form_class = SMSContentItemPageForm
 
     # this configuration allows these custom fields to be available over the API
     api_fields = [

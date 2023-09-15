@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('content', '0013_auto_20230913_1642'),
+        ("content", "0013_auto_20230913_1642"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='smscontentitemcategory',
-            name='code',
+            model_name="smscontentitemcategory",
+            name="code",
             field=models.CharField(max_length=32, unique=True),
         ),
     ]
