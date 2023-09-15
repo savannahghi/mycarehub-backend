@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('content', '0012_alter_smscontentitemcategory_sequence_key'),
+        ("content", "0012_alter_smscontentitemcategory_sequence_key"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='smscontentitemtag',
-            name='code',
+            model_name="smscontentitemtag",
+            name="code",
             field=models.IntegerField(default=1),
             preserve_default=False,
         ),
         migrations.AlterUniqueTogether(
-            name='smscontentitemtag',
-            unique_together={('name', 'code')},
+            name="smscontentitemtag",
+            unique_together={("name", "code")},
         ),
     ]
