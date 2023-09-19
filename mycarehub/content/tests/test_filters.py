@@ -270,7 +270,9 @@ def test_category_with_program_filter(
 
 
 def test_sms_content_item_initial_content_filter(
-    initial_sms_content_item, request_with_user, client
+    initial_sms_content_item,
+    request_with_user,
+    client,
 ):
     """Test SMSContentItem filterset."""
     client.force_login(request_with_user.user)
@@ -281,15 +283,20 @@ def test_sms_content_item_initial_content_filter(
     response = client.get(url)
     assert response.status_code == status.HTTP_200_OK
     response_data = response.json()
+
     assert response_data["meta"]["total_count"] == 1
     assert response_data["items"][0]["sequence_number"] == 1
 
 
 def test_sms_content_item_next_sequence_content_filter(
-    initial_sms_content_item, sms_content_item, request_with_user, client
+    initial_sms_content_item,
+    sms_content_item,
+    request_with_user,
+    client,
 ):
     """Test SMSContentItem filterset."""
     client.force_login(request_with_user.user)
+
     url = (
         reverse("wagtailapi:pages:listing")
         + "?type=content.SMSContentItem&fields=*&offer_code=001032833390&current_sequence_number=1"
@@ -297,6 +304,7 @@ def test_sms_content_item_next_sequence_content_filter(
     response = client.get(url)
     assert response.status_code == status.HTTP_200_OK
     response_data = response.json()
+
     assert response_data["meta"]["total_count"] == 1
     assert response_data["items"][0]["sequence_number"] == 2
 

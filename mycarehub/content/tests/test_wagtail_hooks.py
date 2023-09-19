@@ -4,6 +4,7 @@ from model_bakery import baker
 from wagtail.models import Page, Site
 
 from mycarehub.content.models import Author, ContentItem, CustomMedia
+from mycarehub.content.models.sms import SMSContentItem
 from mycarehub.content.wagtail_hooks import (
     before_publish_page,
     chooser_show_organisation_pages_only,
@@ -85,6 +86,28 @@ def test_set_content_item_program_after_page_create(
     content_item.move(content_item_index, pos="last-child")
 
     set_organisation_after_page_create(request=request_with_user, page=content_item)
+
+
+def test_set_sequence_number_after_page_create(
+    request_with_user,
+    content_item_index,
+    sms_category,
+    sms_tag,
+):
+    sms_content_item = SMSContentItem(
+        english_content="Hello is some sample content for testing purposes",
+        swahili_content="Hello is some sample content for testing purposes",
+        category=sms_category,
+        tag=sms_tag,
+    )
+
+    content_item_index.add_child(instance=sms_content_item)
+    content_item_index.save_revision().publish()
+
+    set_organisation_after_page_create(request=request_with_user, page=sms_content_item)
+
+    sms = SMSContentItem.objects.all().first()
+    assert sms.sequence_number == 1
 
 
 def test_chooser_show_organisation_pages_only(

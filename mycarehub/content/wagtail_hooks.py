@@ -84,6 +84,9 @@ def set_organisation_after_page_create(request, page):
         index = page.get_parent()
         page.program = index.program
 
+    if page.specific_class == SMSContentItem:
+        page.generate_sequence_number()
+
     page.save()
 
 
