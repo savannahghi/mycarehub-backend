@@ -184,9 +184,6 @@ class SMSContentItem(Page):
         We replace the title to make it easier for users to
         keep track of their sms's.
         """
-        if self._state.adding:
-            self.generate_sequence_number()
-
         new_title = Truncator(self.english_content).chars(30)
         self.slug = slugify(new_title)
         self.title = new_title

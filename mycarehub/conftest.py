@@ -11,6 +11,7 @@ from wagtail.models import Page, Site
 from mycarehub.common.models import Facility, Program
 from mycarehub.content.models import Author, ContentItem, ContentItemCategory, ContentItemIndexPage
 from mycarehub.content.models.sms import SMSContentItem, SMSContentItemCategory, SMSContentItemTag
+from mycarehub.content.wagtail_hooks import set_organisation_after_page_create
 from mycarehub.home.models import HomePage
 from mycarehub.users.models import User
 from mycarehub.users.tests.factories import UserFactory
@@ -190,49 +191,37 @@ def content_item_with_tag_and_category(content_item_index, program, facility):
 
 
 @pytest.fixture
-def initial_sms_content_item(content_item_index, program, sms_category, sms_tag):
+def initial_sms_content_item(content_item_index, sms_category, sms_tag, request_with_user):
     """Initial SMS content item fixture."""
     initial_sms_content_item = SMSContentItem(
-        organisation=sms_category.organisation,
-        title="This is some sample content f…",
-        slug="this-is-some-sample-content-f",
-        path="test",
-        depth=3,
         english_content="This is some sample content for testing purposes",
         swahili_content="This is some sample content for testing purposes",
         category=sms_category,
         tag=sms_tag,
-        program=program,
     )
 
     content_item_index.add_child(instance=initial_sms_content_item)
     content_item_index.save_revision().publish()
 
-    initial_sms_content_item.save()
+    set_organisation_after_page_create(request=request_with_user, page=initial_sms_content_item)
 
     return initial_sms_content_item
 
 
 @pytest.fixture
-def sms_content_item(content_item_index, program, sms_category, sms_tag):
+def sms_content_item(content_item_index, sms_category, sms_tag, request_with_user):
     """Subsequent SMS content item fixture."""
     sms_content_item = SMSContentItem(
-        organisation=sms_category.organisation,
-        title="This is some sample content f…",
-        slug="this-is-some-sample-content-f",
-        path="test",
-        depth=3,
         english_content="Hello is some sample content for testing purposes",
         swahili_content="Hello is some sample content for testing purposes",
         category=sms_category,
         tag=sms_tag,
-        program=program,
     )
 
     content_item_index.add_child(instance=sms_content_item)
     content_item_index.save_revision().publish()
 
-    sms_content_item.save()
+    set_organisation_after_page_create(request=request_with_user, page=sms_content_item)
 
     return sms_content_item
 
