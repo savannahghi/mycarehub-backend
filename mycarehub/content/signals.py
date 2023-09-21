@@ -18,6 +18,7 @@ from mycarehub.content.models import (
     ContentItemCategory,
     ContentLike,
 )
+from mycarehub.content.models.sms import SMSContentItemCategory, SMSContentItemTag
 from mycarehub.home.models import HomePage
 
 from .models import ContentItemIndexPage
@@ -98,6 +99,28 @@ def create_program_content_editor_permissions(sender, instance, created, **kwarg
         for permission in allowed_content_category_permissions:
             permission_object = Permission.objects.get(
                 content_type=ContentType.objects.get_for_model(ContentItemCategory),
+                codename=permission,
+            )
+            group.permissions.add(permission_object)
+
+        allowed_sms_content_item_category_permissions = [
+            "add_smscontentitemcategory",
+            "change_smscontentitemcategory",
+        ]
+        for permission in allowed_sms_content_item_category_permissions:
+            permission_object = Permission.objects.get(
+                content_type=ContentType.objects.get_for_model(SMSContentItemCategory),
+                codename=permission,
+            )
+            group.permissions.add(permission_object)
+
+        allowed_sms_content_item_tag_permissions = [
+            "add_smscontentitemtag",
+            "add_smscontentitemtag",
+        ]
+        for permission in allowed_sms_content_item_tag_permissions:
+            permission_object = Permission.objects.get(
+                content_type=ContentType.objects.get_for_model(SMSContentItemTag),
                 codename=permission,
             )
             group.permissions.add(permission_object)
