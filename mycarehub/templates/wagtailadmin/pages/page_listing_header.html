@@ -1,0 +1,17 @@
+{% extends "wagtailadmin/pages/page_listing_header.html" %}
+
+{% load wagtailadmin_tags %}
+{% load wagtailimages_tags %}
+
+{% load i18n %}
+
+{% block header_content %}
+    {{ block.super }}
+    <div class="container" style="margin-left: auto; margin-right: 160px;">
+        <div>
+            <a class="button bicolor button--icon" style="float:right;" href="{% url 'wagtailadmin_pages:add_subpage' parent_page.id %}">
+                {% icon name="plus" wrapped=1 %} {% trans 'Add Content' %}
+            </a>
+        </div>
+    </div>
+{% endblock %}
