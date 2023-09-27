@@ -47,3 +47,4 @@ wagtailmedia~=0.13.0
 wagtail-readinglevel~=3.5.0
 wagtailfontawesome~=1.2.1
 django-nested-admin==4.0.2
+social-auth-core-4.4.2
