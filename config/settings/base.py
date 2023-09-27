@@ -352,6 +352,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "mycarehub.mchprovider.MycarehubOAuth2Token",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.DjangoModelPermissions",),
     "DEFAULT_METADATA_CLASS": "rest_framework.metadata.SimpleMetadata",
@@ -485,3 +486,8 @@ if DEBUG:
         # "DISABLE_PANELS": ["debug_toolbar.panels.redirects.RedirectsPanel"],
         "SHOW_TEMPLATE_CONTEXT": True,
     }
+
+# Mycarehub OAuth2 settings
+MCH_OAUTH2_CLIENT_ID = env("MCH_OAUTH2_CLIENT_ID", default="")
+MCH_OAUTH2_CLIENT_SECRET = env("MCH_OAUTH2_CLIENT_SECRET", default="")
+MCH_OAUTH2_INTROSPECT_URL = env("MCH_OAUTH2_INTROSPECT_URL", default="")
