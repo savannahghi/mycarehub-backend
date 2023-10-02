@@ -1,27 +1,51 @@
 import logging
 import threading
+import uuid
 
 from django import forms
 from django.db import models
 from django.utils.text import Truncator, slugify
 from modelcluster.fields import ParentalManyToManyField
+from modelcluster.models import ClusterableModel
+from wagtail.admin.forms import WagtailAdminPageForm
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 from wagtail.api import APIField
 from wagtail.models import Page
 from wagtail.search import index
 
-from mycarehub.common.models import AbstractBase, Organisation, Program
+from mycarehub.common.models import Organisation, Program
 
 LOGGER = logging.getLogger(__name__)
 
 
-class SMSContentItemCategory(AbstractBase):
+class SMSContentItemPageForm(WagtailAdminPageForm):
+    def __init__(
+        self, data=None, files=None, parent_page=None, subscription=None, *args, **kwargs
+    ):  # pragma: no cover
+        super().__init__(data, files, parent_page, subscription, *args, **kwargs)
+        self.fields["category"].queryset = self.fields["category"].queryset.filter(
+            organisation=self.for_user.organisation, programs=parent_page.specific.program_id
+        )
+        self.fields["tag"].queryset = self.fields["tag"].queryset.filter(
+            organisation=self.for_user.organisation, programs=parent_page.specific.program_id
+        )
+
+
+class SMSContentItemCategory(ClusterableModel):
     """Category associated with an SMS."""
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=32, unique=True)
     name = models.CharField(max_length=64)
     sequence_key = models.IntegerField()
     programs = ParentalManyToManyField(Program)
+    organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="%(app_label)s_%(class)s_related",
+    )
 
     def __str__(self):
         return f"{self.name}"
@@ -44,12 +68,20 @@ class SMSContentItemCategory(AbstractBase):
         return "\n".join([p.name for p in self.programs.all()])
 
 
-class SMSContentItemTag(AbstractBase):
+class SMSContentItemTag(ClusterableModel):
     """Tag associated with an SMS."""
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=64)
     code = models.IntegerField()
     programs = ParentalManyToManyField(Program)
+    organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="%(app_label)s_%(class)s_related",
+    )
 
     def __str__(self):
         return f"{self.name}"
@@ -103,13 +135,15 @@ class SMSContentItem(Page):
     swahili_content = models.TextField(max_length=160)
     english_content = models.TextField(max_length=160)
 
+    base_form_class = SMSContentItemPageForm
+
     content_panels = Page.content_panels + [
         MultiFieldPanel(
             [
                 FieldRowPanel(
                     [
-                        FieldPanel("category"),
-                        FieldPanel("tag"),
+                        FieldPanel("category", widget=forms.Select),
+                        FieldPanel("tag", widget=forms.Select),
                     ]
                 ),
             ],
