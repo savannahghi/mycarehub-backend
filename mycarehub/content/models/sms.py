@@ -35,10 +35,20 @@ class SMSContentItemCategory(ClusterableModel):
     """Category associated with an SMS."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=32, unique=True)
-    name = models.CharField(max_length=64)
-    sequence_key = models.IntegerField()
-    programs = ParentalManyToManyField(Program)
+    code = models.CharField(
+        max_length=32,
+        unique=True,
+        help_text="A code that will be used to uniquely identify a category",
+    )
+    name = models.CharField(
+        max_length=64, help_text="This name will be displayed while creating sms content"
+    )
+    sequence_key = models.IntegerField(
+        help_text="A pre-determined value to be used while sequencing content under this category"
+    )
+    programs = ParentalManyToManyField(
+        Program, help_text="Select a program to assign this category"
+    )
     organisation = models.ForeignKey(
         Organisation,
         on_delete=models.PROTECT,
@@ -72,9 +82,13 @@ class SMSContentItemTag(ClusterableModel):
     """Tag associated with an SMS."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=64)
-    code = models.IntegerField()
-    programs = ParentalManyToManyField(Program)
+    name = models.CharField(
+        max_length=64, help_text="This name will be displayed when creating sms content"
+    )
+    code = models.IntegerField(
+        help_text="A pre-determined value that will be used to uniquely identify a tag"
+    )
+    programs = ParentalManyToManyField(Program, help_text="Select a program to assign this tag")
     organisation = models.ForeignKey(
         Organisation,
         on_delete=models.PROTECT,
@@ -126,14 +140,23 @@ class SMSContentItem(Page):
     )
 
     category = models.ForeignKey(
-        SMSContentItemCategory, on_delete=models.PROTECT, related_name="categories"
+        SMSContentItemCategory,
+        on_delete=models.PROTECT,
+        related_name="categories",
+        help_text="Category to associate content with",
     )
 
-    tag = models.ForeignKey(SMSContentItemTag, on_delete=models.PROTECT, related_name="tags")
+    tag = models.ForeignKey(
+        SMSContentItemTag,
+        on_delete=models.PROTECT,
+        related_name="tags",
+        help_text="Tag to associate content with",
+    )
     sequence_number = models.IntegerField(null=True, blank=True)
     sequence = models.CharField(max_length=10, null=True, blank=True)
-    swahili_content = models.TextField(max_length=160)
-    english_content = models.TextField(max_length=160)
+    content = models.TextField(
+        max_length=160, help_text="Write out the body of the content to be sent to subscribers"
+    )
 
     base_form_class = SMSContentItemPageForm
 
@@ -149,15 +172,13 @@ class SMSContentItem(Page):
             ],
             heading="About",
         ),
-        FieldPanel("swahili_content"),
-        FieldPanel("english_content"),
+        FieldPanel("content"),
     ]
 
     # these fields determine the content that is indexed for search purposes
     search_fields = Page.search_fields + [
         index.SearchField("category"),
-        index.SearchField("english_content"),
-        index.SearchField("swahili_content"),
+        index.SearchField("content"),
     ]
 
     # this configuration allows these custom fields to be available over the API
@@ -169,8 +190,7 @@ class SMSContentItem(Page):
         APIField("tag"),
         APIField("sequence"),
         APIField("sequence_number"),
-        APIField("english_content"),
-        APIField("swahili_content"),
+        APIField("content"),
     ]
 
     # limit the parent page types
@@ -218,7 +238,7 @@ class SMSContentItem(Page):
         We replace the title to make it easier for users to
         keep track of their sms's.
         """
-        new_title = Truncator(self.english_content).chars(30)
+        new_title = Truncator(self.content).chars(30)
         self.slug = slugify(new_title)
         self.title = new_title
         super().save(*args, **kwargs)

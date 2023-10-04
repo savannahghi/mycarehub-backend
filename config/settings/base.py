@@ -102,6 +102,8 @@ THIRD_PARTY_APPS = [
     "wagtail.contrib.settings",
     "wagtail.contrib.frontend_cache",
     "wagtail.contrib.search_promotions",
+    "wagtail.contrib.simple_translation",
+    "wagtail.locales",
     "wagtailreadinglevel",
     "wagtailfontawesome",
     "django_extensions",
