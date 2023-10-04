@@ -174,7 +174,7 @@ def test_content_item_validate_article_hero_image(request_with_user):
     assert "an article must have a hero image" in str(c.value.messages)
 
 
-def test_set_custom_title_from_english_content(initial_sms_content_item):
+def test_set_custom_title(initial_sms_content_item):
     initial_sms_content_item.title = "Hello"
     initial_sms_content_item.save()
 
@@ -209,15 +209,14 @@ def test_bypass_generate_sequence_after_save():
     sms_content_item = SMSContentItem(
         path="test",
         depth=3,
-        english_content="This is some sample content for testing purposes",
-        swahili_content="This is some sample content for testing purposes",
+        content="This is some sample content for testing purposes",
         category=category,
         tag=tag,
     )
 
     sms_content_item.save()
 
-    sms_content_item.english_content = "This is a new title to test the save method"
+    sms_content_item.content = "This is a new title to test the save method"
     sms_content_item.save()
     assert sms_content_item.title == "This is a new title to test t…"
 

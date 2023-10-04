@@ -194,8 +194,7 @@ def content_item_with_tag_and_category(content_item_index, program, facility):
 def initial_sms_content_item(content_item_index, sms_category, sms_tag, request_with_user):
     """Initial SMS content item fixture."""
     initial_sms_content_item = SMSContentItem(
-        english_content="This is some sample content for testing purposes",
-        swahili_content="This is some sample content for testing purposes",
+        content="This is some sample content for testing purposes",
         category=sms_category,
         tag=sms_tag,
     )
@@ -212,8 +211,7 @@ def initial_sms_content_item(content_item_index, sms_category, sms_tag, request_
 def sms_content_item(content_item_index, sms_category, sms_tag, request_with_user):
     """Subsequent SMS content item fixture."""
     sms_content_item = SMSContentItem(
-        english_content="Hello is some sample content for testing purposes",
-        swahili_content="Hello is some sample content for testing purposes",
+        content="Hello is some sample content for testing purposes",
         category=sms_category,
         tag=sms_tag,
     )
