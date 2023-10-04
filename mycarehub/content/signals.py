@@ -125,6 +125,20 @@ def create_program_content_editor_permissions(sender, instance, created, **kwarg
             )
             group.permissions.add(permission_object)
 
+        allowed_locale_permissions = ["add_locale", "change_locale"]
+        allowed_workflow_permissions = ["add_workflow", "change_workflow", "delete_workflow"]
+        allowed_workflowtask_permissions = ["add_task", "change_task", "delete_task"]
+        for permission in (
+            allowed_locale_permissions
+            + allowed_workflow_permissions
+            + allowed_workflowtask_permissions
+        ):
+            permission_object = Permission.objects.get(
+                content_type__app_label="wagtailcore",
+                codename=permission,
+            )
+            group.permissions.add(permission_object)
+
         allowed_page_permissions = ["add", "edit", "publish"]
         for permission in allowed_page_permissions:
             GroupPagePermission.objects.create(
