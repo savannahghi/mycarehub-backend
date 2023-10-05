@@ -31,6 +31,9 @@ def create_program_content_index_page(sender, instance, created, **kwargs):
     if settings.DEFAULT_PROGRAM_ID == str(instance.id) and created:
         return
 
+    if created and ContentItemIndexPage.objects.filter(program=instance).exists():
+        return
+
     try:
         homepage = HomePage.objects.get(title="Mycarehub Home Page")
     except ObjectDoesNotExist:
@@ -77,7 +80,7 @@ def create_program_content_index_page(sender, instance, created, **kwargs):
 @receiver(post_save, sender=ContentItemIndexPage)
 def create_program_content_editor_permissions(sender, instance, created, **kwargs):
     if created:
-        group = Group.objects.create(name=f"{instance.program.name} Editor")
+        group, _ = Group.objects.get_or_create(name=f"{instance.program.name} Editor")
 
         can_access_wagtail_admin = Permission.objects.get(
             content_type=ContentType.objects.get(app_label="wagtailadmin", model="admin"),
@@ -116,7 +119,7 @@ def create_program_content_editor_permissions(sender, instance, created, **kwarg
 
         allowed_sms_content_item_tag_permissions = [
             "add_smscontentitemtag",
-            "add_smscontentitemtag",
+            "change_smscontentitemtag",
         ]
         for permission in allowed_sms_content_item_tag_permissions:
             permission_object = Permission.objects.get(
@@ -141,14 +144,14 @@ def create_program_content_editor_permissions(sender, instance, created, **kwarg
 
         allowed_page_permissions = ["add", "edit", "publish"]
         for permission in allowed_page_permissions:
-            GroupPagePermission.objects.create(
+            GroupPagePermission.objects.get_or_create(
                 group=group, page=instance, permission_type=permission
             )
 
         root_collection = Collection.get_first_root_node()
         allowed_image_permissions = ["add_image", "choose_image", "change_image", "delete_image"]
         for permission in allowed_image_permissions:
-            GroupCollectionPermission.objects.create(
+            GroupCollectionPermission.objects.get_or_create(
                 group=group,
                 collection=root_collection,
                 permission=Permission.objects.get(
@@ -164,7 +167,7 @@ def create_program_content_editor_permissions(sender, instance, created, **kwarg
         ]
 
         for permission in allowed_document_permissions:
-            GroupCollectionPermission.objects.create(
+            GroupCollectionPermission.objects.get_or_create(
                 group=group,
                 collection=root_collection,
                 permission=Permission.objects.get(
@@ -175,7 +178,7 @@ def create_program_content_editor_permissions(sender, instance, created, **kwarg
         allowed_media_permissions = ["add_media", "delete_media", "change_media"]
 
         for permission in allowed_media_permissions:
-            GroupCollectionPermission.objects.create(
+            GroupCollectionPermission.objects.get_or_create(
                 group=group,
                 collection=root_collection,
                 permission=Permission.objects.get(
