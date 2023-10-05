@@ -14,6 +14,7 @@ from wagtail.models import Page
 from wagtail.search import index
 
 from mycarehub.common.models import Organisation, Program
+from mycarehub.content.models.snippets import CustomSnippetForm
 
 LOGGER = logging.getLogger(__name__)
 
@@ -56,6 +57,7 @@ class SMSContentItemCategory(ClusterableModel):
         blank=True,
         related_name="%(app_label)s_%(class)s_related",
     )
+    base_form_class = CustomSnippetForm
 
     def __str__(self):
         return f"{self.name}"
@@ -96,6 +98,7 @@ class SMSContentItemTag(ClusterableModel):
         blank=True,
         related_name="%(app_label)s_%(class)s_related",
     )
+    base_form_class = CustomSnippetForm
 
     def __str__(self):
         return f"{self.name}"

@@ -399,6 +399,7 @@ WAGTAIL_I18N_ENABLED = True
 WAGTAIL_CONTENT_LANGUAGES = [
     ("en", _("English")),
     ("sw", _("Swahili")),
+    ("fr", _("French")),
 ]
 WAGTAILEMBEDS_RESPONSIVE_HTML = True
 WAGTAILADMIN_RECENT_EDITS_LIMIT = 5
