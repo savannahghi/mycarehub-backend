@@ -361,6 +361,7 @@ class ContentItem(Page):
                 source="hero_image",
             ),
         ),
+        APIField("program"),
         APIField("like_count"),
         APIField("bookmark_count"),
         APIField("view_count"),
