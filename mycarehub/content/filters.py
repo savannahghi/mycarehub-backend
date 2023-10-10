@@ -47,6 +47,10 @@ class CategoryFilter(BaseFilterBackend):
     When no filter is passed, the category ID 1
     which is reserved for `welcome` content type is excluded.
 
+    Multiple categories can be passed using the category
+    name param to return a result of content matching the
+    request.
+
     Additionally, the filter excludes content items which are in 'consumer-faqs'
     or 'pro-faqs' unless the api explicitly provides these category-names.
     """
@@ -58,7 +62,8 @@ class CategoryFilter(BaseFilterBackend):
         exclude_categories = query_params.getlist("exclude_category")
 
         if category_name and queryset.model is ContentItem:
-            queryset = queryset.filter(Q(categories__name=category_name))
+            categories = category_name.split(",")
+            queryset = queryset.filter(categories__name__in=categories)
         if category_id and queryset.model is ContentItem:
             queryset = queryset.filter(Q(categories__id=category_id))
         if exclude_categories and queryset.model is ContentItem:
