@@ -69,7 +69,7 @@ class CategoryFilter(BaseFilterBackend):
         if exclude_categories and queryset.model is ContentItem:
             queryset = queryset.exclude(categories__name__in=exclude_categories)
 
-        return queryset
+        return queryset.distinct()
 
 
 class ClientFilter(BaseFilterBackend):
