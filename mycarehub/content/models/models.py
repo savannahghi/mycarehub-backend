@@ -340,6 +340,7 @@ class ContentItem(Page):
     search_fields = Page.search_fields + [
         index.SearchField("intro"),
         index.SearchField("body"),
+        index.FilterField("program"),
     ]
 
     # this configuration allows these custom fields to be available over the API
