@@ -566,3 +566,34 @@ def test_content_view_with_no_attached_pdf_document_media(
 
     response_data = response.json()
     assert response_data["id"] != ""
+
+
+def test_content_detail_view(
+    content_item_with_tag_and_category,
+    request_with_user,
+    client,
+):
+    """
+    Test fetching content item using id or slug.
+    """
+    client.force_login(request_with_user.user)
+
+    pk_url = reverse(
+        "wagtailapi:pages:detail", kwargs={"pk": content_item_with_tag_and_category.id}
+    )
+    response = client.get(pk_url)
+
+    assert response.status_code == status.HTTP_200_OK
+    response_data = response.json()
+
+    assert response_data["id"] == content_item_with_tag_and_category.id
+
+    slug_url = reverse(
+        "wagtailapi:pages:detail", kwargs={"slug": content_item_with_tag_and_category.slug}
+    )
+    response_two = client.get(slug_url)
+
+    assert response_two.status_code == status.HTTP_200_OK
+    response_data = response_two.json()
+
+    assert response_data["id"] == content_item_with_tag_and_category.id
