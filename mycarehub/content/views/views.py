@@ -14,6 +14,7 @@ from mycarehub.common.views.base_views import BaseView
 from mycarehub.content.filters import (
     CategoryFilter,
     ClientFilter,
+    ContentFilter,
     ContentItemCategoryFilter,
     ContentSequenceFilter,
     FacilityFilter,
@@ -33,6 +34,7 @@ class CustomPageAPIViewset(PagesAPIViewSet):
         ContentSequenceFilter,
         FacilityFilter,
         CategoryFilter,
+        ContentFilter,
         FieldsFilter,
         ChildOfFilter,
         AncestorOfFilter,
@@ -53,6 +55,7 @@ class CustomPageAPIViewset(PagesAPIViewSet):
             "client_id",
             "facility_id",
             "exclude_category",
+            "exclude_content",
         ]
     )
 
