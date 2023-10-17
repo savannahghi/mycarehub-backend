@@ -323,3 +323,18 @@ def test_sms_content_item_tag_snippet_filter(sms_category, request_with_user, cl
     url = reverse("wagtailsnippets_content_smscontentitemtag:list")
     response = client.get(url)
     assert response.status_code == status.HTTP_200_OK
+
+
+def test_content_filter_exclude_content(
+    content_item_with_tag_and_category, request_with_user, client
+):
+    """Test exclude content item filter."""
+    url = (
+        reverse("wagtailapi:pages:listing") + f"?type=content.ContentItem"
+        f"&fields=*&exclude_content={content_item_with_tag_and_category.id}"
+    )
+    client.force_login(request_with_user.user)
+    response = client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    response_data = response.json()
+    assert response_data["meta"]["total_count"] == 0

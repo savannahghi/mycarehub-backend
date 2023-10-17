@@ -72,6 +72,22 @@ class CategoryFilter(BaseFilterBackend):
         return queryset.distinct()
 
 
+class ContentFilter(BaseFilterBackend):
+    """
+    This filter excludes the content item given while returning all content
+    available on CMS.
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        query_params = request.query_params
+        exclude_content = query_params.get("exclude_content", "")
+
+        if exclude_content and queryset.model is ContentItem:
+            queryset = queryset.exclude(id=exclude_content)
+
+        return queryset
+
+
 class ClientFilter(BaseFilterBackend):
     """
     Implements the client_id filter which returns only pages that a specific client can view
