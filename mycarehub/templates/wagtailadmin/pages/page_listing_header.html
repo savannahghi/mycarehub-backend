@@ -8,8 +8,8 @@
 {% block header_content %}
     {{ block.super }}
 
-    <div class="container" style="margin-left: auto; margin-right: 160px;">
-        <div style="width: 300px; float: left; margin-right: 15px;">
+    <div class="container" style="margin-left: auto;">
+        <div style="width: 50%; float: left;">
             <form class="search-form" action="{% url 'wagtailadmin_pages:search' %}" method="get">
                 <input type="text" style="font-size: 14px;" placeholder="Search for content  ..." name="q"{% if query_string %} value="{{ query_string }}"{% endif %}>
             </form>
@@ -22,9 +22,9 @@
             {% endif %}
         </div>
 
-        <div style="float: left;">
+        <div style="width: 50%; float: left;">
             <a class="button bicolor button--icon" style="float:right;" href="{% url 'wagtailadmin_pages:add_subpage' parent_page.id %}">
-                {% icon name="plus" wrapped=1 %} {% trans 'Add Content' %}
+                {% icon name="plus" wrapped=1 %} {% trans 'Add New Content' %}
             </a>
         </div>
     </div>

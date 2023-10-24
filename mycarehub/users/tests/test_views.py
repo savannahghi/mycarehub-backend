@@ -6,10 +6,17 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.http import HttpRequest
 from django.test import RequestFactory
 
+from mycarehub.content.models.models import ContentItemIndexPage
 from mycarehub.users.forms import UserChangeForm
 from mycarehub.users.models import User
 from mycarehub.users.tests.factories import UserFactory
-from mycarehub.users.views import UserRedirectView, UserUpdateView, user_detail_view
+from mycarehub.users.views import (
+    CustomLoginView,
+    UserRedirectView,
+    UserUpdateView,
+    login_redirect,
+    user_detail_view,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -82,3 +89,24 @@ class TestUserDetailView:
 
         response = user_detail_view(request, username=user.username)
         assert response.status_code == 302
+
+
+class TestCustomLoginView:
+    def test_get_succes_url(
+        self, content_item_index: ContentItemIndexPage, user: User, rf: RequestFactory
+    ):
+        view = CustomLoginView()
+        request = rf.post("/fake-url")
+        request.user = user
+
+        view.request = request
+
+        assert view.get_success_url() == f"/admin/pages/{content_item_index.id}/"
+
+
+def test_login_redirect(content_item_index: ContentItemIndexPage, user: User, rf: RequestFactory):
+    view = login_redirect
+    request = rf.post("/fake-url")
+    request.user = user
+
+    assert view(request) == f"/admin/pages/{content_item_index.id}/"
