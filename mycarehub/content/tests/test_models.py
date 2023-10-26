@@ -209,14 +209,14 @@ def test_bypass_generate_sequence_after_save():
     sms_content_item = SMSContentItem(
         path="test",
         depth=3,
-        content="This is some sample content for testing purposes",
+        body="This is some sample content for testing purposes",
         category=category,
         tag=tag,
     )
 
     sms_content_item.save()
 
-    sms_content_item.content = "This is a new title to test the save method"
+    sms_content_item.body = "This is a new title to test the save method"
     sms_content_item.save()
     assert sms_content_item.title == "This is a new title to test t…"
 

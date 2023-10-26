@@ -132,7 +132,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 AUTH_USER_MODEL = "users.User"
 
-LOGIN_REDIRECT_URL = "wagtailadmin_home"
+LOGIN_REDIRECT_URL = "wagtailadmin_login_redirect"
 LOGIN_URL = "wagtailadmin_login"
 
 # PASSWORDS

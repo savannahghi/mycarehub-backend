@@ -157,7 +157,7 @@ class SMSContentItem(Page):
     )
     sequence_number = models.IntegerField(null=True, blank=True)
     sequence = models.CharField(max_length=10, null=True, blank=True)
-    content = models.TextField(
+    body = models.TextField(
         max_length=160, help_text="Write out the body of the content to be sent to subscribers"
     )
 
@@ -175,13 +175,13 @@ class SMSContentItem(Page):
             ],
             heading="About",
         ),
-        FieldPanel("content"),
+        FieldPanel("body"),
     ]
 
     # these fields determine the content that is indexed for search purposes
     search_fields = Page.search_fields + [
         index.SearchField("category"),
-        index.SearchField("content"),
+        index.SearchField("body"),
     ]
 
     # this configuration allows these custom fields to be available over the API
@@ -193,7 +193,7 @@ class SMSContentItem(Page):
         APIField("tag"),
         APIField("sequence"),
         APIField("sequence_number"),
-        APIField("content"),
+        APIField("body"),
     ]
 
     # limit the parent page types
@@ -241,7 +241,7 @@ class SMSContentItem(Page):
         We replace the title to make it easier for users to
         keep track of their sms's.
         """
-        new_title = Truncator(self.content).chars(30)
+        new_title = Truncator(self.body).chars(30)
         self.slug = slugify(new_title)
         self.title = new_title
         super().save(*args, **kwargs)
