@@ -15,6 +15,7 @@ from mycarehub.content.models import (
     ContentItemTagIndexPage,
 )
 from mycarehub.content.models.sms import SMSContentItem, SMSContentItemCategory, SMSContentItemTag
+from mycarehub.content.wagtail_hooks import set_organisation_after_page_create
 from mycarehub.home.models import HomePage
 
 pytestmark = pytest.mark.django_db
@@ -174,16 +175,15 @@ def test_content_item_validate_article_hero_image(request_with_user):
     assert "an article must have a hero image" in str(c.value.messages)
 
 
-def test_set_custom_title(initial_sms_content_item):
-    initial_sms_content_item.title = "Hello"
-    initial_sms_content_item.save()
+def test_set_custom_title(sms_content_item):
+    sms_content_item.title = "Hello"
+    sms_content_item.save()
 
-    assert initial_sms_content_item.title == "This is some sample content f…"
-    assert initial_sms_content_item.slug == "this-is-some-sample-content-f"
+    assert sms_content_item.title == "This is some sample content f…"
 
-    assert str(initial_sms_content_item) == "1.1 This is some sample content f…"
-    assert str(initial_sms_content_item.category) == "TYPE 1 DIABETES"
-    assert str(initial_sms_content_item.tag) == "Lifestyle Education"
+    assert str(sms_content_item) == "1.1 This is some sample content f…"
+    assert str(sms_content_item.category) == "TYPE 1 DIABETES"
+    assert str(sms_content_item.tag) == "Lifestyle Education"
 
 
 @patch("mycarehub.content.models.sms." + "LOGGER")
@@ -239,3 +239,49 @@ def test_sms_content_item_tag_get_programs():
         SMSContentItemTag, name="Diabetets and exercise", programs=[program]
     )
     assert content_item_category.get_programs() == "Fafanuka"
+
+
+@patch("mycarehub.content.models.sms." + "LOGGER")
+def test_generate_unique_slug(
+    mock_logger, content_item_index, sms_category, sms_tag, request_with_user
+):
+    """Test generation of unique slug for sms content."""
+    sms_content_item = SMSContentItem(
+        body="This is some sample content for testing purposes",
+        category=sms_category,
+        tag=sms_tag,
+    )
+
+    content_item_index.add_child(instance=sms_content_item)
+    content_item_index.save_revision().publish()
+
+    set_organisation_after_page_create(request=request_with_user, page=sms_content_item)
+
+    mock_logger.info.assert_called_once_with("Duplicate slug found, generating unique slug")
+    assert int(sms_content_item.slug.split("-")[-1]) == 1
+
+
+@patch("mycarehub.content.models.sms." + "LOGGER")
+def test_generate_unique_slug_with_pre_existing_offset(
+    mock_logger,
+    sms_content_item_two,
+    sms_content_item_three,
+    content_item_index,
+    sms_category,
+    sms_tag,
+    request_with_user,
+):
+    """Test generation of unique slug for sms content."""
+    sms_content_item = SMSContentItem(
+        body="Hello this is some sample content for testing purposes",
+        category=sms_category,
+        tag=sms_tag,
+    )
+
+    content_item_index.add_child(instance=sms_content_item)
+    content_item_index.save_revision().publish()
+
+    set_organisation_after_page_create(request=request_with_user, page=sms_content_item)
+
+    mock_logger.info.assert_called_with("Duplicate slug found, generating unique slug")
+    assert int(sms_content_item.slug.split("-")[-1]) == 3

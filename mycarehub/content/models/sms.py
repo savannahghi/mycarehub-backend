@@ -219,7 +219,12 @@ class SMSContentItem(Page):
             "program": self.program,
             "category": self.category,
         }
-        seq = self.__class__.objects.filter(**filters).count()
+        seq = (
+            self.__class__.objects.filter(**filters)
+            .order_by("translation_key")
+            .distinct("translation_key")
+            .count()
+        )
         lock = threading.Lock()
 
         def increment_seq(lock):
@@ -242,6 +247,18 @@ class SMSContentItem(Page):
         keep track of their sms's.
         """
         new_title = Truncator(self.body).chars(30)
-        self.slug = slugify(new_title)
+        slug = slugify(new_title)
+
+        unique_slug = slug
+        offset = 1
+        while self.__class__.objects.filter(slug=unique_slug).exists():
+            msg = "Duplicate slug found, generating unique slug"
+            LOGGER.info(msg)
+
+            unique_slug = "{}-{}".format(slug, offset)  # type: ignore
+            offset += 1
+
+        self.slug = unique_slug
+
         self.title = new_title
         super().save(*args, **kwargs)
