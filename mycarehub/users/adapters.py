@@ -1,7 +1,7 @@
 from typing import Any
 
 from allauth.account.adapter import DefaultAccountAdapter
-from allauth.exceptions import ImmediateHttpResponse
+from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.conf import settings
 from django.contrib import messages
@@ -49,3 +49,11 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
             messages.add_message(request, messages.ERROR, str(exception))
 
         raise ImmediateHttpResponse(redirect(reverse("wagtailadmin_login")))
+
+    def get_connect_redirect_url(self, request, socialaccount):
+        """
+        Returns the default URL to redirect to after successfully
+        connecting a social account.
+        """
+        url = reverse("wagtailadmin_redirect")
+        return url

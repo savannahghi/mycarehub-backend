@@ -6,7 +6,6 @@ from rest_framework.filters import BaseFilterBackend
 from wagtail.admin.filters import WagtailFilterSet
 
 from mycarehub.clients.models import Client
-from mycarehub.common.filters.base_filters import CommonFieldsFilterset
 from mycarehub.common.models import ContentSequence
 from mycarehub.content.models import ContentItem
 from mycarehub.content.models.sms import SMSContentItem, SMSContentItemCategory, SMSContentItemTag
@@ -156,7 +155,7 @@ class FacilityFilter(BaseFilterBackend):
         return queryset
 
 
-class ContentItemCategoryFilter(CommonFieldsFilterset):
+class ContentItemCategoryFilter(django_filters.FilterSet):
     def category_has_content(self, queryset, field, value):
         """
         Ensures the category has content in it
@@ -171,25 +170,25 @@ class ContentItemCategoryFilter(CommonFieldsFilterset):
         fields = "__all__"
 
 
-class ContentViewFilter(CommonFieldsFilterset):
+class ContentViewFilter(django_filters.FilterSet):
     class Meta:
         model = ContentView
         fields = "__all__"
 
 
-class ContentShareFilter(CommonFieldsFilterset):
+class ContentShareFilter(django_filters.FilterSet):
     class Meta:
         model = ContentShare
         fields = "__all__"
 
 
-class ContentLikeFilter(CommonFieldsFilterset):
+class ContentLikeFilter(django_filters.FilterSet):
     class Meta:
         model = ContentLike
         fields = "__all__"
 
 
-class ContentBookmarkFilter(CommonFieldsFilterset):
+class ContentBookmarkFilter(django_filters.FilterSet):
     class Meta:
         model = ContentBookmark
         fields = "__all__"

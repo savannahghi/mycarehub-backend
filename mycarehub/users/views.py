@@ -59,6 +59,7 @@ class CustomLoginView(LoginView):
         index_page = (
             ContentItemIndexPage.objects.filter(program=user.program).order_by("id").first()
         )
+
         return reverse("wagtailadmin_explore", kwargs={"parent_page_id": index_page.id})
 
 

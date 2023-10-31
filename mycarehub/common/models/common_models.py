@@ -4,7 +4,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db.models.fields.json import JSONField
-from django.urls import reverse
 from django.utils import timezone
 
 from ..utils import get_constituencies, get_counties, get_sub_counties, get_wards
@@ -64,10 +63,6 @@ class Facility(AbstractBase):
     model_validators = [
         "check_facility_name_longer_than_three_characters",
     ]
-
-    def get_absolute_url(self):
-        update_url = reverse("common:facility_update", kwargs={"pk": self.pk})
-        return update_url
 
     def check_facility_name_longer_than_three_characters(self):
         if len(self.name) < 3:
@@ -223,10 +218,6 @@ class UserFacilityAllotment(AbstractBase):
                 {"wards": 'At least 1 ward must be selected if region type is "%s"' % ward.label},
                 code="required",
             )
-
-    def get_absolute_url(self):
-        update_url = reverse("common:user_facility_allotment_update", kwargs={"pk": self.pk})
-        return update_url
 
     def __str__(self):
         return (

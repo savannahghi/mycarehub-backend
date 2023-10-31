@@ -4,31 +4,12 @@ from .drf_common_views import (
     ProgramAPIView,
     UserFacilityViewSet,
 )
-from .vanilla_common_views import (
-    AboutView,
-    FacilityCreateView,
-    FacilityDeleteView,
-    FacilityUpdateView,
-    FacilityView,
-    HomeView,
-    UserFacilityAllotmentCreateView,
-    UserFacilityAllotmentDeleteView,
-    UserFacilityAllotmentUpdateView,
-    UserFacilityAllotmentView,
-)
+from .vanilla_common_views import AboutView, HomeView
 
 __all__ = [
     "AboutView",
-    "FacilityCreateView",
-    "FacilityDeleteView",
-    "FacilityUpdateView",
-    "FacilityView",
     "FacilityViewSet",
     "HomeView",
-    "UserFacilityAllotmentCreateView",
-    "UserFacilityAllotmentDeleteView",
-    "UserFacilityAllotmentUpdateView",
-    "UserFacilityAllotmentView",
     "UserFacilityViewSet",
     "OrganisationAPIView",
     "ProgramAPIView",

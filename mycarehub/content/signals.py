@@ -151,10 +151,14 @@ def create_program_content_editor_permissions(sender, instance, created, **kwarg
             )
             group.permissions.add(permission_object)
 
-        allowed_page_permissions = ["add", "edit", "publish"]
+        allowed_page_permissions = ["add_page", "change_page", "publish_page"]
         for permission in allowed_page_permissions:
             GroupPagePermission.objects.get_or_create(
-                group=group, page=instance, permission_type=permission
+                group=group,
+                page=instance,
+                permission=Permission.objects.get(
+                    content_type=ContentType.objects.get_for_model(Page), codename=permission
+                ),
             )
 
         root_collection = Collection.get_first_root_node()

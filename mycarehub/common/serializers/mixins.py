@@ -29,33 +29,7 @@ def get_organisation(request, initial_data=None):
         return user.organisation
 
 
-class PartialResponseMixin(object):
-    """Mixin that allows API clients to specify fields."""
-
-    def strip_fields(self, request, origi_fields):  # noqa
-        """
-        Select a subset of fields, determined by the `fields` parameter.
-
-        Fetch a subset of fields from the serializer determined by the
-        request's ``fields`` query parameter.
-
-        This is an initial implementation that does not handle:
-          - nested relationships
-          - rejection of unknown fields (currently ignoring unknown fields)
-          - wildcards
-          - e.t.c
-        """
-        if request is None or request.method != "GET" or not hasattr(request, "query_params"):
-            return origi_fields
-
-        fields = request.query_params.get("fields", None)
-        if isinstance(fields, str) and fields:
-            fields = [f.strip() for f in fields.split(",")]
-            return {field: origi_fields[field] for field in origi_fields if field in fields}
-        return origi_fields
-
-
-class AuditFieldsMixin(PartialResponseMixin, serializers.ModelSerializer):
+class AuditFieldsMixin(serializers.ModelSerializer):
     """Mixin for organisation, created, updated, created_by and updated_by."""
 
     def __init__(self, *args, **kwargs):
@@ -93,9 +67,3 @@ class AuditFieldsMixin(PartialResponseMixin, serializers.ModelSerializer):
         """Ensure that audit fields are set when updating."""
         self.populate_audit_fields(validated_data, False)
         return super().update(instance, validated_data)
-
-    def get_fields(self):
-        """Implement support for responses that subset available fields."""
-        origi_fields = super().get_fields()
-        request = self.context.get("request", None)
-        return self.strip_fields(request, origi_fields)

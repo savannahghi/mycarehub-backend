@@ -1,44 +1,44 @@
 -r base.txt
 
-Werkzeug~=2.3.3 # https://github.com/pallets/werkzeug
-ipdb~=0.13.9  # https://github.com/gotcha/ipdb
-psycopg2-binary~=2.9.1  # https://github.com/psycopg/psycopg2
-watchgod~=0.8  # https://github.com/samuelcolvin/watchgod
+Werkzeug~=3.0.1 # https://github.com/pallets/werkzeug
+ipdb~=0.13.13  # https://github.com/gotcha/ipdb
+psycopg2-binary~=2.9.9  # https://github.com/psycopg/psycopg2
+watchgod~=0.8.2  # https://github.com/samuelcolvin/watchgod
 
 # Testing
 # ------------------------------------------------------------------------------
 mypy~=0.991 # https://github.com/python/mypy
 django-stubs~=1.9.0  # https://github.com/typeddjango/django-stubs
-pytest~=7.3.1 # https://github.com/pytest-dev/pytest
+pytest~=7.4.3 # https://github.com/pytest-dev/pytest
 pytest-sugar~=0.9.7  # https://github.com/Frozenball/pytest-sugar
-pytest-cov~=4.0.0
-pytest-xdist~=2.4.0
-model_bakery~=1.11.0
+pytest-cov~=4.1.0
+pytest-xdist~=3.3.1
+model_bakery~=1.17.0
 
 # Documentation
 # ------------------------------------------------------------------------------
-sphinx~=4.2.0  # https://github.com/sphinx-doc/sphinx
+sphinx~=7.2.6  # https://github.com/sphinx-doc/sphinx
 sphinx-autobuild~=2021.3.14 # https://github.com/GaretJax/sphinx-autobuild
 
 # Code quality
 # ------------------------------------------------------------------------------
-flake8~=6.0.0  # https://github.com/PyCQA/flake8
-flake8-isort~=6.0.0  # https://github.com/gforcada/flake8-isort
+flake8~=6.1.0  # https://github.com/PyCQA/flake8
+flake8-isort~=6.1.0  # https://github.com/gforcada/flake8-isort
 coverage~=6.5.0  # https://github.com/nedbat/coveragepy
-black~=23.3.0  # https://github.com/psf/black
-click==8.1.3
-pylint-django~=2.4.4  # https://github.com/PyCQA/pylint-django
-pre-commit~=2.15.0  # https://github.com/pre-commit/pre-commit
-Faker~=9.8.0
-pylint>=2.17.3
+black~=23.10.1  # https://github.com/psf/black
+click==8.1.7
+pylint-django~=2.5.5  # https://github.com/PyCQA/pylint-django
+pre-commit~=3.5.0  # https://github.com/pre-commit/pre-commit
+Faker~=19.12.1
+pylint>=3.0.2
 
 # Django
 # ------------------------------------------------------------------------------
-factory-boy~=3.2.0  # https://github.com/FactoryBoy/factory_boy
-django-debug-toolbar~=3.2.1  # https://github.com/jazzband/django-debug-toolbar
-django-extensions~=3.1.3  # https://github.com/django-extensions/django-extensions
-django-coverage-plugin~=3.0.0  # https://github.com/nedbat/django_coverage_plugin
-pytest-django~=4.4.0  # https://github.com/pytest-dev/pytest-django
+factory-boy~=3.3.0  # https://github.com/FactoryBoy/factory_boy
+django-debug-toolbar~=4.2.0  # https://github.com/jazzband/django-debug-toolbar
+django-extensions~=3.2.3  # https://github.com/django-extensions/django-extensions
+django-coverage-plugin~=3.1.0  # https://github.com/nedbat/django_coverage_plugin
+pytest-django~=4.6.0  # https://github.com/pytest-dev/pytest-django
 
 # mypy type definitions
 types-pytz>=2021.1.2
@@ -50,4 +50,4 @@ types-futures>=0.1.6
 types-protobuf>=3.17.4
 types-setuptools>=57.0.2
 types-toml>=0.1.5
-types_requests>=2.25.6
+types_requests>=2.30.0.0

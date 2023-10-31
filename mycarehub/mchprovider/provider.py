@@ -1,3 +1,4 @@
+from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.providers.base import ProviderAccount, ProviderException
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
 from django.core.exceptions import ObjectDoesNotExist
@@ -13,6 +14,11 @@ class MycarehubProvider(OAuth2Provider):
     id = "mycarehub"
     name = "Mycarehub"
     account_class = MycarehubAccount
+
+    def __init__(self, request, app=None):
+        if app is None:
+            app = get_adapter().get_app(request, self.id)
+        super().__init__(request, app=app)
 
     def get_default_scope(self):
         return []
