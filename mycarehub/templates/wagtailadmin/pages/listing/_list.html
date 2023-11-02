@@ -76,7 +76,7 @@
                         {% include "wagtailadmin/shared/page_status_tag.html" with page=page %}
                     </td>
                     <td class="added-by" valign="top">
-                        {{ page.owner }}
+                        {{ page.owner.username }}
                     </td>
                     {% block page_navigation %}
                     {% endblock %}

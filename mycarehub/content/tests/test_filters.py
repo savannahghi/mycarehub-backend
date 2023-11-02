@@ -270,7 +270,7 @@ def test_category_with_program_filter(
 
 
 def test_sms_content_item_initial_content_filter(
-    initial_sms_content_item,
+    sms_content_item,
     request_with_user,
     client,
 ):
@@ -289,8 +289,8 @@ def test_sms_content_item_initial_content_filter(
 
 
 def test_sms_content_item_next_sequence_content_filter(
-    initial_sms_content_item,
     sms_content_item,
+    sms_content_item_two,
     request_with_user,
     client,
 ):
