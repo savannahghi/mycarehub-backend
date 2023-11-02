@@ -43,3 +43,5 @@ rustface~=0.1.0
 wagtailvideos~=4.2.0
 wagtailmedia~=0.14.0
 django-nested-admin==4.0.2
+django-extensions~=3.2.3  # https://github.com/django-extensions/django-extensions
+django-debug-toolbar~=4.2.0  # https://github.com/jazzband/django-debug-toolbar
