@@ -1,10 +1,10 @@
+import django_filters
 from rest_framework import filters
 
 from ..models import Facility, UserFacilityAllotment
-from .base_filters import CommonFieldsFilterset
 
 
-class FacilityFilter(CommonFieldsFilterset):
+class FacilityFilter(django_filters.FilterSet):
     """Filter facilities."""
 
     search = filters.SearchFilter()
@@ -16,7 +16,7 @@ class FacilityFilter(CommonFieldsFilterset):
         fields = "__all__"
 
 
-class UserFacilityAllotmentFilter(CommonFieldsFilterset):
+class UserFacilityAllotmentFilter(django_filters.FilterSet):
     search = filters.SearchFilter()
 
     class Meta:

@@ -8,9 +8,7 @@ from mycarehub.common.filters import FacilityFilter, UserFacilityAllotmentFilter
 from mycarehub.common.models import Organisation, Program, UserFacilityAllotment
 from mycarehub.common.serializers import (
     FacilitySerializer,
-    OrganisationRegistrationSerializer,
     OrganisationSerializer,
-    ProgramRegistrationSerializer,
     ProgramSerializer,
     UserFacilityAllotmentSerializer,
 )
@@ -42,7 +40,7 @@ class UserFacilityViewSet(BaseView):
 
 class OrganisationAPIView(APIView):
     queryset = Organisation.objects.all()
-    serializer_class = OrganisationRegistrationSerializer
+    serializer_class = OrganisationSerializer
 
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
@@ -51,10 +49,10 @@ class OrganisationAPIView(APIView):
                 validated_data = serializer.validated_data
                 data = {
                     "id": validated_data["organisation_id"],
-                    "organisation_name": validated_data["name"],
+                    "name": validated_data["name"],
                     "code": validated_data["code"],
                     "phone_number": validated_data["phone_number"],
-                    "email_address": validated_data["email"],
+                    "email": validated_data["email"],
                 }
 
                 new_org = Organisation.objects.create(**data)
@@ -73,7 +71,7 @@ class OrganisationAPIView(APIView):
 
 class ProgramAPIView(APIView):
     queryset = Program.objects.all()
-    serializer_class = ProgramRegistrationSerializer
+    serializer_class = ProgramSerializer
 
     def get(self, request):
         programs = Program.objects.all()

@@ -201,7 +201,6 @@ class ContentItem(Page):
         Facility,
         help_text="Determines which facilities content is meant for.",
         blank=True,
-        null=True,
     )
 
     date = models.DateField(

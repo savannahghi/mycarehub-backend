@@ -140,4 +140,5 @@ urlpatterns += [
 
 urlpatterns += i18n_patterns(
     path("", include(wagtail_urls), name="wagtail"),
+    prefix_default_language=False,
 )

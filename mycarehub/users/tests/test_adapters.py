@@ -67,3 +67,11 @@ class TestAdapters:
 
         with pytest.raises(ImmediateHttpResponse):
             social_adapter.authentication_error(request=req, provider_id="id")
+
+    def test_get_connect_redirect_url(self):
+        req = MagicMock()
+        social_adapter = SocialAccountAdapter()
+
+        url = social_adapter.get_connect_redirect_url(request=req, socialaccount=None)
+
+        assert url == "/admin/redirect/"

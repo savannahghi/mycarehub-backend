@@ -1,16 +1,16 @@
-from django import forms
-from drf_braces.serializers.form_serializer import FormSerializer, make_form_serializer_field
 from rest_framework import serializers
 
 from mycarehub.common.serializers import OrganisationSerializer, ProgramSerializer
 
-from .forms import ClientRegistrationForm
 from .models import Client
 
 
 class ClientSerializer(serializers.ModelSerializer):
-    organisation = OrganisationSerializer()
-    program = ProgramSerializer()
+    organisation = OrganisationSerializer(read_only=True)
+    program = ProgramSerializer(read_only=True)
+    organisation_id = serializers.UUIDField(write_only=True)
+    program_id = serializers.UUIDField(write_only=True)
+    client_id = serializers.UUIDField(write_only=True)
 
     class Meta:
         model = Client
@@ -21,12 +21,7 @@ class ClientSerializer(serializers.ModelSerializer):
             "date_of_birth",
             "program",
             "organisation",
+            "program_id",
+            "organisation_id",
+            "client_id",
         ]
-
-
-class ClientRegistrationSerializer(FormSerializer):
-    class Meta:
-        form = ClientRegistrationForm
-        field_mapping = {
-            forms.UUIDField: make_form_serializer_field(serializers.UUIDField),
-        }

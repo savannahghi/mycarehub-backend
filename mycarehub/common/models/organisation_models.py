@@ -83,11 +83,11 @@ class Organisation(OrganisationAbstractBase):
         help_text="A unique code representing organisation registration",
         default="",
     )
-    organisation_name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, unique=True, db_column="organisation_name")
 
     # To be used by Branches, Departments and Department units
     # Branches belong to a certain organisation
-    email_address = models.EmailField(max_length=100)
+    email = models.EmailField(max_length=100, db_column="email_address")
     phone_number = PhoneNumberField()
     description = models.TextField(null=True, blank=True)
     postal_address = models.CharField(max_length=100, blank=True)
@@ -96,15 +96,13 @@ class Organisation(OrganisationAbstractBase):
 
     def __str__(self):
         """Represent an organisation using it's name."""
-        return self.organisation_name
+        return self.name
 
     def _set_organisation_code(self):
         code_sequence = _get_next_organisation_code_in_sequence()
         pad_code = str(code_sequence).zfill(4)
-        filtered_org_name = "".join(
-            c for c in self.organisation_name if c not in r"\?:!/();$%^&*)"
-        )
-        count = len(self.organisation_name.split())
+        filtered_org_name = "".join(c for c in self.name if c not in r"\?:!/();$%^&*)")
+        count = len(self.name.split())
         if count >= 2:
             first_letters = [i[0].upper() for i in filtered_org_name.split()]
             name = "".join(first_letters)

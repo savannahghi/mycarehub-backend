@@ -104,7 +104,7 @@ def test_facility_error_saving():
 
 
 def test_organisation_string_representation():
-    org = baker.make("common.Organisation", organisation_name="Test Organisation")
+    org = baker.make("common.Organisation", name="Test Organisation")
     assert str(org) == "Test Organisation"
 
 
@@ -279,7 +279,7 @@ class AuditAbstractBaseModelTest(TestCase):
 
     def test_owner(self):
         """Test for test owner."""
-        org = baker.make(Organisation, organisation_name="Savannah Informatics")
+        org = baker.make(Organisation, name="Savannah Informatics")
         fake = baker.make(
             Facility,
             created=self.jana,
@@ -438,15 +438,6 @@ class UserFacilityAllotmentTest(TestCase):
         assert (
             'At least 1 ward must be selected if region type is "%s"' % ward.label
             in e2.value.messages
-        )
-
-    def test_get_absolute_url(self):
-        """Test the `self.get_absolute_url` method."""
-
-        allotment = self.user_facility_allotment
-        assert (
-            allotment.get_absolute_url()
-            == "/common/user_facility_allotment_update/%s" % allotment.pk
         )
 
     def test_get_facilities_for_user(self):

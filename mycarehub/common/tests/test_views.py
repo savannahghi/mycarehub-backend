@@ -29,17 +29,3 @@ def test_about_view(user_with_all_permissions, client):
     url = reverse("about")
     response = client.get(url)
     assert response.status_code == status.HTTP_200_OK
-
-
-def test_facility_view(user_with_all_permissions, client):
-    client.force_login(user_with_all_permissions)
-    url = reverse("common:facilities")
-    response = client.get(url)
-    assert response.status_code == status.HTTP_200_OK
-
-
-def test_user_facility_allotment_view(user_with_all_permissions, client):
-    client.force_login(user_with_all_permissions)
-    url = reverse("common:user_facility_allotments")
-    response = client.get(url)
-    assert response.status_code == status.HTTP_200_OK
