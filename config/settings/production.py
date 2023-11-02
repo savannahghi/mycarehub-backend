@@ -72,20 +72,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_FILE_STORAGE = "mycarehub.utils.storages.MediaRootGoogleCloudStorage"
 MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
 
-# TEMPLATES
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#templates
-TEMPLATES[-1]["OPTIONS"]["loaders"] = [  # type: ignore[index] # noqa F405
-    (
-        "django.template.loaders.cached.Loader",
-        [
-            "django.template.loaders.filesystem.Loader",
-            "django.template.loaders.app_directories.Loader",
-        ],
-    )
-]
-
-
 # Anymail
 # ------------------------------------------------------------------------------
 # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
