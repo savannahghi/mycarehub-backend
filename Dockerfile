@@ -8,7 +8,6 @@ WORKDIR ${APP_HOME}
 COPY ./package.json ${APP_HOME}
 RUN npm install && npm cache clean --force
 COPY . ${APP_HOME}
-RUN npm run build
 
 # define an alias for the specfic python version used in this file.
 FROM python:${PYTHON_VERSION} as python
@@ -73,7 +72,6 @@ RUN chmod +x /entrypoint
 
 # copy application code to WORKDIR
 COPY --from=client-builder ${APP_HOME} ${APP_HOME}
-RUN npm run build
 RUN npm install -g mjml
 
 ENTRYPOINT ["/entrypoint"]

@@ -18,8 +18,6 @@
 
     {% block css %}
       {% compress css %}
-        <link href="{% static 'css/project.min.css' %}" rel="stylesheet">
-        <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
         <link href="{% static 'css/content.min.css' %}" rel="stylesheet">
       {% endcompress %}
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -34,10 +32,6 @@
     {% endblock extrastyles %}
 
     {% block javascript %}
-      {% compress js %}
-        <script defer src="{% static 'js/sb-admin-2.min.js' %}"></script>
-        <script defer src="{% static 'js/project.min.js' %}"></script>
-      {% endcompress %}
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-XRMT75P1B3"></script>
       <script src="https://kit.fontawesome.com/e1c9d8c99d.js" crossorigin="anonymous"></script>
       <script type="module">

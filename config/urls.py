@@ -17,7 +17,6 @@ from wagtail.documents.api.v2.views import DocumentsAPIViewSet
 from wagtail.images.api.v2.views import ImagesAPIViewSet
 from wagtail.images.views.serve import ServeView
 
-from mycarehub.common.views import AboutView, HomeView
 from mycarehub.content.views import (
     CustomDocumentIndexView,
     CustomImageIndexView,
@@ -28,15 +27,9 @@ from mycarehub.content.views import (
 from mycarehub.users.views import CustomLoginView, login_redirect
 
 urlpatterns = [
-    path("sysadmin/", HomeView.as_view(), name="home"),
     re_path(
         r"^favicon\.ico$",
         RedirectView.as_view(url=settings.STATIC_URL + "favicon.ico", permanent=True),
-    ),
-    path(
-        "about/",
-        AboutView.as_view(),
-        name="about",
     ),
     path(settings.ADMIN_URL, admin.site.urls),
     path("users/", include("mycarehub.users.urls", namespace="users")),
