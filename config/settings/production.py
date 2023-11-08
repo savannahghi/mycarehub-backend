@@ -156,5 +156,22 @@ sentry_sdk.init(
     traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=1.0),
 )
 
+# Wagtail
+# ------------------------------------------------------------------------------
+ELASTICSEARCH_ENABLED = env.bool("ELASTICSEARCH_ENABLED", default=False)
+if ELASTICSEARCH_ENABLED:
+    WAGTAILSEARCH_BACKENDS = {
+        "default": {
+            "BACKEND": "wagtail.search.backends.elasticsearch8",
+            "URLS": [env("ELASTICSEARCH_URL")],
+            "INDEX": env("ELASTICSEARCH_INDEX"),
+            "TIMEOUT": 5,
+            "OPTIONS": {},
+            "INDEX_SETTINGS": {},
+            "ATOMIC_REBUILD": True,
+            "AUTO_UPDATE": True,
+        }
+    }
+
 # Your stuff...
 # ------------------------------------------------------------------------------
