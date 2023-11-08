@@ -124,7 +124,7 @@ function scripts() {
 }
 // Vendor Javascript minification
 function vendorScripts() {
-    return src(paths.vendorsJs)
+    return src(paths.vendorsJs, {sourcemaps: true})
         .pipe(sourcemaps.init())
         .pipe(concat("vendors.js"))
         .pipe(lec({ verbose: true, eolc: "LF", encoding: "utf8" }))
