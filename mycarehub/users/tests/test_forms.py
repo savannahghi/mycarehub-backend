@@ -21,6 +21,9 @@ def test_validate_date_past():
     with pytest.raises(ValidationError):
         validate_date_past("not a date")
 
+    past_date = date.today() - timedelta(days=4)
+    validate_date_past(past_date)
+
 
 class TestUserCreationForm:
     """

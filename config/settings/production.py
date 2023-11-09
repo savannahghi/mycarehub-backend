@@ -72,20 +72,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_FILE_STORAGE = "mycarehub.utils.storages.MediaRootGoogleCloudStorage"
 MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
 
-# TEMPLATES
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#templates
-TEMPLATES[-1]["OPTIONS"]["loaders"] = [  # type: ignore[index] # noqa F405
-    (
-        "django.template.loaders.cached.Loader",
-        [
-            "django.template.loaders.filesystem.Loader",
-            "django.template.loaders.app_directories.Loader",
-        ],
-    )
-]
-
-
 # Anymail
 # ------------------------------------------------------------------------------
 # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
@@ -169,6 +155,23 @@ sentry_sdk.init(
     environment=env("SENTRY_ENVIRONMENT", default="production"),
     traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=1.0),
 )
+
+# Wagtail
+# ------------------------------------------------------------------------------
+ELASTICSEARCH_ENABLED = env.bool("ELASTICSEARCH_ENABLED", default=False)
+if ELASTICSEARCH_ENABLED:
+    WAGTAILSEARCH_BACKENDS = {
+        "default": {
+            "BACKEND": "wagtail.search.backends.elasticsearch8",
+            "URLS": [env("ELASTICSEARCH_URL")],
+            "INDEX": env("ELASTICSEARCH_INDEX"),
+            "TIMEOUT": 5,
+            "OPTIONS": {},
+            "INDEX_SETTINGS": {},
+            "ATOMIC_REBUILD": True,
+            "AUTO_UPDATE": True,
+        }
+    }
 
 # Your stuff...
 # ------------------------------------------------------------------------------

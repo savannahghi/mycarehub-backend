@@ -25,6 +25,7 @@ from mycarehub.content.views import (
     SignedURLView,
     media_index,
 )
+from mycarehub.users.views import CustomLoginView, login_redirect
 
 urlpatterns = [
     path("sysadmin/", HomeView.as_view(), name="home"),
@@ -124,6 +125,8 @@ urlpatterns += [
     path("admin/images/", CustomImageIndexView.as_view(), name="wagtailimages-index"),
     path("admin/media/", media_index, name="wagtailmedia-index"),
     path("admin/documents/", CustomDocumentIndexView.as_view(), name="wagtaildocs-index"),
+    path("admin/login/", CustomLoginView.as_view(), name="wagtailadmin_login"),
+    path("admin/redirect/", login_redirect, name="wagtailadmin_redirect"),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     re_path(
@@ -137,4 +140,5 @@ urlpatterns += [
 
 urlpatterns += i18n_patterns(
     path("", include(wagtail_urls), name="wagtail"),
+    prefix_default_language=False,
 )

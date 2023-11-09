@@ -128,13 +128,22 @@ def create_program_content_editor_permissions(sender, instance, created, **kwarg
             )
             group.permissions.add(permission_object)
 
+        permission_object = Permission.objects.get(
+            content_type=ContentType.objects.get(
+                app_label="simple_translation", model="simpletranslation"
+            ),
+        )
+        group.permissions.add(permission_object)
+
         allowed_locale_permissions = ["add_locale", "change_locale"]
+        allowed_site_permissions = ["add_site", "change_site", "view_site"]
         allowed_workflow_permissions = ["add_workflow", "change_workflow", "delete_workflow"]
         allowed_workflowtask_permissions = ["add_task", "change_task", "delete_task"]
         for permission in (
             allowed_locale_permissions
             + allowed_workflow_permissions
             + allowed_workflowtask_permissions
+            + allowed_site_permissions
         ):
             permission_object = Permission.objects.get(
                 content_type__app_label="wagtailcore",
@@ -142,10 +151,14 @@ def create_program_content_editor_permissions(sender, instance, created, **kwarg
             )
             group.permissions.add(permission_object)
 
-        allowed_page_permissions = ["add", "edit", "publish"]
+        allowed_page_permissions = ["add_page", "change_page", "publish_page"]
         for permission in allowed_page_permissions:
             GroupPagePermission.objects.get_or_create(
-                group=group, page=instance, permission_type=permission
+                group=group,
+                page=instance,
+                permission=Permission.objects.get(
+                    content_type=ContentType.objects.get_for_model(Page), codename=permission
+                ),
             )
 
         root_collection = Collection.get_first_root_node()

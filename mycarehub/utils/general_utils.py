@@ -14,8 +14,8 @@ def default_organisation():
             code=DEFAULT_ORG_CODE,
             id=settings.DEFAULT_ORG_ID,
             defaults={
-                "organisation_name": settings.ORGANISATION_NAME,
-                "email_address": settings.ORGANISATION_EMAIL,
+                "name": settings.ORGANISATION_NAME,
+                "email": settings.ORGANISATION_EMAIL,
                 "phone_number": settings.ORGANISATION_PHONE,
             },
         )
@@ -27,15 +27,18 @@ def default_organisation():
 
 def default_program():
     try:
+        from django.db.models.signals import post_save
+
         from mycarehub.common.models import Program  # intentional late import
 
-        org, _ = Program.objects.get_or_create(
+        program, created = Program.objects.get_or_create(
             id=settings.DEFAULT_PROGRAM_ID,
             defaults={
                 "name": f"{settings.ORGANISATION_NAME}",
             },
         )
-        return org.pk
+        post_save.send(Program, instance=program, created=created)
+        return program.pk
     except (ProgrammingError, Exception):  # pragma: nocover
         # this will occur during initial migrations on a clean db
         return uuid.UUID(settings.DEFAULT_PROGRAM_ID)

@@ -1,6 +1,5 @@
-from .vanilla_mixins import ApprovedMixin, BaseFormMixin
+from .vanilla_mixins import ApprovedMixin
 
 __all__ = [
     "ApprovedMixin",
-    "BaseFormMixin",
 ]

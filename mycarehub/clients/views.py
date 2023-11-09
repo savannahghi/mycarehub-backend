@@ -6,12 +6,12 @@ from rest_framework.views import APIView
 from mycarehub.common.models import Organisation, Program
 
 from .models import Client
-from .serializers import ClientRegistrationSerializer, ClientSerializer
+from .serializers import ClientSerializer
 
 
 class ClientAPIView(APIView):
     queryset = Client.objects.all()
-    serializer_class = ClientRegistrationSerializer
+    serializer_class = ClientSerializer
 
     def get(self, request):
         users = Client.objects.all()

@@ -93,8 +93,7 @@ THIRD_PARTY_APPS = [
     "wagtail.images",
     "wagtail.search",
     "wagtail.admin",
-    "wagtail.core",
-    "wagtail.contrib.modeladmin",
+    "wagtail",
     "wagtailmedia",
     "taggit",
     "modelcluster",
@@ -104,8 +103,6 @@ THIRD_PARTY_APPS = [
     "wagtail.contrib.search_promotions",
     "wagtail.contrib.simple_translation",
     "wagtail.locales",
-    "wagtailreadinglevel",
-    "wagtailfontawesome",
     "django_extensions",
     "nested_admin",
 ]
@@ -132,7 +129,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 AUTH_USER_MODEL = "users.User"
 
-LOGIN_REDIRECT_URL = "wagtailadmin_home"
+LOGIN_REDIRECT_URL = "wagtailadmin_login_redirect"
 LOGIN_URL = "wagtailadmin_login"
 
 # PASSWORDS
@@ -164,6 +161,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 # STATIC
@@ -189,11 +187,8 @@ TEMPLATES = [
         "DIRS": [
             str(APPS_DIR / "templates"),
         ],
+        "APP_DIRS": True,
         "OPTIONS": {
-            "loaders": [
-                "django.template.loaders.filesystem.Loader",
-                "django.template.loaders.app_directories.Loader",
-            ],
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -296,6 +291,7 @@ ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_MIN_LENGTH = 5
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = env.str("DJANGO_ACCOUNT_DEFAULT_HTTP_PROTOCOL", default="https")
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = LOGIN_REDIRECT_URL
 
 SOCIALACCOUNT_ADAPTER = "mycarehub.users.adapters.SocialAccountAdapter"
 SOCIALACCOUNT_AUTO_SIGNUP = True

@@ -1,14 +1,12 @@
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from wagtail import hooks
 from wagtail.admin import messages
-from wagtail.admin.menu import MenuItem
-from wagtail.core import hooks
 from wagtail.documents import get_document_model
 from wagtail.images import get_image_model
 from wagtail.locales.wagtail_hooks import LocalesMenuItem
 from wagtail.models import Page
-from wagtail.permissions import site_permission_policy
 from wagtail.snippets.models import register_snippet
 
 from mycarehub.content.views.snippets import SMSContentItemTagSnippetViewSet
@@ -27,20 +25,6 @@ from .views import (
     SMSContentItemCategorySnippetViewSet,
     author_chooser_viewset,
 )
-
-
-class WorkflowsMenuItem(MenuItem):
-    def is_shown(self, request):
-        return site_permission_policy.user_has_any_permission(
-            request.user, ["add", "change", "delete"]
-        )
-
-
-class WorkflowTasksMenuItem(MenuItem):
-    def is_shown(self, request):
-        return site_permission_policy.user_has_any_permission(
-            request.user, ["add", "change", "delete"]
-        )
 
 
 @hooks.register("insert_global_admin_js")
@@ -171,21 +155,4 @@ def show_organisation_images_only(images, request):
 def register_locales_menu_item():
     return LocalesMenuItem(
         ("Locales"), reverse("wagtaillocales:index"), icon_name="site", order=603
-    )
-
-
-@hooks.register("register_admin_menu_item")
-def register_workflows_menu_item():
-    return WorkflowsMenuItem(
-        ("Workflows"), reverse("wagtailadmin_workflows:index"), icon_name="tasks", order=603
-    )
-
-
-@hooks.register("register_admin_menu_item")
-def register_workflowtask_menu_item():
-    return WorkflowTasksMenuItem(
-        ("Workflow Tasks"),
-        reverse("wagtailadmin_workflows:task_index"),
-        icon_name="thumbtack",
-        order=603,
     )

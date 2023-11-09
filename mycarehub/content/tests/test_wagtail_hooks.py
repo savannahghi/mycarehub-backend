@@ -95,7 +95,7 @@ def test_set_sequence_number_after_page_create(
     sms_tag,
 ):
     sms_content_item = SMSContentItem(
-        content="Hello is some sample content for testing purposes",
+        body="Hello is some sample content for testing purposes",
         category=sms_category,
         tag=sms_tag,
     )
