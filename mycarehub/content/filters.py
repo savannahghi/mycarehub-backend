@@ -64,7 +64,8 @@ class CategoryFilter(BaseFilterBackend):
             categories = category_name.split(",")
             queryset = queryset.filter(categories__name__in=categories)
         if category_id and queryset.model is ContentItem:
-            queryset = queryset.filter(Q(categories__id=category_id))
+            category_ids = category_id.split(",")
+            queryset = queryset.filter(Q(categories__id__in=category_ids))
         if exclude_categories and queryset.model is ContentItem:
             queryset = queryset.exclude(categories__name__in=exclude_categories)
 
