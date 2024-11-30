@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",
-    "browser-sync": "2.27.11",
+    "browser-sync": "3.0.2",
     "cssnano": "^5.1.14",
     "del": "7.0.0",
     "gulp": "^4.0.2",
